@@ -1,0 +1,767 @@
+                         Page 1 of 23
+Last Updated April 28, 2026
+                          TECHNICAL PROFESSIONAL
+                      IA - INDUSTRIAL TECHNOLOGIES
+
+                                          Grade 12
+
+                               Three-Term Budget Of Work
+                                For Learning Competencies
+
+Please note that each TechPro elective is completed within one term if delivered at Grade 12.
+
+                      Term Plan
+
+Elective              Electronics Product Assembly and Servicing
+
+Performance Standard  The learners perform procedures in assembling and testing of electronic components, and
+                      power supply assembly following existing standard. The learners perform servicing of
+                      appliances with electric motors, appliances with heating elements, and rechargeable and
+                      electronic-controlled lighting units ensuring adherence to safety standards. The learners
+                      perform servicing of Closed-Circuit Television (CCTV) systems, and fire alarm systems ensuring
+                      adherence to safety precautions. The learners perform procedures in servicing audio products
+                      and systems, control boards and motor controllers, and sensors and actuators ensuring
+                      adherence to safety precautions.
+
+Content Standard       The learners demonstrate understanding of the principles in electronic systems
+                          assembling and servicing, identification of electronic components, PCB designing,
+                          soldering and desoldering, and assembly of electronic products.
+
+                       Demonstrate an understanding of the principles of appliances with electric motors,
+                          appliances with heating components, and electronic controlled lighting units.
+
+                       The learners demonstrate an understanding of the principles of Closed-Circuit Television
+                          (CCTV) systems, and fire alarm systems.
+
+                       The learners demonstrate an understanding of the principles of audio products and
+
+                                                                                                                        Page 1 of 23
+                                                                                               Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+                systems, television, control boards and motor controllers, sensors and actuators.
+
+Week                               Learning Competency                            Suggested Activities
+   1
+                 Explain the overview of Electronic Systems      Electronic Device Disassembly and System
+                    Servicing.                                      Mapping
+                                                                          Learners disassemble a simple electronic
+                 Discuss electronic components identification.                device (like a radio, LED lamp, or small
+                 Demonstrate procedures in testing electronic                 fan) to observe and understand how its
+                                                                              components work together as a system
+                    components.                                           Carefully open the device, identify its
+                                                                              major parts, and create a simple
+                                                                              diagram showing how each part
+                                                                              contributes to the overall electronic
+                                                                              system
+
+                                                                 Electronic Systems Case Study Discussion
+                                                                          Learners examine real-life electronic
+                                                                              systems (home appliances, gadgets, or
+                                                                              circuit modules) and discuss their
+                                                                              purpose, operation, and service
+                                                                              requirements in a group setting
+                                                                          Review a given electronic system,
+                                                                              describe its function and key
+                                                                              components, and explain the general
+                                                                              steps involved in servicing it
+
+                                                                                                                                            Page 2 of 23
+                                                                                                                  Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                      Component Identification Matching Game
+                                               Learners are given a set of electronic
+                                                   components (resistors, capacitors,
+                                                   diodes, transistors, ICs, etc.) along with
+                                                   their symbols and specifications, and
+                                                   they match each component to its
+                                                   name, function, and symbol
+                                               Match each physical component to its
+                                                   correct name, symbol, and function
+                                                   using a reference chart
+
+                                      Component Sorting and Function Analysis
+                                               Learners sort a mixed set of electronic
+                                                   components into categories (passive,
+                                                   active, ICs, etc.) and explain the role of
+                                                   each component in a circuit
+                                               Sort components into their types and
+                                                   briefly describe the purpose of each
+                                                   within an electronic circuit
+
+                                      Multimeter Hands-On Testing Lab
+                                               Learners use a digital multimeter to
+                                                   measure resistance, voltage, and
+                                                   continuity of various electronic
+                                                   components such as resistors,
+                                                   capacitors, diodes, and LEDs
+
+                                                                                                              Page 3 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week                               Learning Competency                               Suggested Activities
+   2
+                 Discuss the procedures for PCB designing,                   Use a multimeter to check each
+                    including design software and layout transfer                component's value and functionality
+                    techniques.                                                  according to standard testing procedures
+
+                 Discuss soldering and desoldering.                 Component Fault Diagnosis Exercise
+                 Discuss the different types of power supplies.              Learners are given circuits with
+                 Perform variable regulated power supply                         deliberately faulty components and must
+                                                                                 identify which components are defective
+                    assembly.                                                    by performing systematic testing
+                                                                             Test each component in the circuit to
+                                                                                 locate and verify faulty parts using
+                                                                                 proper measuring tools
+
+                                                                    PCB Design Software Simulation
+                                                                             Learners use PCB design software (like
+                                                                                 KiCad or Fritzing) to create a simple
+                                                                                 circuit layout, placing components and
+                                                                                 routing connections digitally.
+                                                                             Open the PCB design software, create a
+                                                                                 basic circuit layout, and simulate
+                                                                                 component placement and routing
+
+                                                                    PCB Layout Transfer Demonstration
+                                                                             Learners observe or perform the process
+                                                                                 of transferring a PCB layout from paper
+                                                                                 or digital design onto a physical copper
+                                                                                 board using methods like the toner
+
+                                                                                                                                              Page 4 of 23
+                                                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                                   transfer or UV exposure technique
+                                               Transfer a designed PCB layout onto a
+
+                                                   copper board using a chosen method,
+                                                   preparing it for etching
+                                      Soldering Practice on a Simple PCB
+                                               Learners practice soldering electronic
+                                                   components (resistors, LEDs, capacitors)
+                                                   onto a pre-made PCB to understand
+                                                   proper technique, heat control, and joint
+                                                   quality
+                                               Carefully solder each component onto
+                                                   the PCB, ensuring secure and clean
+                                                   connections without overheating
+                                      De-soldering and Component
+                                         Replacement Exercise
+                                               Learners practice removing defective
+                                                   components from a PCB using a
+                                                   soldering iron and desoldering pump or
+                                                   wick, then prepare the board for
+                                                   replacement parts
+                                               Use proper de-soldering tools to safely
+                                                   remove faulty components and clean the
+                                                   pads for reinstallation
+                                      Power Supply Identification and
+
+                                                                                                              Page 5 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                         Comparison Lab
+                                               Learners examine various types of
+                                                   power supplies (linear, switching,
+                                                   regulated, unregulated, battery-based)
+                                                   to identify their components,
+                                                   characteristics, and typical applications
+                                               Inspect different power supplies, note
+                                                   their type, voltage/current ratings, and
+                                                   compare their advantages and
+                                                   limitations
+
+                                      Power Supply Function Demonstration
+                                               Learners observe demonstrations of how
+                                                   each type of power supply converts and
+                                                   regulates voltage, including practical
+                                                   examples like adapters, bench supplies,
+                                                   and batteries
+                                               Demonstrate and explain how each type
+                                                   of power supply works and its typical
+                                                   use in electronic circuits
+
+                                      Component Preparation and Layout
+                                         Planning
+                                               Learners gather all required components
+                                                   (transformer, rectifier, filter capacitors,
+                                                   voltage regulator ICs, potentiometers,
+
+                                                                                                              Page 6 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week                               Learning Competency                             Suggested Activities
+   3
+                 Discuss the procedures in servicing appliances                etc.) and plan the physical layout on a
+                    with electric motors.                                      PCB or breadboard before assembly
+                                                                           Arrange and organize all components on
+                 Apply procedures in servicing appliances with                 the board according to the schematic
+                    electric motors.                                           before starting the assembly
+                                                                  Step-by-Step Power Supply Assembly and
+                                                                     Testing
+                                                                           Learners solder the components in
+                                                                               place, connect the circuit, and test the
+                                                                               assembled variable regulated power
+                                                                               supply to ensure proper voltage
+                                                                               adjustment and stability
+                                                                           Assemble the circuit step-by-step, solder
+                                                                               components securely, and test the
+                                                                               output voltage using a multimeter to
+                                                                               confirm regulation
+
+                                                                  Electric Motor Component Analysis
+                                                                           Examine common appliances with
+                                                                               electric motors (fans, blenders) and
+                                                                               identify motor parts, wiring, and safety
+                                                                               features
+                                                                           Observe and describe the motor
+                                                                               components, their functions, and
+                                                                               standard servicing steps
+
+                                                                                                              Page 7 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week                               Learning Competency                             Suggested Activities
+4 to 5
+                 Discuss the procedures in servicing appliances   Video/Simulation Demonstration
+                    with heating components.                               Watch a video or interactive simulation
+                                                                               showing step-by-step servicing of an
+                 Apply procedure in servicing appliances with                  electric motor
+                    heating components.                                    Discuss each procedure demonstrated,
+                                                                               noting the tools and safety measures
+                                                                               used
+
+                                                                  Motor Lubrication and Cleaning Lab
+                                                                           Students dismantle small motors to
+                                                                               clean, lubricate bearings, and check for
+                                                                               mechanical wear
+                                                                           Perform lubrication and cleaning of a
+                                                                               motor, ensuring smooth operation
+
+                                                                  Motor Fault Diagnosis Exercise
+                                                                           Learners test appliances with motor
+                                                                               issues, identify common faults (e.g.,
+                                                                               worn brushes, loose wiring), and repair
+                                                                               them
+                                                                           Apply step-by-step troubleshooting to fix
+                                                                               motor-related problems safely
+
+                                                                  Heating Element Analysis Lab
+                                                                           Examine appliances like irons, toasters,
+                                                                               and water heaters to identify heating
+                                                                               elements and safety features
+
+                                                                                                              Page 8 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week                               Learning Competency                                  Suggested Activities
+
+                 Discuss the procedures in servicing rechargeable               Discuss the structure, function, and
+                    and electronic-controlled lighting units.                       safety precautions for servicing heating
+                                                                                    components
+                 Demonstrate the procedure in servicing
+                    electronic controlled lighting units.              Group Discussion with Case Studies
+                                                                                Review case studies of appliance failures
+                 Discuss the principles of Closed-Circuit Television                due to heating elements and discuss
+                    (CCTV) system.                                                  repair procedures
+                                                                                Explain the procedures used to inspect,
+                                                                                    test, and maintain heating components
+
+                                                                       Heating Element Replacement Lab
+                                                                                Students remove and replace defective
+                                                                                    heating elements in small appliances,
+                                                                                    following manufacturer instructions
+                                                                                Safely replace a heating element and
+                                                                                    test the appliance for proper function
+
+                                                                       Functional Testing Workshop
+                                                                                Learners check the continuity and
+                                                                                    operation of heating components using
+                                                                                    multimeters before and after servicing
+                                                                                Measure and verify the functionality of
+                                                                                    heating elements after maintenance
+
+                                                                       Component Identification and Safety
+                                                                          Review
+                                                                                Examine LED lamps, rechargeable
+
+                                                                                                              Page 9 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                                   torches, and other electronic-controlled
+                                                   lighting units to identify batteries,
+                                                   circuits, and controllers
+                                               Discuss each component's role and the
+                                                   recommended servicing procedures
+                                      Troubleshooting Scenario Discussion
+                                               Present scenarios of faulty lighting units
+                                                   (e.g., battery not charging, LED not
+                                                   lighting) and discuss possible servicing
+                                                   approaches
+                                               Explain the step-by-step troubleshooting
+                                                   and servicing methods for each scenario
+                                      Hands-On Repair Lab
+                                               Students open a rechargeable LED lamp
+                                                   or torch, replace batteries or faulty
+                                                   electronic components, and reassemble
+                                                   it
+                                               Perform the repair procedure
+                                                   step-by-step, ensuring proper
+                                                   reassembly and operation
+                                      Functional Testing of Repaired Units
+                                               After servicing, learners test lighting
+                                                   units for proper voltage, current, and
+                                                   illumination
+
+                                                                                                            Page 10 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                                            Suggested Activities
+
+                   Demonstrate the procedure in CCTV system            Demonstrate the operation of the
+                       installation.                                       repaired unit and verify all functions are
+                                                                           working correctly
+6
+                   Perform CCTV system servicing.             CCTV Components and Function Analysis
+                                                                       Learners examine sample CCTV
+                                                                           cameras, DVR/NVR units, and wiring
+                                                                           diagrams to identify key components
+                                                                           and their functions
+                                                                       Observe and describe each CCTV
+                                                                           component and explain how it
+                                                                           contributes to the system's operation
+
+                                                              CCTV System Theory Discussion
+                                                                       Students analyze a CCTV system
+                                                                           schematic or simulation to discuss signal
+                                                                           flow, camera types, and coverage
+                                                                           strategies
+                                                                       Discuss how video signals travel from
+                                                                           cameras to recording and monitoring
+                                                                           units and the purpose of each
+                                                                           component
+
+                                                              Mock CCTV Installation on a Model Board
+                                                                       Students practice mounting cameras,
+                                                                           routing cables, and connecting to a
+                                                                           DVR/NVR on a classroom or scale model
+
+                                                                                                                                        Page 11 of 23
+                                                                                                               Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                               Install cameras and cables on a model
+                                                   setup according to standard CCTV
+                                                   installation procedures
+
+                                      On-Site Installation Demonstration
+                                               Learners observe or perform a
+                                                   small-scale installation in a controlled
+                                                   area, learning proper placement,
+                                                   alignment, and wiring techniques
+                                               Install and configure a CCTV camera
+                                                   system following safety and operational
+                                                   guidelines
+
+                                      CCTV Troubleshooting Lab
+                                               Students identify common faults (e.g.,
+                                                   camera not recording, poor signal, loose
+                                                   connections) and discuss possible
+                                                   solutions
+                                               Diagnose and document faults in a CCTV
+                                                   system and suggest the correct
+                                                   servicing procedures
+
+                                      Hands-On Maintenance and Repair
+                                               Learners clean camera lenses, tighten
+                                                   connections, and test DVR/NVR
+                                                   functions to restore proper operation
+                                               Perform routine maintenance and minor
+
+                                                                                                             Page 12 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                                               Suggested Activities
+
+                 Discuss the principles of fire alarm systems.                repairs to ensure the CCTV system
+                 Perform the procedure in fire alarm system                   functions correctly
+
+                    installation.                                Fire Alarm Components Study
+                                                                          Examine smoke detectors, heat
+7                                                                             detectors, manual call points, and alarm
+                                                                              panels to understand how each
+                                                                              component works
+                                                                          Discuss the function of each component
+                                                                              and how they interact in a fire alarm
+                                                                              system
+
+                                                                 Fire Alarm System Simulation
+                                                                          Analyze a fire alarm wiring diagram or
+                                                                              software simulation to study signal
+                                                                              detection, activation, and alarm
+                                                                              transmission
+                                                                          Explain how signals are transmitted
+                                                                              from detectors to the control panel and
+                                                                              how the alarm activates
+
+                                                                 Model Fire Alarm Installation Lab
+                                                                          Students install detectors, alarm panels,
+                                                                              and wiring on a mock-up or scale
+                                                                              classroom setup
+                                                                          Install and connect fire alarm system
+                                                                              components according to standard
+
+                                                                                                                                           Page 13 of 23
+                                                                                                                  Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                                              Suggested Activities
+
+                   Perform the procedure in fire alarm system                wiring and placement procedures
+                       servicing.                               On-Site Installation Demonstration
+
+                   Discuss audio products and systems.                   Observe or perform installation in a
+                                                                             controlled area, ensuring proper
+8                                                                            detector spacing, wiring, and panel
+                                                                             configuration
+
+                                                                         Install a functional fire alarm system
+                                                                             following safety and operational
+                                                                             protocols
+
+                                                                Fire Alarm Testing Lab
+                                                                         Learners test smoke detectors, manual
+                                                                             call points, and alarm panels to verify
+                                                                             signal transmission and alarm activation
+                                                                         Perform functional testing of fire alarm
+                                                                             components and record results
+
+                                                                Troubleshooting and Maintenance
+                                                                   Workshop
+                                                                         Learners identify faults like false alarms,
+                                                                             dead batteries, or wiring issues, and
+                                                                             perform corrective maintenance
+                                                                         Service the fire alarm system by
+                                                                             troubleshooting faults and performing
+                                                                             preventive maintenance
+
+                                                                Audio System Component Mapping
+
+                                                                                                                                         Page 14 of 23
+                                                                                                                 Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week                               Learning Competency                              Suggested Activities
+   9
+                 Perform the installation and operation of audio            Learners examine common audio
+                    products and systems.                                       devices (speaker, amplifier, microphone,
+                                                                                mixer) and map how signals flow
+                 Perform procedure in servicing audio products                  through an audio system from input to
+                    and systems.                                                output
+
+                                                                            Provide learners with actual or printed
+                                                                                audio components and let them create a
+                                                                                signal flow diagram explaining how
+                                                                                sound travels through the system
+
+                                                                   Sound System Investigation
+                                                                            Learners analyze different types of audio
+                                                                                systems used in homes, schools, and
+                                                                                events and compare their components
+                                                                                and functions
+                                                                            Assign groups to research and present
+                                                                                one audio system setup (home theater,
+                                                                                PA system, recording system)
+                                                                                highlighting its key parts and uses
+
+                                                                   Public Address System Setup Simulation
+                                                                            Learners perform a hands-on installation
+                                                                                of a basic PA system including
+                                                                                microphones, amplifier, mixer, and
+                                                                                speakers
+                                                                            In groups, assemble and connect a
+
+                                                                                                             Page 15 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                                   simple PA system and demonstrate
+                                                   proper microphone testing and sound
+                                                   level adjustment
+                                      Audio Troubleshooting Drill
+                                               Learners operate an audio system while
+                                                   identifying common operational issues
+                                                   such as feedback, loose connections, or
+                                                   improper volume control
+                                               Present a pre-configured audio setup
+                                                   with minor faults and ask learners to
+                                                   identify and correct the problems before
+                                                   operating the system
+                                      Audio Equipment Preventive Maintenance
+                                               Learners inspect and perform routine
+                                                   maintenance tasks on audio devices
+                                                   including cleaning ports, checking
+                                                   cables, and testing outputs
+                                               Provide an equipment checklist and
+                                                   guide learners to inspect and perform
+                                                   preventive maintenance on a speaker or
+                                                   amplifier unit
+                                      Fault Diagnosis Workshop
+                                               Learners analyze malfunctioning audio
+                                                   devices and identify the source of the
+
+                                                                                                             Page 16 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+  Week                             Learning Competency                             Suggested Activities
+10 to 11
+                 Discuss television.                                           problem using basic diagnostic tools
+                 Perform the procedure in servicing television.            Present a defective audio unit and ask
+                 Discuss control boards and motor controllers.
+                 Perform the procedure in servicing control                    learners to follow a step-by-step
+                                                                               diagnostic procedure to determine the
+                    boards and motor controllers.                              fault
+                 Discuss sensors and actuators.
+                 Perform the procedure in servicing sensors and   Television Technology Timeline
+                                                                           Learners explore the evolution of
+                    actuators.                                                 television technology from CRT to
+                                                                               modern smart TVs
+                                                                           Ask groups to create a timeline showing
+                                                                               major developments in television
+                                                                               technology and present key features of
+                                                                               each stage
+
+                                                                  TV System Components Exploration
+                                                                           Learners identify and explain the main
+                                                                               internal and external components of a
+                                                                               television system
+                                                                           Provide a diagram or disassembled TV
+                                                                               image and let learners label and explain
+                                                                               the functions of its major components
+
+                                                                  Television Inspection and Safety Check
+                                                                           Learners practice safe handling and
+                                                                               inspection procedures before servicing
+                                                                               television units
+
+                                                                                                             Page 17 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                               Demonstrate proper safety procedures
+                                                   and have learners perform a guided
+                                                   inspection using a servicing checklist
+
+                                      TV Troubleshooting Simulation
+                                               Learners diagnose common television
+                                                   problems such as no power, no display,
+                                                   or no sound
+                                               Provide case scenarios of TV
+                                                   malfunctions and let learners identify
+                                                   possible causes and solutions
+
+                                      Control Board Component Identification
+                                               Learners examine control boards and
+                                                   identify components such as relays,
+                                                   resistors, capacitors, and ICs
+                                               Provide a sample control board and ask
+                                                   learners to label components and
+                                                   explain their functions
+
+                                      Motor Controller Function Demonstration
+                                               Learners explore how motor controllers
+                                                   regulate speed and direction in electrical
+                                                   systems
+                                               Demonstrate a simple motor control
+                                                   circuit and let learners explain how the
+                                                   controller affects motor performance
+
+                                                                                                            Page 18 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency                    Suggested Activities
+
+                                      Basic Circuit Testing Activity
+                                               Learners test circuits on control boards
+                                                   using tools such as multimeters to check
+                                                   continuity and voltage
+                                               Provide a sample board and guide
+                                                   learners in measuring voltage and
+                                                   checking for circuit faults
+
+                                      Motor Controller Troubleshooting Task
+                                               Learners identify problems in a motor
+                                                   controller system and propose repair
+                                                   steps
+                                               Present a malfunctioning motor control
+                                                   setup and have learners perform
+                                                   step-by-step troubleshooting
+
+                                      Sensor Application Exploration
+                                               Learners explore common sensors
+                                                   (temperature, motion, light) and how
+                                                   they are used in everyday devices
+                                               Assign groups to demonstrate how a
+                                                   specific sensor works and identify
+                                                   devices that use it
+
+                                      Actuator Function Demonstration
+                                               Learners observe how actuators convert
+                                                   electrical signals into mechanical
+
+                                                                                                             Page 19 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+ Week              Learning Competency  Suggested Activities
+
+       Suggested                                      movement
+Performance Tasks                                 Demonstrate simple actuators (motor,
+
+                                                      relay, solenoid) and ask learners to
+                                                      explain how each responds to control
+                                                      signals
+                                         Sensor Testing Activity
+                                                  Learners test sensors using diagnostic
+                                                      tools and observe output changes based
+                                                      on environmental conditions
+                                                  Provide sensors and a multimeter and
+                                                      ask learners to measure and record
+                                                      sensor responses
+                                         Actuator Maintenance and Testing
+                                                  Learners inspect actuators for proper
+                                                      operation and perform basic servicing
+                                                      procedures
+                                                  Provide a working actuator setup and let
+                                                      learners check connections, clean parts,
+                                                      and test its movement
+
+                    INDIVIDUAL PERFORMANCE TASK - Assembly and Testing of a Regulated DC
+                       Power Supply
+                             The learner individually assembles a basic regulated DC power supply
+                                 (transformer, rectifier, filter capacitor, voltage regulator IC, and output terminals)
+                                 on a project board or PCB, then tests the output voltage and checks for proper
+
+                                                                                                            Page 20 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency  Suggested Activities
+
+                              component functionality using a multimeter, following standard electronic
+                              assembly and safety procedures.
+                          Assemble the DC power supply circuit according to the schematic diagram and
+                              test its output voltage and polarity using appropriate measuring instruments while
+                              following standard assembly and safety practices.
+                 GROUP PERFORMANCE TASK - Electronic Circuit Assembly and Functional
+                    Testing Project
+                          In groups, learners assemble and test an electronic project (e.g., amplifier circuit,
+                              LED flasher, or regulated bench power supply) by interpreting the schematic
+                              diagram, properly mounting and soldering components, inspecting connections,
+                              and performing functional testing to ensure the circuit operates according to
+                              specifications and established standards.
+                          Collaboratively assemble, solder, inspect, and test the assigned electronic circuit
+                              based on the provided schematic while ensuring correct component placement,
+                              proper soldering techniques, and safe testing procedures.
+                 INDIVIDUAL PERFORMANCE TASK - Servicing and Functional Testing of a
+                    Motor-Operated or Heating Appliance
+                          The learner individually diagnoses and services a common household appliance
+                              (e.g., electric fan, blender, flat iron, or rice cooker) by inspecting components such
+                              as motor windings or heating elements, checking wiring continuity, replacing
+                              defective parts if necessary, reassembling the unit, and performing operational
+                              testing while strictly observing electrical safety procedures.
+                          Disassemble, diagnose, repair or replace faulty components, reassemble, and
+                              safely test the assigned appliance while following proper servicing and electrical
+                              safety standards.
+                 GROUP PERFORMANCE TASK - Comprehensive Servicing of Rechargeable and
+                    Electronic-Controlled Lighting Units
+                          In groups, learners troubleshoot and service rechargeable lamps or
+
+                                                                                                             Page 21 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency  Suggested Activities
+
+                              electronic-controlled lighting units by checking the power supply, battery
+                              condition, charging circuit, LED components, and control switches, performing
+                              necessary repairs or replacements, and conducting final safety and performance
+                              testing in accordance with established servicing standards.
+                          Collaboratively inspect, troubleshoot, repair, and test the assigned rechargeable or
+                              electronic-controlled lighting unit while ensuring safe handling of electrical
+                              components and proper use of testing instruments.
+                 INDIVIDUAL PERFORMANCE TASK - Troubleshooting and Servicing of a CCTV
+                    Camera Unit
+                          The learner individually diagnoses and services a malfunctioning CCTV unit
+                              (camera, power supply, or DVR/NVR connection) by inspecting cables, checking
+                              voltage output, testing video signal transmission, correcting faulty terminations,
+                              and restoring system operation while strictly observing electrical and low-voltage
+                              safety precautions.
+                          Inspect, troubleshoot, repair, and test the assigned CCTV unit while following
+                              proper servicing procedures and observing electrical safety standards.
+                 GROUP PERFORMANCE TASK - Fire Alarm System (FAS) Inspection,
+                    Troubleshooting, and Restoration Project
+                          In groups, learners conduct systematic inspection and servicing of a simulated fire
+                              alarm system, including smoke detectors, manual pull stations, alarm notification
+                              devices, and control panel connections, by identifying faults (e.g., open circuit,
+                              short circuit, device failure), performing corrective actions, and ensuring the
+                              system operates safely and reliably.
+                          Collaboratively inspect, diagnose, repair, and function-test the fire alarm system
+                              while strictly observing safety precautions and proper servicing procedures.
+                 INDIVIDUAL PERFORMANCE TASK - Troubleshooting and Servicing of an Audio
+                    Amplifier or Control Board
+                          The learner individually diagnoses and services a defective audio amplifier or basic
+
+                                                                                                            Page 22 of 23
+                                                                                     Last Updated April 28, 2026
+Budget of Work  Grade 12 | TechPro: IA - Electronics Product Assembly and Servicing
+
+Week            Learning Competency  Suggested Activities
+
+                              motor control board by inspecting components, checking power supply output,
+                              testing input/output signals, identifying faulty parts (e.g., capacitors, transistors,
+                              relays), performing necessary repairs or replacements, and conducting functional
+                              testing while strictly observing electrical and ESD safety precautions.
+                          Inspect, troubleshoot, repair, and function-test the assigned audio unit or control
+                              board following proper servicing procedures and safety standards.
+                 GROUP PERFORMANCE TASK - Integrated System Servicing of Motor Controller
+                    with Sensors and Actuators
+                          In groups, learners service and restore the operation of a simulated motor control
+                              system integrated with sensors (e.g., limit switch, proximity sensor) and actuators
+                              (e.g., relay-controlled motor, solenoid), by analyzing the wiring diagram,
+                              diagnosing faults, correcting wiring or component issues, and performing full
+                              system testing while ensuring strict compliance with safety precautions.
+                          Collaboratively diagnose, repair, and test the motor control system with its
+                              sensors and actuators according to the schematic diagram while observing proper
+                              electrical and equipment safety procedures.
+
+                                                                                                            Page 23 of 23
+                                                                                     Last Updated April 28, 2026
+
