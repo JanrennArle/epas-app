@@ -18,7 +18,7 @@ Deferred items from executed plans. Each was reviewed, judged non-blocking, and 
 **UI**
 - `Quiz.submit()` has no explicit `if (submitted) return` guard. Unreachable today because the button unmounts, but it would matter after a refactor.
 - The catch-all route copy says "coming in a later version", which is accurate for `/labs` and `/progress` but misleading for a genuine 404. Revisit when those routes land.
-- The `order` question shuffles by reversing the authored steps, so the pool is the exact inverse of the answer and the item is solvable bottom-up without reading it. A fixed non-identity permutation would keep determinism without that.
+- ~~The `order` question shuffles by reversing the authored steps.~~ **Resolved in Plan 2.** The reverse presented the pool as the exact inverse of the answer, so the item could be solved bottom-up without reading it. `shuffleSteps` in `src/ui/Quiz.tsx` now interleaves odd-indexed steps before even-indexed ones: still deterministic for every student, with no such shortcut.
 - Several radii sit off the 14/10/pill scale: the logo chip at 7, the meter screen at 7, progress bars at 2. `DESIGN.md` section 3 was amended to permit smaller radii on decorative sub-elements rather than churning the code. Revisit if the scale is ever tightened.
 
 ### Load-bearing for later plans
