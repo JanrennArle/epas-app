@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Block } from '../../lib/types'
-import { MultimeterTrainer } from '../../interactives/MultimeterTrainer'
+import { getSim } from '../../interactives/registry'
 
 const text: CSSProperties = {
   fontSize: 15, lineHeight: 1.62, color: 'var(--ink-2)',
@@ -76,15 +76,17 @@ export function BlockRenderer({ blocks, moduleId }: { blocks: Block[]; moduleId:
               </figure>
             )
 
-          case 'interactive':
-            if (b.simId === 'multimeter') {
-              return <MultimeterTrainer key={i} moduleId={moduleId} config={b.config} />
+          case 'interactive': {
+            const Sim = getSim(b.simId)
+            if (Sim) {
+              return <Sim key={i} moduleId={moduleId} config={b.config} />
             }
             return (
               <p key={i} style={{ ...text, color: 'var(--ink-3)' }}>
                 This activity is not available yet.
               </p>
             )
+          }
         }
       })}
     </>
