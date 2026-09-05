@@ -82,3 +82,10 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+.tile {
+  transition: transform 140ms var(--ease-out);
+}
+.tile:active {
+  transform: scale(0.98);
+}
