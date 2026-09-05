@@ -28,10 +28,10 @@ function isStable(cfg: PsuConfig): boolean {
   return out.ripple < 0.1 && out.vMin > TARGET_V - 0.1
 }
 
-function Scope({ points, vRef }: { points: number[]; vRef: number }) {
+function Scope({ points, vRef }: { points: number[]; vRef?: number }) {
   const w = 300
   const h = 110
-  const top = Math.max(vRef, ...points, 1)
+  const top = Math.max(vRef ?? 0, ...points, 1)
   const bottom = Math.min(0, ...points)
   const range = top - bottom || 1
   const y = (v: number) => h - ((v - bottom) / range) * h
@@ -41,10 +41,12 @@ function Scope({ points, vRef }: { points: number[]; vRef: number }) {
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img"
-      aria-label={`Waveform, peak ${Math.max(...points).toFixed(1)} volts, trough ${Math.min(...points).toFixed(1)} volts`}>
+      aria-label={`Waveform, peak ${Math.max(...points).toFixed(1)} volts, trough ${Math.min(...points).toFixed(1)} volts${vRef !== undefined ? `, reference line at ${vRef.toFixed(1)} volts` : ''}`}>
       <rect x="0" y="0" width={w} height={h} fill="#0C1015" />
       <line x1="0" y1={y(0)} x2={w} y2={y(0)} stroke="#232D39" strokeWidth="1" />
-      <line x1="0" y1={y(vRef)} x2={w} y2={y(vRef)} stroke="#F2A93B" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+      {vRef !== undefined && (
+        <line x1="0" y1={y(vRef)} x2={w} y2={y(vRef)} stroke="#F2A93B" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+      )}
       <path d={d} fill="none" stroke="#5FE3B0" strokeWidth="1.6" />
     </svg>
   )
@@ -91,7 +93,14 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
       </header>
 
       <div className="instrument" style={{ background: '#141A21', padding: 14 }}>
-        <Scope points={w.points} vRef={stage === 'regulated' ? TARGET_V : 0} />
+        <Scope
+          points={w.points}
+          vRef={
+            stage === 'regulated' ? TARGET_V
+              : stage === 'filtered' ? TARGET_V + REGULATOR_DROPOUT
+                : undefined
+          }
+        />
         <div style={{
           display: 'flex', justifyContent: 'space-between', marginTop: 8,
           fontFamily: 'var(--font-mono)', fontSize: 11, color: '#7A8798',
@@ -160,7 +169,7 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
           </p>
         )}
 
-        {tried.length > 0 && !done && (
+        {tried.length > 0 && !done && !stable && (
           <p role="status" style={{ fontSize: 12.5, color: 'var(--caution)', marginTop: 10, lineHeight: 1.55 }}>
             Output falls to {out.vMin.toFixed(2)} V at the bottom of the ripple. The regulator needs at least {REGULATOR_DROPOUT} V above {TARGET_V} V at every instant, so look at the Filter stage and see how far it dips.
           </p>
