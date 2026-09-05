@@ -70,12 +70,18 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
     const next = tried.includes(attempt) ? tried : [...tried, attempt]
     setTried(next)
     onEvent?.({ type: 'attempt', correct: stable })
-    if (!stable) return
 
-    setDone(true)
-    // First try scores full marks; each further configuration costs a fifth.
-    const score = Math.max(0.2, 1 - 0.2 * (next.length - 1))
-    const evidence = { ...(config ?? {}), attempts: next, solvedWith: attempt }
+    if (stable) setDone(true)
+    // A solved supply scores full marks on the first configuration and loses a
+    // fifth for each further one; an unsolved Test press still records a row so
+    // a student who tried and gave up is not confused with one who never began.
+    const score = stable ? Math.max(0.2, 1 - 0.2 * (next.length - 1)) : 0
+    const evidence = {
+      ...(config ?? {}),
+      configsTried: next,
+      solvedWith: stable ? attempt : null,
+      solved: stable,
+    }
     recordSim({ simId: 'psu', moduleId, score, at: new Date().toISOString(), evidence })
     onEvent?.({ type: 'complete', score, evidence })
   }

@@ -32,6 +32,7 @@ export const m2: Module = {
               ['Transfer', 'Getting the artwork onto copper', 'Broken or bridged tracks before you even etch'],
             ] },
           { kind: 'text', md: 'Transfer is the step where a good design becomes a bad board. In toner transfer you print the layout mirrored onto glossy paper, iron it onto cleaned copper, and soak the paper away. In UV exposure you print onto transparent film and expose a photoresist-coated board through it. Both depend on the copper being clean: a fingerprint is enough to lift a track.' },
+          { kind: 'safety', md: 'Etchant burns skin and eyes and ruins clothing. Wear gloves and eye protection, work where air moves, and never pour spent etchant down a drain: neutralise and dispose of it the way your school requires. Do not look into a UV exposure source, and treat the transfer iron as a soldering iron, because it is just as hot.' },
           { kind: 'steps', items: [
             'Print the layout at exactly 100 percent scale, mirrored for toner transfer.',
             'Clean the copper with fine abrasive and then with alcohol, and do not touch it again.',

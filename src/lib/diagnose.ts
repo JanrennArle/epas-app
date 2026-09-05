@@ -52,9 +52,21 @@ export function isConclusive(s: Scenario, testPointId: string): boolean {
   return tp.implicates.includes(s.actualFault)
 }
 
+/**
+ * The baseline number of tests a correct diagnosis is allowed for free.
+ *
+ * Test points are authored in service order, the order Module 3 teaches:
+ * start at the plug and work toward the motor. A student who works through
+ * them in that order until the fault shows should not be penalised, so the
+ * baseline is the 1-based position of the LAST test point that implicates
+ * the actual fault, not the count of implicating points.
+ */
 export function requiredTests(s: Scenario): number {
-  const n = s.testPoints.filter(t => t.implicates.includes(s.actualFault)).length
-  return Math.max(1, n)
+  const last = s.testPoints.reduce(
+    (acc, t, i) => (t.implicates.includes(s.actualFault) ? i + 1 : acc),
+    0,
+  )
+  return Math.max(1, last)
 }
 
 export function scoreDiagnosis(

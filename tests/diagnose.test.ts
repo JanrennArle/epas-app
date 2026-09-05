@@ -53,8 +53,8 @@ describe('isConclusive', () => {
 })
 
 describe('requiredTests', () => {
-  it('counts the test points that implicate the actual fault', () => {
-    expect(requiredTests(s)).toBe(1)
+  it('is the position of the last implicating test point in service order', () => {
+    expect(requiredTests(s)).toBe(2)
   })
 })
 
@@ -66,9 +66,9 @@ describe('scoreDiagnosis', () => {
     expect(r.remedy).toBe('Fit a fuse of the same rating.')
   })
 
-  it('deducts for each extra test beyond the minimum', () => {
-    expect(scoreDiagnosis(s, ['tp-cord', 'tp-fuse'], 'fuse').score).toBeCloseTo(0.85, 5)
-    expect(scoreDiagnosis(s, ['tp-cord', 'tp-wind', 'tp-fuse'], 'fuse').score).toBeCloseTo(0.7, 5)
+  it('deducts only for tests beyond the service-order position', () => {
+    expect(scoreDiagnosis(s, ['tp-cord', 'tp-fuse'], 'fuse').score).toBe(1)
+    expect(scoreDiagnosis(s, ['tp-cord', 'tp-wind', 'tp-fuse'], 'fuse').score).toBeCloseTo(0.85, 5)
   })
 
   it('never drops a correct diagnosis below a floor', () => {

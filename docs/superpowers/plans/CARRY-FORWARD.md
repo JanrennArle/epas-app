@@ -28,6 +28,7 @@ Deferred items from executed plans. Each was reviewed, judged non-blocking, and 
 - **`zustand` and `@phosphor-icons/react` are dependencies with zero imports.** Tree-shaken from the bundle. Either use them in Plan 2 or drop them.
 - **Lesson ids are not module-unique.** All three M1 lessons use `id: 'l1'`, unique only within their outcome. Anything keying lessons globally must use `outcomeId + lessonId`.
 - **`match` and `hotspot` quiz kinds do not exist yet.** Deliberately deferred from the content model; the assessment layer in Plan 3 adds them.
+- **The three simulations record on different triggers.** `multimeter` writes one row when all five components have been judged. `psu` writes a row on every Test press, with `solved` true or false. `troubleshoot` writes one row when the student names a fault, correct or not. An export must not average `score` across simIds without accounting for this, and should use `evidence.solved` rather than a non-zero score to decide whether a psu attempt succeeded.
 
 ### Open for the teacher, not for code
 

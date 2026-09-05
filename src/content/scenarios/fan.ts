@@ -6,12 +6,12 @@ export const fanScenario: Scenario = {
   symptom: 'The fan is plugged in and switched on, but nothing happens. No noise, no movement, no smell of burning.',
   safety: [
     'Unplug the fan from the outlet before opening any part of it.',
-    'Set your multimeter to continuity or resistance, never to volts, for a dead unit you have isolated.',
+    'Never put the meter on continuity or resistance while a circuit is live. Work only on a unit you have unplugged, and use DC volts to confirm the capacitor is discharged.',
     'Check the capacitor is discharged before touching the motor terminals.',
   ],
   faults: [
     { id: 'cord', label: 'Broken supply cord', remedy: 'Replace the cord, or re-terminate it if the break is at the plug.' },
-    { id: 'fuse', label: 'Open thermal fuse', remedy: 'Fit a thermal fuse of the same rating and temperature. Never bridge it.' },
+    { id: 'fuse', label: 'Open thermal fuse', remedy: 'Fit a thermal fuse of the same rating and temperature. Never bridge it. Then find what made the winding overheat, or the new fuse will open too.' },
     { id: 'switch', label: 'Faulty speed switch', remedy: 'Clean or replace the switch assembly.' },
     { id: 'capacitor', label: 'Failed run capacitor', remedy: 'Replace with the same microfarad and voltage rating.' },
     { id: 'winding', label: 'Open motor winding', remedy: 'Rewind or replace the motor. Usually not economical on a small fan.' },

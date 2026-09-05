@@ -84,7 +84,7 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
             const done = used.includes(tp.id)
             return (
               <div key={tp.id}>
-                <button onClick={() => runTest(tp.id)} disabled={!safe || done || !!result}
+                <button onClick={() => runTest(tp.id)} aria-disabled={!safe || done || !!result}
                   className="tile"
                   style={{
                     width: '100%', textAlign: 'left', minHeight: 44, padding: '10px 12px',
@@ -96,7 +96,7 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
                   <strong style={{ fontWeight: 620 }}>{tp.label}. </strong>{tp.action}
                 </button>
                 {done && (
-                  <p style={{
+                  <p role="status" style={{
                     fontFamily: 'var(--font-mono)', fontSize: 12.5, color: 'var(--ink)',
                     margin: '6px 0 0 12px', lineHeight: 1.5,
                   }}>Reading: {readingAt(scenario, tp.id)}</p>

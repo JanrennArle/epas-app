@@ -117,14 +117,27 @@ export function Quiz({ items, moduleId, onFinish }: {
   )
 }
 
+/**
+ * Deterministic shuffle. Reversing would present the pool as the exact
+ * inverse of the answer, which a student can solve from the bottom up
+ * without reading. Interleaving is still reproducible for every student
+ * but carries no such shortcut.
+ */
+function shuffleSteps(steps: string[]): string[] {
+  return [
+    ...steps.filter((_, i) => i % 2 === 1),
+    ...steps.filter((_, i) => i % 2 === 0),
+  ]
+}
+
 function OrderInput({ item, disabled, onChange }: {
   item: Extract<QuizItem, { kind: 'order' }>
   disabled: boolean
   onChange: (seq: string[]) => void
 }) {
-  // Deterministic shuffle: reverse. Keeps the exercise real without adding
-  // randomness that would make the student's experience irreproducible.
-  const [pool, setPool] = useState<string[]>(() => [...item.steps].reverse())
+  // Deterministic shuffle via shuffleSteps: reproducible for every student
+  // without presenting the pool as the plain inverse of the answer.
+  const [pool, setPool] = useState<string[]>(() => shuffleSteps(item.steps))
   const [chosen, setChosen] = useState<string[]>([])
 
   function pick(step: string) {
@@ -135,7 +148,7 @@ function OrderInput({ item, disabled, onChange }: {
   }
 
   function reset() {
-    setPool([...item.steps].reverse())
+    setPool(shuffleSteps(item.steps))
     setChosen([])
     onChange([])
   }
