@@ -18,7 +18,7 @@ export function Shell({ children }: { children: ReactNode }) {
       }}>
         <Link to="/" style={{
           display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none',
-          color: 'var(--ink)', fontWeight: 700, fontSize: 14,
+          color: 'var(--ink)', fontWeight: 700, fontSize: 14, minHeight: 44,
         }}>
           <span aria-hidden style={{
             width: 22, height: 22, borderRadius: 7, background: 'var(--accent)',

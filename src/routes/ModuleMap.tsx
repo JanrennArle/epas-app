@@ -21,7 +21,9 @@ export default function ModuleMap() {
       }}>
         {modules.map(m => {
           const done = state.modules[m.id]?.completedOutcomes.length ?? 0
-          const pct = Math.round((done / m.outcomes.length) * 100)
+          const pct = m.outcomes.length
+            ? Math.min(100, Math.round((done / m.outcomes.length) * 100))
+            : 0
           return (
             <li key={m.id}>
               <Link to={`/m/${m.id}`} className="tile" style={{
@@ -39,7 +41,7 @@ export default function ModuleMap() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
-                  <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'rgba(0,0,0,0.09)' }}>
+                  <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'color-mix(in srgb, var(--ink) 14%, transparent)' }}>
                     <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: `var(--${m.tint}-ink)` }} />
                   </div>
                   <span style={{

@@ -15,7 +15,7 @@ export default function ModuleOverview() {
 
   return (
     <>
-      <Link to="/" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>Modules</Link>
+      <Link to="/" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>Modules</Link>
       <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '8px 0 2px' }}>{m.title}</h1>
       <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '0 0 14px' }}>{m.week}</p>
 
