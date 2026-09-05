@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import type { InteractiveProps } from './types'
 import { MultimeterTrainer } from './MultimeterTrainer'
 import { PowerSupplySim } from './PowerSupplySim'
+import { SystemTroubleshooter } from './SystemTroubleshooter'
 
 /**
  * Every simulation in the app. Adding one is a single entry here plus the
@@ -10,6 +11,7 @@ import { PowerSupplySim } from './PowerSupplySim'
 export const SIMS: Record<string, ComponentType<InteractiveProps>> = {
   multimeter: MultimeterTrainer,
   psu: PowerSupplySim,
+  troubleshoot: SystemTroubleshooter,
 }
 
 export function getSim(id: string): ComponentType<InteractiveProps> | undefined {
