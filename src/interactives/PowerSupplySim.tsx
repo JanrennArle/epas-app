@@ -75,7 +75,7 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
     setDone(true)
     // First try scores full marks; each further configuration costs a fifth.
     const score = Math.max(0.2, 1 - 0.2 * (next.length - 1))
-    const evidence = { attempts: next, solvedWith: attempt, ...(config ?? {}) }
+    const evidence = { ...(config ?? {}), attempts: next, solvedWith: attempt }
     recordSim({ simId: 'psu', moduleId, score, at: new Date().toISOString(), evidence })
     onEvent?.({ type: 'complete', score, evidence })
   }

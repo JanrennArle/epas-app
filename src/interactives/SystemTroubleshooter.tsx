@@ -34,7 +34,7 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
   }
 
   const accuse = (faultId: string) => {
-    if (result) return
+    if (!safe || result) return
     const r = scoreDiagnosis(scenario, used, faultId)
     setResult(r)
     onEvent?.({ type: 'attempt', correct: r.correct })

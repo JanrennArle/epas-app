@@ -45,9 +45,9 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
         moduleId,
         score,
         at: new Date().toISOString(),
-        evidence: { verdicts: next, ...(config ?? {}) },
+        evidence: { ...(config ?? {}), verdicts: next },
       })
-      onEvent?.({ type: 'complete', score, evidence: { verdicts: next, ...(config ?? {}) } })
+      onEvent?.({ type: 'complete', score, evidence: { ...(config ?? {}), verdicts: next } })
     }
   }
 
