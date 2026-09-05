@@ -2,6 +2,7 @@ import { createHashRouter, RouterProvider } from 'react-router'
 import { Shell } from './ui/Shell'
 import ModuleMap from './routes/ModuleMap'
 import ModuleOverview from './routes/ModuleOverview'
+import LessonReader from './routes/LessonReader'
 
 function NotBuiltYet() {
   return (
@@ -19,6 +20,7 @@ function NotBuiltYet() {
 const router = createHashRouter([
   { path: '/', element: <Shell><ModuleMap /></Shell> },
   { path: '/m/:moduleId', element: <Shell><ModuleOverview /></Shell> },
+  { path: '/m/:moduleId/lo/:outcomeId', element: <Shell><LessonReader /></Shell> },
   { path: '*', element: <Shell><NotBuiltYet /></Shell> },
 ])
 
