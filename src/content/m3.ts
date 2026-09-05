@@ -19,7 +19,7 @@ export const m3: Module = {
         title: 'What is inside a small appliance motor',
         blocks: [
           { kind: 'safety', md: 'Unplug the appliance before opening it, every time, with no exception for a quick look. A fan or blender that appears dead can still hold charge in its run capacitor, and a motor that starts unexpectedly while your hand is near the blades causes serious injury.' },
-          { kind: 'text', md: 'Most household appliances use one of two motor types. A shaded pole motor, found in fans and small blowers, is cheap, quiet and has no brushes to wear out. A universal motor, found in blenders and drills, is more powerful for its size and uses carbon brushes that press against a rotating commutator. Brushes wear out, so a universal motor is a serviceable motor.' },
+          { kind: 'text', md: 'Household appliances use a few motor types, and telling them apart decides how you service them. Most electric fans use a permanent split capacitor motor, which keeps a run capacitor in circuit the whole time it runs, because that capacitor produces the phase shift that starts the rotor turning and keeps it turning. A shaded pole motor, found in very small blowers and range hoods, produces that phase shift with copper shading rings instead, so it has no capacitor and no brushes. A universal motor, found in blenders and drills, is more powerful for its size and uses carbon brushes that press against a rotating commutator. Brushes wear out, so a universal motor is a serviceable motor.' },
           { kind: 'table',
             headers: ['Part', 'What it does', 'How it usually fails'],
             rows: [
@@ -56,7 +56,7 @@ export const m3: Module = {
             'An open thermal fuse cuts the circuit completely, so there would be no hum at all.',
             'Correct. The hum means current is reaching the winding, but without the capacitor there is no phase shift to start rotation.',
             'A broken cord would give no hum, because no current would reach the motor.',
-            'A shaded pole fan motor has no brushes.',
+            'A fan motor of this kind has no brushes. Only universal motors, such as those in blenders and drills, have them.',
           ] },
         { kind: 'truefalse', id: 'm3-lo1-q2', competency: 'Discuss the procedures in servicing appliances with electric motors.',
           stem: 'If a thermal fuse has opened, fitting a new one is a complete repair.',
