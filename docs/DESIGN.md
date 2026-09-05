@@ -33,11 +33,11 @@ No pure black, no pure white. Both kill depth.
 
 ### Semantic status
 
-| Token | Light | Meaning |
-|---|---|---|
-| `--danger` | `#B3382C` | **Electrical safety only** |
-| `--pass` | `#1E7A4A` | Correct, within tolerance, passed |
-| `--caution` | `#A9650C` | Incorrect answer, out of tolerance, warning |
+| Token | Light | Dark | Meaning |
+|---|---|---|---|
+| `--danger` | `#B3382C` | `#EF8577` | **Electrical safety only** |
+| `--pass` | `#1E7A4A` | `#5FC98E` | Correct, within tolerance, passed |
+| `--caution` | `#A9650C` | `#E0A54A` | Incorrect answer, out of tolerance, warning |
 
 **Red is reserved for electrical safety.** In an app about live voltage, red cannot also mean "wrong answer". Incorrect answers use `--caution` plus a written reason.
 
