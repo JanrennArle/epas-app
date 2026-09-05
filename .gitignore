@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .superpowers/
+.vite/
+*.tsbuildinfo
 .DS_Store
 *.local
-*.tsbuildinfo
