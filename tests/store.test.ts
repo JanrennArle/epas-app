@@ -1,5 +1,5 @@
 import {
-  loadState, saveState, recordAttempt, recordSim,
+  loadState, recordAttempt, recordSim,
   markOutcomeComplete, STORAGE_KEY,
 } from '../src/lib/store'
 
