@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+  --radius-card: 14px;
+  --radius-control: 10px;
+}
+
+:root {
+  --paper: #FAFAF9;
+  --surface: #FFFFFF;
+  --ink: #1A1B1E;
+  --ink-2: #5F646C;
+  --ink-3: #8A9099;
+  --line: #E7E7E9;
+  --accent: #0E6E63;
+  --danger: #B3382C;
+  --pass: #1E7A4A;
+  --caution: #A9650C;
+
+  --m1: #DDF0EC; --m1-ink: #1D6B60;
+  --m2: #FAEDD6; --m2-ink: #8A5B12;
+  --m3: #DEECFA; --m3-ink: #1F5A87;
+  --m4: #FBE7DD; --m4-ink: #8E4B2E;
+  --m5: #E4E6FA; --m5-ink: #414BA0;
+  --m6: #FADEE4; --m6-ink: #963C58;
+  --m7: #EFE2F7; --m7-ink: #6B3D8F;
+  --m8: #E9F3D8; --m8-ink: #4F6B1E;
+  --m9: #DAF0F5; --m9-ink: #1B6377;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #131417;
+    --surface: #1A1C20;
+    --ink: #EDEEF0;
+    --ink-2: #A2A8B2;
+    --ink-3: #767D88;
+    --line: #2A2D33;
+    --accent: #3FA394;
+
+    --m1: #17332E; --m1-ink: #79CFBF;
+    --m2: #33291A; --m2-ink: #E0B269;
+    --m3: #1A2A38; --m3-ink: #82BCE6;
+    --m4: #33231B; --m4-ink: #E2A183;
+    --m5: #22243D; --m5-ink: #A3AAF0;
+    --m6: #33222A; --m6-ink: #E79BB1;
+    --m7: #2B2136; --m7-ink: #C39BE4;
+    --m8: #262E1B; --m8-ink: #B7CE84;
+    --m9: #162E36; --m9-ink: #7FCBDD;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
