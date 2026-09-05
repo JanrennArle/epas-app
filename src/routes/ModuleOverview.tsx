@@ -25,6 +25,10 @@ export default function ModuleOverview() {
           border: '1px solid var(--line)', borderLeft: '3px solid var(--caution)',
           borderRadius: '0 10px 10px 0', padding: '10px 12px', margin: '0 0 16px',
         }}>
+          <strong style={{
+            fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: 'var(--caution)', display: 'block', marginBottom: 4,
+          }}>Not yet reviewed</strong>
           This module has not yet been reviewed by your teacher. Confirm any procedure with them before performing it on real equipment.
         </p>
       )}

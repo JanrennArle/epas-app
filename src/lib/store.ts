@@ -15,6 +15,7 @@ export interface Attempt {
 export interface SimRecord {
   simId: string
   moduleId: string
+  /** Fraction 0..1. */
   score: number
   at: string
   evidence: Record<string, unknown>
@@ -72,9 +73,10 @@ function migrate(raw: unknown): StoreV1 {
 }
 
 export function loadState(): StoreV1 {
+  let raw: string | null = null
   let parsed: unknown
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    raw = localStorage.getItem(STORAGE_KEY)
     if (raw === null) {
       const s = freshState()
       saveState(s)
@@ -87,7 +89,10 @@ export function loadState(): StoreV1 {
     return s
   }
   const migrated = migrate(parsed)
-  saveState(migrated)
+  if (migrated !== parsed) {
+    if (raw) localStorage.setItem(`${STORAGE_KEY}.unreadable.${Date.now()}`, raw)
+    saveState(migrated)
+  }
   return migrated
 }
 

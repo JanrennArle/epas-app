@@ -22,7 +22,7 @@ Low variance and low motion are deliberate: this is a daily task surface for stu
 | `--surface` | `#FFFFFF` | `#1A1C20` | Cards, panels |
 | `--ink` | `#1A1B1E` | `#EDEEF0` | Primary text |
 | `--ink-2` | `#5F646C` | `#A2A8B2` | Secondary text |
-| `--ink-3` | `#8A9099` | `#767D88` | Tertiary, labels |
+| `--ink-3` | `#6C737D` | `#868D98` | Tertiary, labels |
 | `--line` | `#E7E7E9` | `#2A2D33` | Hairlines, borders |
 
 No pure black, no pure white. Both kill depth.
@@ -79,7 +79,7 @@ Restrained scale. An Operate surface does not shout. Hierarchy comes from weight
 
 ## 3. Shape and elevation
 
-**One radius scale, no exceptions.** Cards and module tiles 14px. Controls, inputs, buttons 10px. Pills full.
+**One radius scale, no exceptions.** Cards and module tiles 14px. Controls, inputs, buttons 10px. Pills full. Decorative sub-elements inside a component, such as the logo chip, the meter screen and progress bars, may use a smaller radius than the scale; the scale governs cards, tiles and interactive controls.
 
 **Almost no elevation.** Tiles are flat fills with a hairline. Shadows appear only on genuinely floating layers (modal, sheet, toast), tinted to the ground hue, never pure black.
 

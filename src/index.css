@@ -14,9 +14,10 @@
   --surface: #FFFFFF;
   --ink: #1A1B1E;
   --ink-2: #5F646C;
-  --ink-3: #8A9099;
+  --ink-3: #6C737D;
   --line: #E7E7E9;
   --accent: #0E6E63;
+  --on-accent: #FFFFFF;
   --danger: #B3382C;
   --pass: #1E7A4A;
   --caution: #A9650C;
@@ -43,9 +44,10 @@
     --surface: #1A1C20;
     --ink: #EDEEF0;
     --ink-2: #A2A8B2;
-    --ink-3: #767D88;
+    --ink-3: #868D98;
     --line: #2A2D33;
     --accent: #3FA394;
+    --on-accent: #131417;
     --danger: #EF8577;
     --pass: #5FC98E;
     --caution: #E0A54A;
@@ -89,3 +91,12 @@ body {
 .tile:active {
   transform: scale(0.98);
 }
+
+/* Restore list semantics that Tailwind preflight removes. Inline
+   listStyle:'none' still wins where a list is used for layout. */
+ol { list-style: decimal; }
+ul { list-style: disc; }
+
+/* The instrument panel keeps its dark skin in both themes, so it carries
+   the dark accent for focus visibility. */
+.instrument { --accent: #3FA394; }

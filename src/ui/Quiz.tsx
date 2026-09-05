@@ -26,6 +26,7 @@ export function Quiz({ items, moduleId, onFinish }: {
   }
 
   const result = submitted ? scoreQuiz(items, responses) : null
+  const ready = items.every(i => responses[i.id] !== undefined)
 
   return (
     <section style={{
@@ -83,8 +84,8 @@ export function Quiz({ items, moduleId, onFinish }: {
                 fontSize: 12.5, lineHeight: 1.55, marginTop: 8,
                 color: correct ? 'var(--pass)' : 'var(--caution)',
               }}>
-                {correct ? 'Correct. ' : 'Not quite. '}
-                {item.kind === 'mcq' ? item.rationale[item.answer]
+                {correct ? '' : 'Not quite. '}
+                {item.kind === 'mcq' ? item.rationale[typeof answered === 'number' ? answered : item.answer]
                   : item.kind === 'truefalse' ? item.rationale
                   : `The correct order is: ${item.steps.join(', ')}.`}
               </p>
@@ -94,17 +95,20 @@ export function Quiz({ items, moduleId, onFinish }: {
       })}
 
       {!submitted ? (
-        <button onClick={submit} className="tile" style={{
-          background: 'var(--accent)', color: '#fff', border: 0, borderRadius: 10,
-          padding: '11px 18px', fontSize: 14, fontWeight: 620, cursor: 'pointer', minHeight: 44,
-        }}>Check answers</button>
+        <button onClick={submit} className="tile"
+          disabled={!ready}
+          style={{
+            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
+            padding: '11px 18px', fontSize: 14, fontWeight: 620, minHeight: 44,
+            cursor: ready ? 'pointer' : 'default', opacity: ready ? 1 : 0.5,
+          }}>Check answers</button>
       ) : (
         <div>
           <p style={{ fontSize: 14, fontWeight: 620, margin: '0 0 12px' }}>
             You scored {result!.correct} out of {result!.total}.
           </p>
           <button onClick={onFinish} className="tile" style={{
-            background: 'var(--accent)', color: '#fff', border: 0, borderRadius: 10,
+            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
             padding: '11px 18px', fontSize: 14, fontWeight: 620, cursor: 'pointer', minHeight: 44,
           }}>Mark this outcome complete</button>
         </div>

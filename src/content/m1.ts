@@ -21,6 +21,7 @@ export const m1: Module = {
         blocks: [
           { kind: 'text', md: 'Servicing an electronic product means restoring it to its working condition by finding the fault, correcting it, and proving the repair. Every device you will work on this term, from a rechargeable lamp to a CCTV recorder, is a system: a power source, a set of components that process a signal, and an output. When one part of that chain fails, the symptom you see is rarely at the point of failure.' },
           { kind: 'text', md: 'This is why servicing is a procedure and not a guess. You observe the symptom, form a theory about which stage of the system is at fault, test that stage, and only then replace anything.' },
+          { kind: 'safety', md: 'Never open a mains-powered appliance while it is plugged in. Unplug it, then confirm with a meter that stored charge has drained before touching any internal part.' },
           { kind: 'steps', items: [
             'Confirm the complaint. Operate the unit yourself and see the fault.',
             'Isolate the unit from the supply before opening it.',
@@ -29,7 +30,6 @@ export const m1: Module = {
             'Repair or replace the confirmed faulty part.',
             'Reassemble, then test the unit under normal operation before returning it.',
           ] },
-          { kind: 'safety', md: 'Never open a mains-powered appliance while it is plugged in. Unplug it, then confirm with a meter that stored charge has drained before touching any internal part.' },
         ],
       }],
       quiz: [
@@ -128,6 +128,7 @@ export const m1: Module = {
               ['Diode test', 'Does this conduct one way only?', 'Diodes, LEDs, transistor junctions'],
               ['DC volts', 'What potential is present here?', 'Live circuits, batteries, supply rails'],
             ] },
+          { kind: 'safety', md: 'A filter capacitor can hold a lethal charge long after the unit is unplugged. Discharge it through a bleeder resistor of about 2.2 kilohms rated 5 watts. Never short the terminals with a screwdriver: it welds the tip, damages the capacitor, and throws molten metal.' },
           { kind: 'steps', items: [
             'Isolate the component from the supply and discharge any capacitors.',
             'Lift at least one leg of the component out of circuit where possible.',
@@ -135,7 +136,6 @@ export const m1: Module = {
             'Touch the probes to the leads and let the reading settle.',
             'Compare the reading against the marked value and its tolerance.',
           ] },
-          { kind: 'safety', md: 'A filter capacitor can hold a lethal charge long after the unit is unplugged. Discharge it through a bleeder resistor of about 2.2 kilohms rated 5 watts. Never short the terminals with a screwdriver: it welds the tip, damages the capacitor, and throws molten metal.' },
           { kind: 'note', md: 'Measuring a resistor while it is still soldered into a circuit usually reads low, because other parts in parallel with it also carry current. Lifting one leg removes those parallel paths.' },
           { kind: 'interactive', simId: 'multimeter', config: { preset: 'test' } },
         ],

@@ -22,7 +22,7 @@ export function Shell({ children }: { children: ReactNode }) {
         }}>
           <span aria-hidden style={{
             width: 22, height: 22, borderRadius: 7, background: 'var(--accent)',
-            color: '#fff', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 800,
+            color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 800,
           }}>E</span>
           EPAS
         </Link>

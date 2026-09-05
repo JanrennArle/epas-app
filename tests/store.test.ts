@@ -40,6 +40,23 @@ describe('store', () => {
     expect(s.schemaVersion).toBe(1)
   })
 
+  it('preserves a forward schema version under an unreadable key instead of losing it', () => {
+    const payload = JSON.stringify({
+      schemaVersion: 99,
+      participant: { code: 'EPAS-FUTURE' },
+      attempts: [{ itemId: 'q9', moduleId: 'm1', competency: 'c1', correct: true, at: 'x', context: 'formative' }],
+    })
+    localStorage.setItem(STORAGE_KEY, payload)
+    loadState()
+    const salvaged: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith(`${STORAGE_KEY}.unreadable.`)) salvaged.push(k)
+    }
+    expect(salvaged).toHaveLength(1)
+    expect(localStorage.getItem(salvaged[0]!)).toBe(payload)
+  })
+
   it('migrates a version 0 payload by preserving its attempts', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       schemaVersion: 0,

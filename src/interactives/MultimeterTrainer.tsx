@@ -23,7 +23,7 @@ function isHealthy(c: TestComponent): boolean {
   return c.fault === 'ok'
 }
 
-export function MultimeterTrainer({ moduleId, onEvent }: InteractiveProps) {
+export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProps) {
   const [mode, setMode] = useState<MeterMode>('ohms')
   const [probed, setProbed] = useState<TestComponent | null>(null)
   const [verdicts, setVerdicts] = useState<Record<string, boolean>>({})
@@ -45,9 +45,9 @@ export function MultimeterTrainer({ moduleId, onEvent }: InteractiveProps) {
         moduleId,
         score,
         at: new Date().toISOString(),
-        evidence: { verdicts: next },
+        evidence: { verdicts: next, ...(config ?? {}) },
       })
-      onEvent?.({ type: 'complete', score, evidence: { verdicts: next } })
+      onEvent?.({ type: 'complete', score, evidence: { verdicts: next, ...(config ?? {}) } })
     }
   }
 
@@ -63,7 +63,7 @@ export function MultimeterTrainer({ moduleId, onEvent }: InteractiveProps) {
         </p>
       </header>
 
-      <div style={{ background: '#141A21', padding: 14 }}>
+      <div className="instrument" style={{ background: '#141A21', padding: 14 }}>
         <div style={{
           background: '#0C1015', border: '1px solid #232D39', borderRadius: 8,
           padding: '12px 14px', textAlign: 'right',

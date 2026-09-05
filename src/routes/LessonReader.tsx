@@ -16,7 +16,7 @@ export default function LessonReader() {
 
   return (
     <>
-      <Link to={`/m/${m.id}`} style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>
+      <Link to={`/m/${m.id}`} style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>
         {m.title}
       </Link>
       <h1 style={{ fontSize: 20, fontWeight: 680, letterSpacing: '-0.02em', margin: '8px 0 16px', maxWidth: '30ch' }}>
