@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Block } from '../../lib/types'
+import { MultimeterTrainer } from '../../interactives/MultimeterTrainer'
 
 const text: CSSProperties = {
   fontSize: 15, lineHeight: 1.62, color: 'var(--ink-2)',
@@ -23,9 +24,7 @@ function Callout({ tone, children }: { tone: 'safety' | 'note'; children: ReactN
   )
 }
 
-// moduleId is part of the public interface and is consumed by the multimeter
-// branch that Task 9 adds to the 'interactive' case. It is unused until then.
-export function BlockRenderer({ blocks, moduleId: _moduleId }: { blocks: Block[]; moduleId: string }) {
+export function BlockRenderer({ blocks, moduleId }: { blocks: Block[]; moduleId: string }) {
   return (
     <>
       {blocks.map((b, i) => {
@@ -78,6 +77,9 @@ export function BlockRenderer({ blocks, moduleId: _moduleId }: { blocks: Block[]
             )
 
           case 'interactive':
+            if (b.simId === 'multimeter') {
+              return <MultimeterTrainer key={i} moduleId={moduleId} config={b.config} />
+            }
             return (
               <p key={i} style={{ ...text, color: 'var(--ink-3)' }}>
                 This activity is not available yet.
