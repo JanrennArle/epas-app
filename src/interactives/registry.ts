@@ -4,6 +4,7 @@ import { HotspotActivity } from './HotspotActivity'
 import { MatchActivity } from './MatchActivity'
 import { MultimeterTrainer } from './MultimeterTrainer'
 import { PowerSupplySim } from './PowerSupplySim'
+import { SequenceActivity } from './SequenceActivity'
 import { SystemTroubleshooter } from './SystemTroubleshooter'
 
 /**
@@ -15,6 +16,7 @@ export const SIMS: Record<string, ComponentType<InteractiveProps>> = {
   match: MatchActivity,
   multimeter: MultimeterTrainer,
   psu: PowerSupplySim,
+  sequence: SequenceActivity,
   troubleshoot: SystemTroubleshooter,
 }
 
