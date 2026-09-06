@@ -5,7 +5,7 @@ export const tvScenario: Scenario = {
   appliance: 'Flat screen television',
   symptom: 'Sound is normal and the set responds to the remote, but the screen stays black. The standby light works as usual.',
   safety: [
-    'Unplug the set and wait, then discharge the large filter capacitors on the power supply board through a bleeder resistor before touching anything.',
+    'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching anything.',
     'Never lever, twist or press the panel. It is a sheet of glass and it will crack, which ends the repair and can cut you.',
     'Lay the set face down on a clean flat surface with the stand removed, and get someone to help you turn it.',
   ],

@@ -5,7 +5,7 @@ export const motorControlScenario: Scenario = {
   appliance: 'Motor control board',
   symptom: 'The motor starts correctly, but it keeps running when the limit switch is reached instead of stopping. Pressing stop does halt it.',
   safety: [
-    'Isolate the supply and lock it off before opening the enclosure, because this motor can start on its own when a control signal changes.',
+    'Isolate the supply and lock it off before opening the enclosure, because this motor can start on its own when a control signal changes. Prove the load side is dead with the meter before you touch it.',
     'Keep hands, sleeves and tools clear of the driven mechanism at all times, even with the supply removed.',
     'Tell whoever operates this machine that it is out of service, and do not rely on a note left on the panel.',
   ],

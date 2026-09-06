@@ -6,7 +6,7 @@ export const ampScenario: Scenario = {
   symptom: 'The right channel is silent. The left channel plays normally at the same volume setting, and neither channel hums or crackles.',
   safety: [
     'Switch the amplifier off and unplug it before opening the case.',
-    'The filter capacitors in the supply hold their charge after the mains is removed, so discharge them through a bleeder resistor before touching the board.',
+    'The filter capacitors in the supply hold their charge after the mains is removed, so discharge them through a bleeder resistor and then confirm with the meter that they read close to zero volts before touching the board.',
     'Turn the volume fully down before you switch on again, because a fault can put full output into a speaker without warning.',
   ],
   faults: [
