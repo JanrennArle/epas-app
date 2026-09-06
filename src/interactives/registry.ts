@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import type { InteractiveProps } from './types'
+import { MatchActivity } from './MatchActivity'
 import { MultimeterTrainer } from './MultimeterTrainer'
 import { PowerSupplySim } from './PowerSupplySim'
 import { SystemTroubleshooter } from './SystemTroubleshooter'
@@ -9,6 +10,7 @@ import { SystemTroubleshooter } from './SystemTroubleshooter'
  * component file; nothing else in the app needs to know it exists.
  */
 export const SIMS: Record<string, ComponentType<InteractiveProps>> = {
+  match: MatchActivity,
   multimeter: MultimeterTrainer,
   psu: PowerSupplySim,
   troubleshoot: SystemTroubleshooter,
