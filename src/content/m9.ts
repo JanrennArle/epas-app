@@ -298,7 +298,7 @@ export const m9: Module = {
         title: 'Testing by changing what it senses',
         blocks: [
           { kind: 'safety', md: 'Isolate and lock off before working on any actuator, because a solenoid, valve or motor can operate the moment a signal changes and will not wait for your hand to move. Treat every actuator as though it is about to operate.' },
-          { kind: 'text', md: 'A sensor is tested by changing what it senses and watching the signal move. A limit switch is operated by hand while you watch continuity. A thermistor is warmed while you watch resistance. A light sensor is covered while you watch its resistance rise. A static reading proves nothing on its own.' },
+          { kind: 'text', md: 'A sensor is tested by changing what it senses and watching the signal move. A limit switch is operated by hand while you watch continuity. A thermistor is warmed while you watch resistance. A light sensor is covered while you watch its resistance rise. A static reading proves nothing on its own. Those three are passive, so they test with the supply still locked off. A proximity sensor is the exception, because it is an active device that produces no output at all without its own supply, so it is tested with that supply connected and the driven mechanism still isolated.' },
           { kind: 'text', md: 'An actuator is tested the other way round, by giving it the signal it expects and watching whether it acts. Apply the rated coil voltage to a relay off the machine and listen for the click. Energise a solenoid off the machine and feel the plunger pull. If it does not act on a correct signal, it has failed.' },
           { kind: 'steps', items: [
             'Isolate the supply and lock it off.',
