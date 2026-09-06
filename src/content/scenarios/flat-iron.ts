@@ -3,7 +3,7 @@ import type { Scenario } from '../../lib/diagnose'
 export const flatIronScenario: Scenario = {
   id: 'flat-iron',
   appliance: 'Electric flat iron',
-  symptom: 'The iron is plugged in and the dial is turned up, but the plate stays cold. The indicator lamp does not light.',
+  symptom: 'The iron is plugged in and the dial is turned up, but the plate stays cold.',
   safety: [
     'Unplug the iron and let the plate cool completely before opening it.',
     'Check the cord along its whole length, because flexing wear hides under the sleeve near the strain relief.',
