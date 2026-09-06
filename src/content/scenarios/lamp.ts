@@ -3,7 +3,7 @@ import type { Scenario } from '../../lib/diagnose'
 export const lampScenario: Scenario = {
   id: 'lamp',
   appliance: 'Rechargeable LED lamp',
-  symptom: 'The lamp runs for only a few minutes off the battery. On charge, the charging indicator never comes on.',
+  symptom: 'The lamp runs for only a few minutes off the battery.',
   safety: [
     'Unplug the charger and switch the lamp off before opening the case.',
     'Treat the cell as live at all times, because a lithium cell cannot be switched off and a shorted one can vent or catch fire.',
@@ -34,7 +34,7 @@ export const lampScenario: Scenario = {
       implicates: ['charger'],
     },
     {
-      id: 'tp-cell', label: 'Cell', action: 'DC volts across the cell after ten minutes on charge.',
+      id: 'tp-cell', label: 'Cell', action: 'DC volts across the cell with the charger unplugged, after ten minutes on charge.',
       readings: { cell: '3.1 V, and it falls to 2.8 V as soon as the lamp is switched on', '*': '4.0 V, steady under load' },
       implicates: ['cell'],
     },

@@ -29,6 +29,9 @@ Deferred items from executed plans. Each was reviewed, judged non-blocking, and 
 - **Lesson ids are not module-unique.** All three M1 lessons use `id: 'l1'`, unique only within their outcome. Anything keying lessons globally must use `outcomeId + lessonId`.
 - **`match` and `hotspot` quiz kinds do not exist yet.** Deliberately deferred from the content model; the assessment layer in Plan 3 adds them.
 - **The three simulations record on different triggers.** `multimeter` writes one row when all five components have been judged. `psu` writes a row on every Test press, with `solved` true or false. `troubleshoot` writes one row when the student names a fault, correct or not. An export must not average `score` across simIds without accounting for this, and should use `evidence.solved` rather than a non-zero score to decide whether a psu attempt succeeded.
+- **`simId` alone no longer identifies an exercise.** Module 4 embeds `troubleshoot` twice, with the `flat-iron` and `lamp` scenarios. An export must key on `evidence.scenario` or `evidence.activity` as well as `simId` and `moduleId`.
+- **"Did the student succeed" is encoded four different ways.** `troubleshoot` writes `evidence.correct`, `psu` writes `evidence.solved`, `multimeter` means success by `score === 1`, and `match` and `hotspot` mean it by `evidence.wrong.length === 0`. Read the right field per simId; do not compare `score` across them.
+- **A missing row is not proof of no engagement.** `match` and `hotspot` write nothing until every item is answered, so a partial attempt leaves no row at all. `psu` writes a row per Test press, while the other four write once.
 
 ### Open for the teacher, not for code
 

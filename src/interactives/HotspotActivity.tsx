@@ -75,10 +75,21 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
         {activity.instruction}
       </p>
 
-      <div style={{ background: 'var(--paper)', borderRadius: 10, padding: 8 }}>
+      {!done && item && (
+        <>
+          <p style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', margin: '14px 0 4px' }}>
+            Question {step + 1} of {activity.items.length}
+          </p>
+          <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', margin: '0 0 10px' }}>
+            {item.prompt}
+          </p>
+        </>
+      )}
+
+      <div style={{ background: 'var(--paper)', borderRadius: 10, overflowX: 'auto', padding: 8 }}>
         <div style={{ position: 'relative' }}>
           <svg viewBox={`0 0 ${activity.box.w} ${activity.box.h}`}
-            style={{ width: '100%', height: 'auto', display: 'block' }}
+            style={{ width: '100%', height: 'auto', display: 'block', minWidth: 400 }}
             role="img" aria-label={activity.instruction}>
             <Drawing shapes={activity.shapes} />
           </svg>
@@ -93,12 +104,14 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
             return (
               <button key={region.id} onClick={() => pick(region.id)}
                 aria-label={region.label}
-                aria-disabled={done}
+                aria-disabled={done || answered}
                 style={{
                   position: 'absolute', left: `${region.xPct}%`, top: `${region.yPct}%`,
                   transform: 'translate(-50%, -50%)',
                   width: 44, height: 44, borderRadius: 9999,
-                  background: 'transparent', border: `2px solid ${border}`,
+                  background: 'transparent',
+                  borderStyle: 'solid', borderColor: border,
+                  borderWidth: show && isAnswer ? 3 : 2,
                   cursor: done || answered ? 'default' : 'pointer',
                 }} />
             )
@@ -108,12 +121,6 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
 
       {!done && item && (
         <>
-          <p style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', margin: '14px 0 4px' }}>
-            Question {step + 1} of {activity.items.length}
-          </p>
-          <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', margin: '0 0 10px' }}>
-            {item.prompt}
-          </p>
           {answered && (
             <>
               <p role="status" style={{

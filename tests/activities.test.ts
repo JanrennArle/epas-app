@@ -1,4 +1,7 @@
 import { ACTIVITIES } from '../src/content/activities'
+import { allModules } from '../src/content'
+import { SCENARIOS } from '../src/content/scenarios'
+import { getSim } from '../src/interactives/registry'
 
 describe('every authored activity is internally consistent', () => {
   const entries = Object.entries(ACTIVITIES)
@@ -44,6 +47,55 @@ describe('every authored activity is internally consistent', () => {
         ? activity.choices.map(c => c.id)
         : activity.regions.map(r => r.id)
       expect(new Set(targetIds), `${key} targets`).toHaveProperty('size', targetIds.length)
+    }
+  })
+})
+
+describe('module content resolves against the registries', () => {
+  const modules = allModules()
+
+  const interactives = modules.flatMap(m =>
+    m.outcomes.flatMap(o =>
+      o.lessons.flatMap(l =>
+        l.blocks
+          .filter(b => b.kind === 'interactive')
+          .map(b => ({ module: m.id, outcome: o.id, block: b as Extract<typeof b, { kind: 'interactive' }> })))))
+
+  it('registers at least one module', () => {
+    expect(modules.length).toBeGreaterThan(0)
+  })
+
+  it('resolves every embedded simulation id', () => {
+    for (const { module, outcome, block } of interactives) {
+      expect(getSim(block.simId), `${module} ${outcome} simId ${block.simId}`).toBeDefined()
+    }
+  })
+
+  it('resolves every embedded activity and scenario id', () => {
+    for (const { module, outcome, block } of interactives) {
+      const activity = block.config?.activity
+      if (typeof activity === 'string') {
+        expect(Object.keys(ACTIVITIES), `${module} ${outcome} activity`).toContain(activity)
+      }
+      const scenario = block.config?.scenario
+      if (typeof scenario === 'string') {
+        expect(Object.keys(SCENARIOS), `${module} ${outcome} scenario`).toContain(scenario)
+      }
+    }
+  })
+
+  it('gives every quiz item a globally unique id', () => {
+    const ids = modules.flatMap(m => m.outcomes.flatMap(o => o.quiz.map(q => q.id)))
+    expect(new Set(ids), 'quiz ids').toHaveProperty('size', ids.length)
+  })
+
+  it('ties every quiz item to a competency its own module declares', () => {
+    for (const m of modules) {
+      for (const o of m.outcomes) {
+        for (const q of o.quiz) {
+          expect(m.competencies, `${m.id} ${q.id}`).toContain(q.competency)
+        }
+      }
     }
   })
 })
