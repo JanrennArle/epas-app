@@ -73,7 +73,7 @@ export const m9: Module = {
         id: 'l1',
         title: 'The torch test and what follows it',
         blocks: [
-          { kind: 'safety', md: 'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching the board. Lay the set face down on a clean flat surface with the stand removed, and get help to turn it.' },
+          { kind: 'safety', md: 'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching the board. The torch test and two of the measurements below need the set switched on with the back off, so clip the probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them. Lay the set face down on a clean flat surface with the stand removed, and get help to turn it.' },
           { kind: 'text', md: 'Sound with a black screen has one quick test that decides the whole job. Shine a torch at the screen at a shallow angle in a dark room and look closely. If you can see a faint but complete picture, the panel is being driven correctly and only the light is missing, so the fault is the backlight. If you see nothing, the picture is not being produced at all and the fault is further back.' },
           { kind: 'interactive', simId: 'troubleshoot', config: { scenario: 'tv' } },
           { kind: 'table',

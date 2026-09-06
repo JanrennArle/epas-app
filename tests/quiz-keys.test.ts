@@ -13,13 +13,18 @@ for (const m of allModules()) {
 }
 
 describe('multiple choice answer keys', () => {
-  it('finds the multiple choice items', () => {
-    expect(mcqs.length).toBeGreaterThan(0)
+  // Pinned, not just non-zero: a content refactor that stopped collecting
+  // items would otherwise leave every loop below vacuously passing.
+  it('finds every multiple choice item', () => {
+    expect(mcqs.length).toBe(45)
   })
 
   // The keyed option and its explanation must stay paired. Every correct
   // rationale opens with "Correct", so a key pointing at a rationale that
-  // does not is a key and rationale that have drifted apart.
+  // does not is a key and rationale that have drifted apart. This catches
+  // drift at the key only. Two distractors swapped without their rationales
+  // would still pass here, because nothing machine-checkable distinguishes
+  // one wrong answer's explanation from another's. Read them when editing.
   it('points each key at the rationale that explains it', () => {
     for (const q of mcqs) {
       const chosen = q.rationale[q.answer]
