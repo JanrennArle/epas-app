@@ -75,33 +75,35 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
         {activity.instruction}
       </p>
 
-      <div style={{ position: 'relative', background: 'var(--paper)', borderRadius: 10, padding: 8 }}>
-        <svg viewBox={`0 0 ${activity.box.w} ${activity.box.h}`}
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-          role="img" aria-label={activity.instruction}>
-          <Drawing shapes={activity.shapes} />
-        </svg>
+      <div style={{ background: 'var(--paper)', borderRadius: 10, padding: 8 }}>
+        <div style={{ position: 'relative' }}>
+          <svg viewBox={`0 0 ${activity.box.w} ${activity.box.h}`}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+            role="img" aria-label={activity.instruction}>
+            <Drawing shapes={activity.shapes} />
+          </svg>
 
-        {activity.regions.map(region => {
-          const chosen = item ? responses[item.id] === region.id : false
-          const isAnswer = item ? region.id === item.answer : false
-          const show = answered || done
-          const border = show && isAnswer ? 'var(--pass)'
-            : show && chosen ? 'var(--caution)'
-              : 'var(--ink-3)'
-          return (
-            <button key={region.id} onClick={() => pick(region.id)}
-              aria-label={region.label}
-              aria-disabled={done}
-              style={{
-                position: 'absolute', left: `${region.xPct}%`, top: `${region.yPct}%`,
-                transform: 'translate(-50%, -50%)',
-                width: 44, height: 44, borderRadius: 9999,
-                background: 'transparent', border: `2px solid ${border}`,
-                cursor: done || answered ? 'default' : 'pointer',
-              }} />
-          )
-        })}
+          {activity.regions.map(region => {
+            const chosen = item ? responses[item.id] === region.id : false
+            const isAnswer = item ? region.id === item.answer : false
+            const show = answered || done
+            const border = show && isAnswer ? 'var(--pass)'
+              : show && chosen ? 'var(--caution)'
+                : 'var(--ink-3)'
+            return (
+              <button key={region.id} onClick={() => pick(region.id)}
+                aria-label={region.label}
+                aria-disabled={done}
+                style={{
+                  position: 'absolute', left: `${region.xPct}%`, top: `${region.yPct}%`,
+                  transform: 'translate(-50%, -50%)',
+                  width: 44, height: 44, borderRadius: 9999,
+                  background: 'transparent', border: `2px solid ${border}`,
+                  cursor: done || answered ? 'default' : 'pointer',
+                }} />
+            )
+          })}
+        </div>
       </div>
 
       {!done && item && (
