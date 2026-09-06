@@ -121,8 +121,8 @@ export const m5: Module = {
           stem: 'Arrange the steps for finding why one camera shows no picture.',
           steps: [
             'Confirm the other cameras are normal',
-            'Isolate the camera supply',
             'Check the voltage at the camera end',
+            'Isolate the camera supply',
             'Open and inspect the connector at the camera',
             'Test the cable run',
             'Substitute a camera known to be working',

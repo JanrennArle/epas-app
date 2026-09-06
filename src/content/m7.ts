@@ -87,7 +87,7 @@ export const m7: Module = {
               ['Speaker', 'Turns the signal back into sound', 'A blown driver from long term overdriving'],
               ['Cabling', 'Carries the signal between stages', 'Intermittent joints, especially at plugs'],
             ] },
-          { kind: 'text', md: 'Two ideas explain most of what goes wrong. Gain structure means setting each stage so it passes a healthy signal without pushing the next one into distortion, and most bad sound is a gain set wrong somewhere earlier in the chain. Feedback is the howl you get when a microphone hears its own speaker, and it is fixed by moving or aiming, not by turning things down.' },
+          { kind: 'text', md: 'Two ideas explain most of what goes wrong. Gain structure means setting each stage so it passes a healthy signal without pushing the next one into distortion, and most bad sound is a gain set wrong somewhere earlier in the chain. Feedback is the howl you get when a microphone hears its own speaker. Turning the level down stops it, but only by giving up the level you wanted, so the lasting cure is moving or aiming the microphone and the speaker so one no longer hears the other.' },
           { kind: 'note', md: 'Before diagnosing a fault, check what is muted. A muted channel, a wrong input selected, and a speaker unplugged account for more silent systems than every genuine electronic failure put together.' },
         ],
       }],
