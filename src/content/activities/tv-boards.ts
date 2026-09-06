@@ -13,7 +13,7 @@ export const tvBoards: HotspotActivityData = {
     { kind: 'rect', x: 200, y: 180, w: 110, h: 30, r: 3, fill: 'var(--surface)', stroke: 'var(--ink-3)' },
     { kind: 'line', x1: 8, y1: 195, x2: 40, y2: 195, width: 4 },
     { kind: 'circle', cx: 255, cy: 222, r: 7, fill: 'var(--surface)', stroke: 'var(--ink-3)' },
-    { kind: 'line', x1: 300, y1: 134, x2: 300, y2: 180, width: 2 },
+    { kind: 'line', x1: 100, y1: 134, x2: 100, y2: 180, width: 2 },
     { kind: 'text', x: 200, y: 236, text: 'Rear view, back cover removed', anchor: 'middle' },
   ],
   regions: [

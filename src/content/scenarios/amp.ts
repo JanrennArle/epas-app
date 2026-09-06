@@ -29,7 +29,7 @@ export const ampScenario: Scenario = {
       implicates: ['rails'],
     },
     {
-      id: 'tp-out', label: 'Amplifier output', action: 'AC volts at the right speaker terminals with a test tone playing and the volume at one quarter.',
+      id: 'tp-out', label: 'Amplifier output', action: 'AC volts at the right speaker output terminals on the amplifier, with a test tone playing and the volume at one quarter.',
       readings: { output: '0.00 V AC while the left terminals read 2.4 V AC', '*': '2.4 V AC, matching the left channel' },
       implicates: ['output'],
     },
@@ -39,7 +39,7 @@ export const ampScenario: Scenario = {
       implicates: ['speakerlead'],
     },
     {
-      id: 'tp-driver', label: 'Speaker driver', action: 'Resistance across the right speaker terminals with the lead disconnected.',
+      id: 'tp-driver', label: 'Speaker driver', action: 'Resistance across the terminals on the right loudspeaker itself, with the lead disconnected.',
       readings: { driver: 'OL', '*': '6.4 ohm against a marked 8 ohm' },
       implicates: ['driver'],
     },

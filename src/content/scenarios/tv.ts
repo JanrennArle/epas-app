@@ -5,7 +5,7 @@ export const tvScenario: Scenario = {
   appliance: 'Flat screen television',
   symptom: 'Sound is normal and the set responds to the remote, but the screen stays black. The standby light works as usual.',
   safety: [
-    'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching anything.',
+    'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching the boards. Three of the measurements below need the set switched on with the back off. Clip the probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them.',
     'Never lever, twist or press the panel. It is a sheet of glass and it will crack, which ends the repair and can cut you.',
     'Lay the set face down on a clean flat surface with the stand removed, and get someone to help you turn it.',
   ],
@@ -34,7 +34,7 @@ export const tvScenario: Scenario = {
     },
     {
       id: 'tp-bldriver', label: 'Backlight driver', action: 'DC volts on the backlight driver output with the set switched on.',
-      readings: { backlight: '0.0 V, and the enable line is present', '*': '128 V' },
+      readings: { backlight: '0.0 V, and the enable line is present. The driver tries briefly each time the set is switched on, then shuts down', '*': '128 V' },
       implicates: ['backlight'],
     },
     {
@@ -43,7 +43,7 @@ export const tvScenario: Scenario = {
       implicates: ['tcon'],
     },
     {
-      id: 'tp-main', label: 'Main board', action: 'Check the main board is producing video on its output to the timing board.',
+      id: 'tp-main', label: 'Main board', action: 'Check with an oscilloscope for video on the main board output to the timing board. Without one, this is where the set is referred on.',
       readings: { main: 'No signal on the output', '*': 'Signal present on the output' },
       implicates: ['main'],
     },
