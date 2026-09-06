@@ -49,7 +49,25 @@ export interface HotspotActivityData {
   items: ActivityItem[]
 }
 
-export type Activity = MatchActivityData | HotspotActivityData
+export interface SequenceActivityData {
+  kind: 'sequence'
+  id: string
+  instruction: string
+  /**
+   * The blocks a student arranges. Authored in display order, which must
+   * NOT be the chain order, or the exercise answers itself.
+   */
+  choices: Choice[]
+  /**
+   * One item per position in the chain, authored in chain order. Each
+   * `answer` is the id of the choice belonging at that position. Choices
+   * with no matching answer are deliberate distractors: parts that are in
+   * the box but not in the signal path.
+   */
+  items: ActivityItem[]
+}
+
+export type Activity = MatchActivityData | HotspotActivityData | SequenceActivityData
 
 export interface ActivityResult {
   correct: number

@@ -18,9 +18,9 @@ describe('every authored activity is internally consistent', () => {
 
   it('gives every item an answer that resolves to a declared id', () => {
     for (const [key, activity] of entries) {
-      const valid = activity.kind === 'match'
-        ? activity.choices.map(c => c.id)
-        : activity.regions.map(r => r.id)
+      const valid = activity.kind === 'hotspot'
+        ? activity.regions.map(r => r.id)
+        : activity.choices.map(c => c.id)
       for (const item of activity.items) {
         expect(valid, `${key} item ${item.id}`).toContain(item.answer)
       }
@@ -43,10 +43,28 @@ describe('every authored activity is internally consistent', () => {
     for (const [key, activity] of entries) {
       const itemIds = activity.items.map(i => i.id)
       expect(new Set(itemIds), `${key} items`).toHaveProperty('size', itemIds.length)
-      const targetIds = activity.kind === 'match'
-        ? activity.choices.map(c => c.id)
-        : activity.regions.map(r => r.id)
+      const targetIds = activity.kind === 'hotspot'
+        ? activity.regions.map(r => r.id)
+        : activity.choices.map(c => c.id)
       expect(new Set(targetIds), `${key} targets`).toHaveProperty('size', targetIds.length)
+    }
+  })
+
+  it('never presents a sequence in its own answer order', () => {
+    for (const [key, activity] of entries) {
+      if (activity.kind !== 'sequence') continue
+      const shown = activity.choices.map(c => c.id)
+      const answer = activity.items.map(i => i.answer)
+      const prefix = shown.slice(0, answer.length)
+      expect(prefix, `${key} display order`).not.toEqual(answer)
+    }
+  })
+
+  it('never repeats a block within one sequence', () => {
+    for (const [key, activity] of entries) {
+      if (activity.kind !== 'sequence') continue
+      const answers = activity.items.map(i => i.answer)
+      expect(new Set(answers), `${key} chain`).toHaveProperty('size', answers.length)
     }
   })
 })
