@@ -25,7 +25,7 @@ export const m9: Module = {
           { kind: 'safety', md: 'A television panel is a large sheet of glass held in a thin frame. Never lever it, twist the set, or lay it on an uneven surface. A cracked panel cannot be repaired and ends the job, and the broken edge is sharp enough to cut through a glove.' },
           { kind: 'text', md: 'A flat screen television is four blocks behind one sheet of glass. A power supply board turns the mains into the rails everything else needs. A main board takes the incoming signal and turns it into video. A timing board takes that video and drives the panel row by row. The backlight lights the panel from behind so you can see the result.' },
           { kind: 'interactive', simId: 'hotspot', config: { activity: 'tv-boards' } },
-          { kind: 'text', md: 'Knowing those four blocks tells you what a symptom means before you open anything. Sound but no picture means the signal path is working and the light is not. No sound and no picture with a dead standby light means the supply. A picture with no sound means the audio output, not the panel.' },
+          { kind: 'text', md: 'Knowing those four blocks tells you what a symptom means before you open anything. Sound but no picture usually means the signal path is working and the light is not. No sound and no picture with a dead standby light means the supply. A picture with no sound means the audio output, not the panel.' },
           { kind: 'note', md: 'Televisions have changed a great deal, and the old high voltage danger of a cathode ray tube is gone. What replaced it is a large filter capacitor bank in the supply, which still holds a charge that will hurt you, and a fragile panel that is expensive to break.' },
         ],
       }],
@@ -73,7 +73,7 @@ export const m9: Module = {
         id: 'l1',
         title: 'The torch test and what follows it',
         blocks: [
-          { kind: 'safety', md: 'Unplug the set and discharge the large filter capacitors on the power supply board through a bleeder resistor before touching the board. Lay the set face down on a clean flat surface with the stand removed, and get help to turn it.' },
+          { kind: 'safety', md: 'Unplug the set, discharge the large filter capacitors on the power supply board through a bleeder resistor, and then confirm with the meter that they read close to zero volts before touching the board. Lay the set face down on a clean flat surface with the stand removed, and get help to turn it.' },
           { kind: 'text', md: 'Sound with a black screen has one quick test that decides the whole job. Shine a torch at the screen at a shallow angle in a dark room and look closely. If you can see a faint but complete picture, the panel is being driven correctly and only the light is missing, so the fault is the backlight. If you see nothing, the picture is not being produced at all and the fault is further back.' },
           { kind: 'interactive', simId: 'troubleshoot', config: { scenario: 'tv' } },
           { kind: 'table',

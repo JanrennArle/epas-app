@@ -20,7 +20,7 @@ export const m8: Module = {
         blocks: [
           { kind: 'text', md: 'Setting up a sound system is mostly about two decisions made before anything is switched on: where the speakers go relative to the microphones, and how much gain each stage is given. Get those right and the system behaves. Get them wrong and no amount of adjustment later will rescue it.' },
           { kind: 'interactive', simId: 'sequence', config: { activity: 'audio-signal' } },
-          { kind: 'text', md: 'Speakers must end up in front of the microphones, meaning further from the audience than the microphone is, so the microphone is behind the sound it would otherwise pick up. A speaker placed behind a presenter is the single most common cause of feedback at a school event.' },
+          { kind: 'text', md: 'Speakers must end up in front of the microphones, meaning closer to the audience than the microphone is, so the microphone sits behind the sound it would otherwise pick up. A speaker placed behind a presenter is the single most common cause of feedback at a school event.' },
           { kind: 'steps', items: [
             'Place the speakers so they face the audience and sit ahead of every microphone position.',
             'Connect the system from the microphone forward, leaving the amplifier switched off.',
@@ -112,10 +112,10 @@ export const m8: Module = {
         { kind: 'order', id: 'm8-lo2-q3', competency: 'Perform procedure in servicing audio products and systems.',
           stem: 'Arrange the steps for finding why one channel is silent.',
           steps: [
-            'Unplug the amplifier and discharge the supply capacitors',
             'Swap the input leads and see whether the silence follows',
             'Compare the supply rails feeding each output stage',
             'Compare the output at each pair of speaker terminals',
+            'Unplug the amplifier and discharge the supply capacitors',
             'Test the speaker lead and the driver on the silent side',
             'Repair, then run both channels and compare them by ear',
           ] },
