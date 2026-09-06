@@ -5,7 +5,7 @@ export const cctvScenario: Scenario = {
   appliance: 'CCTV camera channel',
   symptom: 'Camera 3 shows a black screen on the monitor. The other three cameras are fine, and the recorder is running normally.',
   safety: [
-    'Switch off the camera power supply before touching any camera wiring.',
+    'Switch off the camera power supply before you disconnect or re-terminate any camera wiring.',
     'Work from a stable platform when reaching a mounted camera, and never lean off a ladder to reach sideways.',
     'Treat every outdoor connector as wet until you have opened and looked at it.',
   ],

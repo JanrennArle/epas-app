@@ -67,7 +67,7 @@ export const m6: Module = {
         { kind: 'truefalse', id: 'm6-lo1-q3', competency: 'Discuss the principles of fire alarm systems.',
           stem: 'A short circuit across a conventional zone makes the panel report a fault.',
           answer: false,
-          rationale: 'It reports an alarm, not a fault. A detector activating is exactly a short across the zone, so the panel cannot tell an accidental short from a real activation. An open circuit is what reads as a fault.' },
+          rationale: 'It reports an alarm, not a fault. A detector in alarm puts a low resistance across the zone, which is why a low reading means alarm and an open reading means fault. That is also why many panels can tell a dead short from a genuine activation, because a detector in alarm presents a defined resistance rather than zero ohms.' },
       ],
     },
     {
@@ -77,7 +77,7 @@ export const m6: Module = {
         id: 'l1',
         title: 'Installing a zone that the panel will trust',
         blocks: [
-          { kind: 'safety', md: 'Tell the responsible person before you put any part of a fire alarm out of service, isolate the sounders so testing does not evacuate the building, and never leave a system disabled at the end of a day without telling someone in writing.' },
+          { kind: 'safety', md: 'Tell the responsible person before you put any part of a fire alarm out of service, isolate the sounders so testing does not evacuate the building, and never leave a system disabled at the end of a day without telling someone in writing. The panel enclosure carries mains voltage and a standby battery that can push a very high current into a short circuit. Do not open it or work at its terminals without your teacher present.' },
           { kind: 'text', md: 'Installation is mostly about making a circuit the panel can monitor honestly. Devices go in order along the zone, the end of line resistor goes at the last one and nowhere else, and every joint is made in an enclosure that can be found again.' },
           { kind: 'steps', items: [
             'Plan the zone so every device on it is in one identifiable area of the building.',

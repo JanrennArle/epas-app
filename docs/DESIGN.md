@@ -35,11 +35,11 @@ No pure black, no pure white. Both kill depth.
 
 | Token | Light | Dark | Meaning |
 |---|---|---|---|
-| `--danger` | `#B3382C` | `#EF8577` | **Electrical safety only** |
+| `--danger` | `#B3382C` | `#EF8577` | **Safety hazards only** |
 | `--pass` | `#1E7A4A` | `#5FC98E` | Correct, within tolerance, passed |
 | `--caution` | `#A9650C` | `#E0A54A` | Incorrect answer, out of tolerance, warning |
 
-**Red is reserved for electrical safety.** In an app about live voltage, red cannot also mean "wrong answer". Incorrect answers use `--caution` plus a written reason.
+**Red is reserved for safety hazards.** In an app about live voltage, red cannot also mean "wrong answer". Incorrect answers use `--caution` plus a written reason.
 
 ### Module tints
 
