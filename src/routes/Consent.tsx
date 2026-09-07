@@ -36,7 +36,7 @@ export default function Consent() {
         <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: 0 }}>
           Everything stays on this device. Nothing is sent anywhere. Your teacher receives
           your results only when you choose to export them and hand them in. You can take
-          part without giving your name, and you can stop at any time.
+          part without giving your name, and you can ask your teacher to remove your results at any time.
         </p>
       </div>
 

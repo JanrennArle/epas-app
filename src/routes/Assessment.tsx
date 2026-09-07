@@ -37,6 +37,7 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
   const retake = hasTaken(moduleId, spec.context as AttemptContext)
 
   function submit() {
+    if (done) return
     const runId = newRunId()
     const at = new Date().toISOString()
     for (const item of items) {
@@ -86,8 +87,9 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
 
         {phase === 'post' && measured > 0 && (
           <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 18px' }}>
-            Comparing this with your pre-test, there {gained === 1 ? 'is' : 'are'} {gained} of {measured} competencies
-            you answer correctly now and did not before.
+            {gained === 0
+              ? `Comparing this with your pre-test, none of the ${measured} competencies moved from wrong to right.`
+              : `Comparing this with your pre-test, ${gained} of the ${measured} competencies moved from wrong to right.`}
           </p>
         )}
 

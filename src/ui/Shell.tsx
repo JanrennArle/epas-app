@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router'
+import { Link, Navigate, useLocation } from 'react-router'
 import type { ReactNode } from 'react'
+import { hasConsented } from '../lib/store'
 
 const NAV = [
   { to: '/', label: 'Modules' },
@@ -9,6 +10,15 @@ const NAV = [
 
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
+
+  // Every route is wrapped in the Shell, so this is the only place that can
+  // gate all of them. Gating the module map alone let a typed or restored URL
+  // reach a lesson or a test, and the test routes write attempt records, so a
+  // student could have had data stored before consenting to anything.
+  if (pathname !== '/consent' && !hasConsented()) {
+    return <Navigate to="/consent" replace />
+  }
+
   return (
     <div style={{ minHeight: '100dvh' }}>
       <header style={{

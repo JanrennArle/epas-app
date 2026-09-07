@@ -1,9 +1,8 @@
-import { Link, Navigate } from 'react-router'
+import { Link } from 'react-router'
 import { allModules } from '../content'
-import { loadState, hasConsented } from '../lib/store'
+import { loadState } from '../lib/store'
 
 export default function ModuleMap() {
-  if (!hasConsented()) return <Navigate to="/consent" replace />
   const state = loadState()
   const modules = allModules()
 
