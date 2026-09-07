@@ -13,13 +13,14 @@ export function Quiz({ items, moduleId, onFinish }: {
 
   function submit() {
     const runId = newRunId()
+    const at = new Date().toISOString()
     for (const item of items) {
       recordAttempt({
         itemId: item.id,
         moduleId,
         competency: item.competency,
         correct: gradeItem(item, responses[item.id]),
-        at: new Date().toISOString(),
+        at,
         context: 'formative',
         runId,
       })

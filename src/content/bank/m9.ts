@@ -126,9 +126,9 @@ export const m9Bank: BankItem[] = [
     competency: 'Perform the procedure in servicing sensors and actuators.',
     stem: 'Why is an actuator tested off the machine rather than in place?',
     options: [
-      'Because the meter probes cannot get to the actuator terminals while it is still in place',
+      'Because the actuator needs to cool down before any test of it is meaningful',
       'Because a jammed mechanism and an open coil look identical until the actuator is free to move',
-      'Because a controller output can never supply the current an actuator needs to operate',
+      'Because a controller output supplies too little current to work an actuator',
       'Because the actuator cannot be given its full rated signal while it is still wired into the machine',
     ],
     answer: 1,

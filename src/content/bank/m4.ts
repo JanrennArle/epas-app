@@ -69,7 +69,7 @@ export const m4Bank: BankItem[] = [
       'Charge it fully once more to see whether it recovers',
       'Run the lamp until the cell is flat, then replace it',
       'Isolate it, do not charge it, and do not refit it',
-      'Pierce it to release the pressure before disposal',
+      'Fit a higher capacity cell so the lamp runs longer',
     ],
     answer: 2,
   },

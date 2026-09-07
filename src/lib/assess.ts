@@ -29,7 +29,14 @@ export interface Gain {
   /** Null where that side was never taken. */
   pre: boolean | null
   post: boolean | null
-  /** Wrong before the teaching and right after it. */
+  /**
+   * False when the pre-test attempt was written after the post-test one.
+   * Retaking the pre-test after the post-test is not a before-and-after
+   * measurement, and counting it as one lets a student raise their own
+   * reported gain by sitting the easier form again at the end.
+   */
+  ordered: boolean
+  /** Wrong before the teaching and right after it, in that order. */
   gained: boolean
 }
 
@@ -46,15 +53,25 @@ export interface Gain {
  * written one.
  */
 export function competencyGains(pre: Attempt[], post: Attempt[]): Gain[] {
-  const preBy = new Map<string, boolean>()
-  for (const a of pre) preBy.set(a.competency, a.correct)
-  const postBy = new Map<string, boolean>()
-  for (const a of post) postBy.set(a.competency, a.correct)
+  const preBy = new Map<string, Attempt>()
+  for (const a of pre) preBy.set(a.competency, a)
+  const postBy = new Map<string, Attempt>()
+  for (const a of post) postBy.set(a.competency, a)
 
   const names = [...new Set([...preBy.keys(), ...postBy.keys()])].sort()
   return names.map(competency => {
-    const before = preBy.has(competency) ? preBy.get(competency)! : null
-    const after = postBy.has(competency) ? postBy.get(competency)! : null
-    return { competency, pre: before, post: after, gained: before === false && after === true }
+    const before = preBy.get(competency)
+    const after = postBy.get(competency)
+    // Only a pre-test sat before the post-test measures anything. Where one
+    // side is missing there is nothing to order, so `ordered` stays true and
+    // `gained` is false on the missing side alone.
+    const ordered = before === undefined || after === undefined || before.at <= after.at
+    return {
+      competency,
+      pre: before ? before.correct : null,
+      post: after ? after.correct : null,
+      ordered,
+      gained: ordered && before?.correct === false && after?.correct === true,
+    }
   })
 }

@@ -51,7 +51,7 @@ describe('competencyGains', () => {
     const pre = [attempt({ correct: false })]
     const post = [attempt({ correct: true, context: 'posttest' })]
     expect(competencyGains(pre, post)).toEqual([
-      { competency: 'C1', pre: false, post: true, gained: true },
+      { competency: 'C1', pre: false, post: true, ordered: true, gained: true },
     ])
   })
 
@@ -62,12 +62,12 @@ describe('competencyGains', () => {
 
   it('records a competency that was lost', () => {
     const g = competencyGains([attempt({ correct: true })], [attempt({ correct: false, context: 'posttest' })])
-    expect(g[0]).toEqual({ competency: 'C1', pre: true, post: false, gained: false })
+    expect(g[0]).toEqual({ competency: 'C1', pre: true, post: false, ordered: true, gained: false })
   })
 
   it('reports null for a side that was never taken', () => {
     expect(competencyGains([attempt()], [])).toEqual([
-      { competency: 'C1', pre: true, post: null, gained: false },
+      { competency: 'C1', pre: true, post: null, ordered: true, gained: false },
     ])
   })
 
@@ -105,6 +105,27 @@ describe('competencyGains', () => {
       [attempt({ correct: true, context: 'posttest' })],
     )
     expect(g[0]?.pre).toBe(false)
+    expect(g[0]?.gained).toBe(true)
+  })
+
+  // A student who sits the post-test, sees their gain, then retakes the
+  // easier pre-test and answers badly would otherwise raise their own
+  // reported figure.
+  it('does not count a pre-test taken after the post-test', () => {
+    const g = competencyGains(
+      [attempt({ correct: false, at: '2026-03-01T00:00:00.000Z' })],
+      [attempt({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' })],
+    )
+    expect(g[0]?.ordered).toBe(false)
+    expect(g[0]?.gained).toBe(false)
+  })
+
+  it('still counts a pair sat in the right order', () => {
+    const g = competencyGains(
+      [attempt({ correct: false, at: '2026-02-01T00:00:00.000Z' })],
+      [attempt({ correct: true, context: 'posttest', at: '2026-03-01T00:00:00.000Z' })],
+    )
+    expect(g[0]?.ordered).toBe(true)
     expect(g[0]?.gained).toBe(true)
   })
 

@@ -32,7 +32,7 @@ export interface ModuleProgress {
 
 export interface StoreV1 {
   schemaVersion: 1
-  participant: { code: string; name?: string; consentedAt?: string }
+  participant: { code: string; name?: string; consentedAt?: string; research?: boolean }
   modules: Record<string, ModuleProgress>
   attempts: Attempt[]
   sims: SimRecord[]
@@ -168,12 +168,23 @@ export function hasTaken(moduleId: string, context: AttemptContext): boolean {
  * created, so consenting never changes it: a student who consents keeps the
  * identity their earlier work is already filed under.
  */
-export function setConsent(name?: string): void {
+export function setConsent(name?: string, research = true): void {
   update(s => {
     const trimmed = name?.trim()
     s.participant.consentedAt = new Date().toISOString()
+    s.participant.research = research
     if (trimmed) s.participant.name = trimmed
   })
+}
+
+/**
+ * Whether this student agreed to their work being used in the study. A
+ * student who declined still uses the app, because it is their coursework;
+ * the export simply leaves them out. Absent on records written before the
+ * choice existed, which the export must treat as unknown rather than as yes.
+ */
+export function inStudy(): boolean {
+  return loadState().participant.research === true
 }
 
 export function hasConsented(): boolean {

@@ -1,10 +1,18 @@
-import { Link } from 'react-router'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router'
 import { allModules } from '../content'
-import { loadState } from '../lib/store'
+import { loadState, resetAll } from '../lib/store'
 
 export default function ModuleMap() {
+  const navigate = useNavigate()
   const state = loadState()
   const modules = allModules()
+  const [confirming, setConfirming] = useState(false)
+
+  function startNewParticipant() {
+    resetAll()
+    navigate('/consent', { replace: true })
+  }
 
   return (
     <>
@@ -54,6 +62,56 @@ export default function ModuleMap() {
           )
         })}
       </ul>
+
+      {/*
+        These machines are shared. Without a way to hand the app to the next
+        student, their work joined the previous student's participant record,
+        they never saw the consent screen, and the two sittings resolved as one
+        student retaking a test.
+      */}
+      <div style={{
+        marginTop: 28, paddingTop: 14, borderTop: '1px solid var(--line)',
+        fontSize: 12.5, lineHeight: 1.6, color: 'var(--ink-3)',
+      }}>
+        {confirming ? (
+          <div>
+            <p style={{ margin: '0 0 10px', color: 'var(--ink-2)' }}>
+              This clears every answer and result stored on this device and starts a new
+              participant. Work that has not been exported cannot be got back.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button onClick={startNewParticipant} className="tile" style={{
+                minHeight: 44, padding: '10px 14px', borderRadius: 10, border: 0,
+                background: 'var(--accent)', color: 'var(--on-accent)',
+                font: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}>
+                Clear and start a new participant
+              </button>
+              <button onClick={() => setConfirming(false)} className="tile" style={{
+                minHeight: 44, padding: '10px 14px', borderRadius: 10,
+                border: '1px solid var(--line)', background: 'var(--surface)',
+                color: 'var(--ink)', font: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <span>
+            Working as{' '}
+            <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-2)', fontWeight: 600 }}>
+              {state.participant.code}
+            </strong>
+            {state.participant.name ? ` (${state.participant.name})` : ''}.{' '}
+            <button onClick={() => setConfirming(true)} style={{
+              background: 'none', border: 0, padding: 0, font: 'inherit',
+              color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
+            }}>
+              Not you?
+            </button>
+          </span>
+        )}
+      </div>
     </>
   )
 }

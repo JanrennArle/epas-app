@@ -72,7 +72,7 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
       ? competencyGains(attemptsFor(moduleId, 'pretest'), attemptsFor(moduleId, 'posttest'))
       : []
     const gained = gains.filter(g => g.gained).length
-    const measured = gains.filter(g => g.pre !== null && g.post !== null).length
+    const measured = gains.filter(g => g.ordered && g.pre !== null && g.post !== null).length
 
     return (
       <div style={{ maxWidth: '60ch' }}>
