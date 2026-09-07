@@ -13,6 +13,15 @@ const PHASES = {
 
 export default function Assessment() {
   const { moduleId = '', phase = '' } = useParams()
+  // Keyed so the form remounts whenever the route changes. React Router keeps
+  // the same component mounted when only the params move, so without this the
+  // answers and the finished result of one test carry into the next: going
+  // from a completed pre-test to the post-test showed it already finished,
+  // reporting the pre-test's score while recording no post-test at all.
+  return <AssessmentForm key={`${moduleId}/${phase}`} moduleId={moduleId} phase={phase} />
+}
+
+function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }) {
   const [responses, setResponses] = useState<Record<string, number>>({})
   const [done, setDone] = useState<{ correct: number; total: number } | null>(null)
 
