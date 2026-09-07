@@ -678,6 +678,7 @@ Create `tests/bank.test.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest'
+import type { BankItem } from '../src/lib/types'
 import { BANK, bankFor } from '../src/content/bank'
 import { allModules } from '../src/content'
 
@@ -814,12 +815,12 @@ export const m1Bank: BankItem[] = [
     competency: 'Explain the overview of Electronic Systems Servicing.',
     stem: 'A customer reports a fault. What does a technician do before opening the appliance?',
     options: [
-      'Confirm the symptom for themselves, and note the conditions under which it appears',
       'Order the part most likely to be at fault',
+      'Confirm the symptom for themselves, and note the conditions under which it appears',
       'Strip the appliance down to its boards',
       'Quote the price of the repair',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
     id: 'b-m1-c1-b', moduleId: 'm1', pair: 'm1-c1', form: 'B',
@@ -839,11 +840,11 @@ export const m1Bank: BankItem[] = [
     stem: 'Which component is polarised, so that fitting it the wrong way round will damage it?',
     options: [
       'A carbon film resistor',
-      'A ceramic capacitor',
       'An electrolytic capacitor',
+      'A ceramic capacitor',
       'A wirewound inductor',
     ],
-    answer: 2,
+    answer: 1,
   },
   {
     id: 'b-m1-c2-b', moduleId: 'm1', pair: 'm1-c2', form: 'B',
