@@ -27,6 +27,9 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
   }
 
   const safe = acked.length === scenario.safety.length
+  // Naming a fault with no evidence is a guess, and a guess that happens to
+  // be right would score the same as a diagnosis. Require one test first.
+  const canAccuse = safe && used.length > 0
 
   const runTest = (id: string) => {
     if (!safe || result || used.includes(id)) return
@@ -34,7 +37,7 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
   }
 
   const accuse = (faultId: string) => {
-    if (!safe || result) return
+    if (!canAccuse || result) return
     const r = scoreDiagnosis(scenario, used, faultId)
     setResult(r)
     onEvent?.({ type: 'attempt', correct: r.correct })
@@ -107,16 +110,21 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
         </div>
 
         <p style={label}>Name the fault</p>
+        {safe && used.length === 0 && (
+          <p style={{ fontSize: 12.5, color: 'var(--ink-3)', margin: '0 0 8px', lineHeight: 1.5 }}>
+            Run at least one test first. A fault named without evidence is a guess.
+          </p>
+        )}
         <div style={{ display: 'grid', gap: 6 }}>
           {scenario.faults.map(f => (
-            <button key={f.id} onClick={() => accuse(f.id)} disabled={!safe || !!result}
+            <button key={f.id} onClick={() => accuse(f.id)} disabled={!canAccuse || !!result}
               className="tile"
               style={{
                 width: '100%', textAlign: 'left', minHeight: 44, padding: '10px 12px',
                 borderRadius: 10, background: 'var(--paper)', font: 'inherit', fontSize: 13,
                 border: `1px solid ${result && f.id === scenario.actualFault ? 'var(--pass)' : 'var(--line)'}`,
-                color: 'var(--ink)', cursor: !safe || result ? 'default' : 'pointer',
-                opacity: safe ? 1 : 0.5,
+                color: 'var(--ink)', cursor: !canAccuse || result ? 'default' : 'pointer',
+                opacity: canAccuse ? 1 : 0.5,
               }}>{f.label}</button>
           ))}
         </div>
