@@ -43,8 +43,8 @@ export const m1Bank: BankItem[] = [
     stem: 'A resistor is banded brown, black, orange, gold. What is its value?',
     options: [
       '10 ohms',
-      '1 kilohm',
       '100 ohms',
+      '1 kilohm',
       '10 kilohms',
     ],
     answer: 3,
