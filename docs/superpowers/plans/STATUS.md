@@ -20,14 +20,14 @@ Six of the eight steps in the spec's build order (section 14 of `docs/superpower
 
 Two plans. Neither has been written yet.
 
-**Plan 7 — survey, export, teacher tool, task sheets**
+**Plan 7: survey, export, teacher tool, task sheets**
 
 - ISO/IEC 25010 evaluation survey, 20 items, five categories, held as data so it can be replaced without code changes.
 - `/progress` export: CSV for statistical software, JSON for lossless transfer.
 - `/teacher`: merges a set of student JSON files into one CSV, a row per student, pre/post/gain columns per competency.
 - The eight Budget of Work performance task sheets, with rubrics visible to the student from the start.
 
-**Plan 8 — packaging and deployment**
+**Plan 8: packaging and deployment**
 
 - `vite-plugin-pwa` with Workbox precaching the whole app; the service worker prompts to update rather than reloading, so it never interrupts a test in progress.
 - Offline verification on a real phone.
