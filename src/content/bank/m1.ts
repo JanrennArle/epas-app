@@ -28,12 +28,12 @@ export const m1Bank: BankItem[] = [
   {
     id: 'b-m1-c2-a', moduleId: 'm1', pair: 'm1-c2', form: 'A',
     competency: 'Discuss electronic components identification.',
-    stem: 'Which component is polarised, so that fitting it the wrong way round will damage it?',
+    stem: 'A resistor is banded red, violet, brown, gold. What is its value?',
     options: [
-      'A carbon film resistor',
-      'An electrolytic capacitor',
-      'A ceramic capacitor',
-      'A wirewound inductor',
+      '27 ohms',
+      '270 ohms',
+      '2.7 kilohms',
+      '270 kilohms',
     ],
     answer: 1,
   },

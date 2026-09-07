@@ -716,6 +716,7 @@ describe('the item bank', () => {
   it('gives every item four options and an answer that indexes them', () => {
     for (const i of BANK) {
       expect(i.options.length, i.id).toBe(4)
+      expect(Number.isInteger(i.answer), `${i.id} answer is not a whole number`).toBe(true)
       expect(i.answer, i.id).toBeGreaterThanOrEqual(0)
       expect(i.answer, i.id).toBeLessThan(4)
     }
@@ -757,10 +758,11 @@ describe('the item bank', () => {
     }
   })
 
-  it('uses no em dashes in anything a student reads', () => {
+  it('uses no long dashes in anything a student reads', () => {
     for (const i of BANK) {
       const copy = [i.stem, ...i.options].join(' ')
-      expect(copy.includes('—'), `${i.id}`).toBe(false)
+      // U+2014 em dash, U+2013 en dash, U+2015 horizontal bar.
+      expect(/[–—―]/.test(copy), `${i.id}`).toBe(false)
     }
   })
 
@@ -837,12 +839,12 @@ export const m1Bank: BankItem[] = [
   {
     id: 'b-m1-c2-a', moduleId: 'm1', pair: 'm1-c2', form: 'A',
     competency: 'Discuss electronic components identification.',
-    stem: 'Which component is polarised, so that fitting it the wrong way round will damage it?',
+    stem: 'A resistor is banded red, violet, brown, gold. What is its value?',
     options: [
-      'A carbon film resistor',
-      'An electrolytic capacitor',
-      'A ceramic capacitor',
-      'A wirewound inductor',
+      '27 ohms',
+      '270 ohms',
+      '2.7 kilohms',
+      '270 kilohms',
     ],
     answer: 1,
   },

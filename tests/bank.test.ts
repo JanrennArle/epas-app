@@ -37,6 +37,7 @@ describe('the item bank', () => {
   it('gives every item four options and an answer that indexes them', () => {
     for (const i of BANK) {
       expect(i.options.length, i.id).toBe(4)
+      expect(Number.isInteger(i.answer), `${i.id} answer is not a whole number`).toBe(true)
       expect(i.answer, i.id).toBeGreaterThanOrEqual(0)
       expect(i.answer, i.id).toBeLessThan(4)
     }
@@ -78,10 +79,11 @@ describe('the item bank', () => {
     }
   })
 
-  it('uses no em dashes in anything a student reads', () => {
+  it('uses no long dashes in anything a student reads', () => {
     for (const i of BANK) {
       const copy = [i.stem, ...i.options].join(' ')
-      expect(copy.includes('—'), `${i.id}`).toBe(false)
+      // U+2014 em dash, U+2013 en dash, U+2015 horizontal bar.
+      expect(/[–—―]/.test(copy), `${i.id}`).toBe(false)
     }
   })
 
