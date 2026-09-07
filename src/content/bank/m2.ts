@@ -40,11 +40,11 @@ export const m2Bank: BankItem[] = [
   {
     id: 'b-m2-c2-b', moduleId: 'm2', pair: 'm2-c2', form: 'B',
     competency: 'Discuss soldering and desoldering.',
-    stem: 'A through-hole joint has a good fillet on the top side, but no solder has reached the pad underneath. What went wrong?',
+    stem: 'A through-hole joint has a good fillet on the solder side, but no solder has wicked up to the component side. What went wrong?',
     options: [
-      'Too much solder was fed in at once, so the excess sealed over the hole before it could flow through',
-      'The board was held at an angle, so gravity kept the solder on the upper side',
-      'The iron touched the lead only, so the pad never reached the temperature the solder needed',
+      'Too much solder was fed in at once, so the excess sealed over the mouth of the hole before it could flow',
+      'The board was held at an angle, so gravity kept the solder on the lower side',
+      'The iron touched the pad only, so the lead and the hole never reached the temperature the solder needed',
       'The solder used was too thin a gauge to be able to reach through the hole',
     ],
     answer: 2,
