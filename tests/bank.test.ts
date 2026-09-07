@@ -6,8 +6,19 @@ import { allModules } from '../src/content'
 const modules = allModules()
 
 describe('the item bank', () => {
-  it('has items', () => {
-    expect(BANK.length).toBeGreaterThan(0)
+  // Pinned, not just non-zero: a refactor that dropped a module file would
+  // otherwise leave every loop below quietly running on a shorter bank.
+  it('holds two items for each of the 28 competencies', () => {
+    expect(BANK.length).toBe(56)
+  })
+
+  it('covers every competency of every module', () => {
+    for (const m of modules) {
+      for (const c of m.competencies) {
+        const forC = BANK.filter(i => i.moduleId === m.id && i.competency === c)
+        expect(forC.map(i => i.form).sort(), `${m.id}: ${c}`).toEqual(['A', 'B'])
+      }
+    }
   })
 
   it('gives every item a globally unique id', () => {

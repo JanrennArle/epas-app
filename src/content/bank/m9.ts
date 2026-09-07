@@ -1,0 +1,148 @@
+import type { BankItem } from '../../lib/types'
+
+export const m9Bank: BankItem[] = [
+  {
+    id: 'b-m9-c1-a', moduleId: 'm9', pair: 'm9-c1', form: 'A',
+    competency: 'Discuss television.',
+    stem: 'Which board in a flat screen television has the aerial socket on it?',
+    options: [
+      'The main board',
+      'The timing board',
+      'The power supply board',
+      'The backlight',
+    ],
+    answer: 0,
+  },
+  {
+    id: 'b-m9-c1-b', moduleId: 'm9', pair: 'm9-c1', form: 'B',
+    competency: 'Discuss television.',
+    stem: 'A set has normal sound and answers the remote, but the screen is black. What has that already proved?',
+    options: [
+      'That only the power supply is working',
+      'That the panel is cracked',
+      'That the supply and the signal path are both alive',
+      'That nothing is working except the standby circuit',
+    ],
+    answer: 2,
+  },
+  {
+    id: 'b-m9-c2-a', moduleId: 'm9', pair: 'm9-c2', form: 'A',
+    competency: 'Perform the procedure in servicing television.',
+    stem: 'You shine a torch at a black screen at a shallow angle and see a faint but complete picture. What does that tell you?',
+    options: [
+      'The panel is cracked',
+      'The picture is being produced correctly and only the light behind it is missing',
+      'The main board has failed',
+      'The set is in standby',
+    ],
+    answer: 1,
+  },
+  {
+    id: 'b-m9-c2-b', moduleId: 'm9', pair: 'm9-c2', form: 'B',
+    competency: 'Perform the procedure in servicing television.',
+    stem: 'Before touching any board inside a television, what must you have done?',
+    options: [
+      'Switched it to standby',
+      'Unplugged it and waited a minute',
+      'Unplugged it, discharged the filter capacitors, and confirmed with a meter that they read close to zero volts',
+      'Removed the stand',
+    ],
+    answer: 2,
+  },
+  {
+    id: 'b-m9-c3-a', moduleId: 'm9', pair: 'm9-c3', form: 'A',
+    competency: 'Discuss control boards and motor controllers.',
+    stem: 'What does a relay let a control board do?',
+    options: [
+      'Measure a voltage more accurately',
+      'Switch a load that draws far more current than the board itself could carry',
+      'Convert alternating current to direct current',
+      'Store the state of the machine when power is lost',
+    ],
+    answer: 1,
+  },
+  {
+    id: 'b-m9-c3-b', moduleId: 'm9', pair: 'm9-c3', form: 'B',
+    competency: 'Discuss control boards and motor controllers.',
+    stem: 'A capacitor on a control board is visibly bulged. Why does that matter to the rest of the board?',
+    options: [
+      'It does not, as long as the board still runs',
+      'It draws extra current and overheats the regulator',
+      'It has lost capacitance, so the rail it smooths now carries ripple and the logic behaves unpredictably',
+      'It blocks the signal path through the board',
+    ],
+    answer: 2,
+  },
+  {
+    id: 'b-m9-c4-a', moduleId: 'm9', pair: 'm9-c4', form: 'A',
+    competency: 'Perform the procedure in servicing control boards and motor controllers.',
+    stem: 'A motor runs but will not stop when the limit switch operates. The switch tests good and the controller input changes state correctly. What do you suspect?',
+    options: [
+      'The limit switch after all',
+      'The relay coil is open',
+      'The motor is faulty',
+      'The relay contacts have welded closed',
+    ],
+    answer: 3,
+  },
+  {
+    id: 'b-m9-c4-b', moduleId: 'm9', pair: 'm9-c4', form: 'B',
+    competency: 'Perform the procedure in servicing control boards and motor controllers.',
+    stem: 'You find welded relay contacts and fit a new relay of the same type. Why is the job not finished?',
+    options: [
+      'Because the new relay must be run in before use',
+      'Because the controller must be reprogrammed after a relay change',
+      'Because a new relay always needs its coil voltage adjusted',
+      'Because the contacts welded from switching more current than they are rated for, and that cause is still there',
+    ],
+    answer: 3,
+  },
+  {
+    id: 'b-m9-c5-a', moduleId: 'm9', pair: 'm9-c5', form: 'A',
+    competency: 'Discuss sensors and actuators.',
+    stem: 'Which of these is a sensor rather than an actuator?',
+    options: [
+      'A thermistor',
+      'A relay',
+      'A solenoid',
+      'A valve',
+    ],
+    answer: 0,
+  },
+  {
+    id: 'b-m9-c5-b', moduleId: 'm9', pair: 'm9-c5', form: 'B',
+    competency: 'Discuss sensors and actuators.',
+    stem: 'A thermistor reads a plausible resistance. Is it proven good?',
+    options: [
+      'Yes, the reading is in its normal range',
+      'No, because only a reading that changes when you warm it proves it responds',
+      'Yes, provided the circuit around it also works',
+      'No, because a healthy thermistor reads zero',
+    ],
+    answer: 1,
+  },
+  {
+    id: 'b-m9-c6-a', moduleId: 'm9', pair: 'm9-c6', form: 'A',
+    competency: 'Perform the procedure in servicing sensors and actuators.',
+    stem: 'Why is an actuator tested off the machine rather than in place?',
+    options: [
+      'Because a jammed mechanism and an open coil look identical until the actuator is free to move',
+      'Because the meter cannot reach it in place',
+      'Because testing it in place would damage the controller',
+      'Because it cannot be given its rated signal in place',
+    ],
+    answer: 0,
+  },
+  {
+    id: 'b-m9-c6-b', moduleId: 'm9', pair: 'm9-c6', form: 'B',
+    competency: 'Perform the procedure in servicing sensors and actuators.',
+    stem: 'A solenoid does not move when the machine calls for it, but it pulls in strongly when given its rated voltage on the bench. What does that tell you?',
+    options: [
+      'The solenoid coil is open',
+      'The solenoid is good, so the fault is the signal reaching it or a jam in the mechanism',
+      'The controller output has certainly failed',
+      'The solenoid needs replacing anyway',
+    ],
+    answer: 1,
+  },
+]
