@@ -81,7 +81,18 @@ Re-taking a quiz or re-running a simulation appends more rows, and nothing marks
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/store.test.ts`:
+First widen that file's existing import, which currently reads
+`loadState, recordAttempt, recordSim, markOutcomeComplete, STORAGE_KEY`:
+
+```ts
+import {
+  loadState, saveState, recordAttempt, recordSim,
+  markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
+} from '../src/lib/store'
+import type { Attempt } from '../src/lib/store'
+```
+
+Then append:
 
 ```ts
 describe('run identity', () => {
@@ -267,37 +278,54 @@ The fix is to require at least one test point before any fault button is live. T
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/registry.test.tsx`:
+Append to `tests/registry.test.tsx`, and change that file's existing first line from
+`import { render, screen } from '@testing-library/react'` to add `fireEvent`:
 
 ```tsx
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
+```
 
+Use `fireEvent`, not `@testing-library/user-event`. That package is not a dependency of
+this project and the Global Constraints forbid adding one.
+
+```tsx
 describe('naming a fault requires evidence', () => {
   beforeEach(() => localStorage.clear())
 
-  it('leaves every fault button disabled until a test has been run', async () => {
-    const user = userEvent.setup()
-    render(<SystemTroubleshooter moduleId="m2" config={{ scenario: 'fan' }} />)
+  // The safety lines render as checkboxes and all of them must be ticked
+  // before any control in the exercise becomes live.
+  function ackAllSafety() {
+    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box)
+  }
 
-    for (const line of screen.getAllByRole('checkbox')) await user.click(line)
-
-    const welded = screen.getByRole('button', { name: /capacitor/i })
-    expect(welded).toBeDisabled()
+  it('leaves the fault buttons disabled until a test has been run', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeDisabled()
   })
 
-  it('enables them once one test point has been used', async () => {
-    const user = userEvent.setup()
-    render(<SystemTroubleshooter moduleId="m2" config={{ scenario: 'fan' }} />)
+  it('enables them once one test point has been used', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    fireEvent.click(screen.getByRole('button', { name: /^Supply cord\./ }))
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeEnabled()
+  })
 
-    for (const line of screen.getAllByRole('checkbox')) await user.click(line)
-    await user.click(screen.getAllByRole('button', { name: /test|measure|check/i })[0]!)
-
-    expect(screen.getByRole('button', { name: /capacitor/i })).toBeEnabled()
+  it('says why the fault buttons are inert', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByText(/Run at least one test first/)).toBeInTheDocument()
   })
 })
 ```
+
+Two selector details that will waste your time if you change them. The fault button's
+name is matched as an exact string, because the scenario also has a *test point* button
+whose name begins "Run capacitor", and a loose `/capacitor/i` matches both. And the
+assertions target fault buttons rather than test point buttons because only the fault
+buttons use the real `disabled` attribute; test point buttons use `aria-disabled`, which
+`toBeDisabled()` does not read.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -1761,7 +1789,7 @@ The consent text is shown to sixteen and seventeen year olds, so it says plainly
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/store.test.ts`:
+Add `setConsent` and `hasConsented` to that file's import from `../src/lib/store`, then append:
 
 ```ts
 describe('consent', () => {
