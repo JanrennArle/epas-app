@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { getModule } from '../content'
 import { bankFor } from '../content/bank'
@@ -24,6 +24,10 @@ export default function Assessment() {
 function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }) {
   const [responses, setResponses] = useState<Record<string, number>>({})
   const [done, setDone] = useState<{ correct: number; total: number } | null>(null)
+  // A ref rather than `done`, because two clicks landing in the same tick both
+  // read the old state and would each write a run. This sitting is one row in
+  // the teacher's data, so it must be written exactly once.
+  const written = useRef(false)
 
   const spec = phase === 'pre' || phase === 'post' ? PHASES[phase] : undefined
   const module = getModule(moduleId)
@@ -37,7 +41,8 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
   const retake = hasTaken(moduleId, spec.context as AttemptContext)
 
   function submit() {
-    if (done) return
+    if (written.current) return
+    written.current = true
     const runId = newRunId()
     const at = new Date().toISOString()
     for (const item of items) {
