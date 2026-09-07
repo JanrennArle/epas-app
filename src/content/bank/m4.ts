@@ -30,12 +30,12 @@ export const m4Bank: BankItem[] = [
     competency: 'Apply procedure in servicing appliances with heating components.',
     stem: 'An iron does not heat. The element measures open. What should you establish before fitting a new element?',
     options: [
-      'Whether the thermal cutout has operated, and if so what made it operate',
       'Nothing else is needed, because an open element is the whole of the fault here',
+      'Whether the thermal cutout has operated, and if so what made it operate',
       'Whether the soleplate is scratched or pitted enough to need refacing',
       'Whether the mains flex is long enough to reach a wall socket across the room',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
     id: 'b-m4-c2-b', moduleId: 'm4', pair: 'm4-c2', form: 'B',
@@ -44,22 +44,22 @@ export const m4Bank: BankItem[] = [
     options: [
       'The heating element has gone open circuit',
       'The thermal cutout has operated',
-      'The mains flex has a broken core',
       'The thermostat contacts have welded closed',
+      'The mains flex has a broken core',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c3-a', moduleId: 'm4', pair: 'm4-c3', form: 'A',
     competency: 'Discuss the procedures in servicing rechargeable and electronic-controlled lighting units.',
     stem: 'A rechargeable lamp runs for only a few minutes on a full charge. What does that indicate?',
     options: [
-      'The charger is pushing too much current into the cell and cutting the run short',
+      'The cell has lost capacity and no longer holds the charge it once did',
       'The lamp is simply being switched on and off far too often between charges',
       'The light emitting diodes have dimmed with age and now give up sooner',
-      'The cell has lost capacity and no longer holds the charge it once did',
+      'The charger is pushing too much current into the cell and cutting the run short',
     ],
-    answer: 3,
+    answer: 0,
   },
   {
     id: 'b-m4-c3-b', moduleId: 'm4', pair: 'm4-c3', form: 'B',
@@ -68,10 +68,10 @@ export const m4Bank: BankItem[] = [
     options: [
       'Charge it fully once more to see whether it recovers',
       'Run the lamp until the cell is flat, then replace it',
-      'Pierce it to release the pressure before disposal',
       'Isolate it, do not charge it, and do not refit it',
+      'Pierce it to release the pressure before disposal',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c4-a', moduleId: 'm4', pair: 'm4-c4', form: 'A',
@@ -92,10 +92,10 @@ export const m4Bank: BankItem[] = [
     options: [
       'To turn the alternating mains supply into the direct current that the diode needs to light up',
       'To protect the diode from reverse voltage that would otherwise puncture the junction',
-      'To make the diode switch on and off more quickly and crisply when it is pulsed',
       'To drop the supply to the diode forward voltage and hold the current at a safe value',
+      'To make the diode switch on and off more quickly and crisply when it is pulsed',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c5-a', moduleId: 'm4', pair: 'm4-c5', form: 'A',
@@ -103,22 +103,22 @@ export const m4Bank: BankItem[] = [
     stem: 'What does the recorder in a closed circuit television system do?',
     options: [
       'It only supplies power to the cameras and does nothing with the pictures they send',
-      'It focuses and aims each camera lens by remote control from the one central unit',
-      'It receives the video from the cameras, stores it, and presents it for viewing',
+      'It focuses and aims each camera lens by remote control',
       'It converts the camera signal into a radio broadcast that any receiver nearby can pick up',
+      'It receives the video from the cameras, stores it, and presents it for viewing',
     ],
-    answer: 2,
+    answer: 3,
   },
   {
     id: 'b-m4-c5-b', moduleId: 'm4', pair: 'm4-c5', form: 'B',
     competency: 'Discuss the principles of Closed-Circuit Television (CCTV) system.',
     stem: 'One camera in a working system shows no picture, while the others are normal. What does that prove about the recorder?',
     options: [
-      'That the recorder is working, because it is displaying the other cameras',
       'That the recorder has failed on that one input and the whole unit needs replacing',
+      'That the recorder is working, because it is displaying the other cameras',
       'Nothing at all about the recorder can be told from a single dead camera',
       'That the recorder has filled its storage and cannot take the extra camera in',
     ],
-    answer: 0,
+    answer: 1,
   },
 ]

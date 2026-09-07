@@ -137,6 +137,50 @@ describe('the item bank', () => {
     expect(share, `the key is the longest option in ${uniquelyLongest}/${BANK.length} items`).toBeLessThan(0.4)
   })
 
+  // A student sits ONE form, not the bank. Balancing the keys across all 56
+  // let the two forms cancel each other out: form A held 14 percent of its
+  // keys on option D and form B held 36 percent, so pressing D twenty-eight
+  // times scored 14 percent on the pre-test and 36 percent on the post-test,
+  // and the app credited that as seven competencies gained.
+  it('spreads the keys across the options within each form', () => {
+    for (const form of ['A', 'B'] as const) {
+      const items = BANK.filter((i) => i.form === form)
+      const counts = [0, 0, 0, 0]
+      for (const i of items) counts[i.answer] = (counts[i.answer] ?? 0) + 1
+      for (let k = 0; k < 4; k++) {
+        const share = counts[k]! / items.length
+        const where = `form ${form}: option ${'ABCD'[k]} holds ${counts[k]}/${items.length}`
+        expect(share, where).toBeGreaterThan(0.15)
+        expect(share, where).toBeLessThan(0.35)
+      }
+    }
+  })
+
+  // The same asymmetry in the other dimension: if the key is the shortest
+  // option far more often on one form than the other, "pick the shortest"
+  // scores differently on the pre-test and the post-test and the difference
+  // is reported as learning.
+  it('does not let option length pick the answer in either form', () => {
+    const shares: Record<string, Record<string, number>> = { longest: {}, shortest: {} }
+    for (const form of ['A', 'B'] as const) {
+      const items = BANK.filter((i) => i.form === form)
+      for (const pick of ['longest', 'shortest'] as const) {
+        const n = items.filter((i) => {
+          const lengths = i.options.map((o) => o.length)
+          const target = pick === 'longest' ? Math.max(...lengths) : Math.min(...lengths)
+          return lengths[i.answer] === target && lengths.filter((l) => l === target).length === 1
+        }).length
+        const share = n / items.length
+        shares[pick]![form] = share
+        expect(share, `form ${form}: the ${pick} option is the key in ${n}/${items.length}`).toBeLessThan(0.35)
+      }
+    }
+    for (const pick of ['longest', 'shortest'] as const) {
+      const gap = Math.abs(shares[pick]!.A! - shares[pick]!.B!)
+      expect(gap, `the ${pick}-option tell differs by ${gap.toFixed(2)} between the forms`).toBeLessThan(0.15)
+    }
+  })
+
   it('keeps every key close in length to its own distractors', () => {
     for (const i of BANK) {
       const others = i.options.filter((_, n) => n !== i.answer).map((o) => o.length)
