@@ -9,7 +9,7 @@ An offline-capable learning app for EPAS (Electronics Products Assembly and Serv
 Two consequences that are not visible from the code:
 
 - **Students follow these procedures on real mains-powered appliances.** A wrong step is a physical hazard, not a content bug.
-- **The quizzes and simulation scores are the research instrument.** Anything that lets a student score well without doing the work invalidates the data, so treat scoring defects as severe even when they look cosmetic. This has already happened twice: 43 of 45 multiple-choice items keyed to option B (fixed, now guarded), and the troubleshooter still awards a perfect score for a zero-test guess (open, see `docs/superpowers/plans/CARRY-FORWARD.md`).
+- **The quizzes, tests and simulation scores are the research instrument.** Anything that lets a student score well without doing the work invalidates the data, so treat scoring defects as severe even when they look cosmetic.
 
 ## Commands
 
@@ -29,9 +29,11 @@ npx vitest run tests/diagnose.test.ts
 npx vitest run -t "returns an empty string for an unknown test point"
 ```
 
+`.claude/launch.json` defines an `epas-dev` config, so the dev server can be started for browser checks. **Do them.** Two defects on this project were reachable only by driving the app: a route that showed a finished test as already complete and recorded nothing, and a consent gate that a deep link walked straight past. Neither is catchable by a unit test of a pure engine, which is where all the testing lives.
+
 ## Architecture
 
-**Content is data, not components.** The nine modules in `src/content/m1.ts` .. `m9.ts` are typed `Module` objects (`src/lib/types.ts`). Lessons are arrays of `Block` unions rendered by `src/ui/blocks/BlockRenderer.tsx`; quizzes are `QuizItem` unions rendered by `src/ui/Quiz.tsx`. Adding a lesson, a quiz or a whole module means editing data and nothing else. Two shared sub-registries work the same way: `src/content/activities/` (match, hotspot, sequence data) and `src/content/scenarios/` (fault-diagnosis scenarios).
+**Content is data, not components.** The nine modules in `src/content/m1.ts` .. `m9.ts` are typed `Module` objects (`src/lib/types.ts`). Lessons are arrays of `Block` unions rendered by `src/ui/blocks/BlockRenderer.tsx`; formative quizzes are `QuizItem` unions rendered by `src/ui/Quiz.tsx`. Adding a lesson, a quiz or a whole module means editing data and nothing else. Three shared sub-registries work the same way: `src/content/activities/` (match, hotspot, sequence data), `src/content/scenarios/` (fault-diagnosis scenarios) and `src/content/bank/` (pre-test and post-test items).
 
 **Logic lives in pure engines under `src/lib/`,** each total, dependency-free and unit-tested:
 
@@ -41,18 +43,29 @@ npx vitest run -t "returns an empty string for an unknown test point"
 | `signal.ts` | Power-supply waveforms per stage |
 | `diagnose.ts` | Fault-scenario scoring. **Frozen**, see below |
 | `activity.ts` | One scorer serving all three activity formats |
-| `quiz.ts` | Quiz grading |
+| `quiz.ts` | Formative quiz grading |
+| `assess.ts` | Test-form grading and per-competency learning gain |
 | `store.ts` | The only localStorage owner (key `epas.v1`) |
 
-The UI is deliberately not unit-tested. Put behaviour worth testing in an engine, then test the engine.
+The UI is deliberately not unit-tested. Put behaviour worth testing in an engine, then test the engine, then check the screen in a browser.
 
 **Simulations register themselves once.** `src/interactives/registry.ts` maps a `simId` to a component; a lesson embeds one with `{ kind: 'interactive', simId, config }`. Adding a simulation is one registry entry plus one component file.
 
 **Persistence goes through `src/lib/store.ts` only.** Never touch `localStorage` elsewhere. On an unreadable or unknown-version payload it salvages the raw string to `epas.v1.unreadable.<timestamp>` before overwriting, because silently wiping a student's data mid-study destroys research results.
 
-**Routing uses `createHashRouter` and `base: './'`** so the built app runs from any static host or the filesystem. Keep it that way.
+**Routing uses `createHashRouter` and `base: './'`** so the built app runs from any static host or the filesystem. Keep it that way. `src/ui/Shell.tsx` wraps every route and is where the consent gate lives, because it is the only place that can cover all of them; gating a single screen leaves deep links open.
 
 TypeScript runs with `strict`, `noUnusedLocals`, `noUnusedParameters` and `noUncheckedIndexedAccess`. Indexed access yields `T | undefined`; handle it rather than asserting past it.
+
+## The assessment layer
+
+This is what the research paper reports, so its invariants are load-bearing.
+
+**Two disjoint item sets.** The 84 formative items live inside lessons and explain every option. The 56 bank items in `src/content/bank/` are the pre-test (form A) and post-test (form B), a matched pair for each of the 28 competencies. `BankItem` has **no `rationale` field, by design**: showing a student why an answer was wrong between the two measurements teaches them, which is exactly what the gain is trying to detect. Do not add one, and do not reuse `Quiz.tsx` for a test.
+
+**One sitting is one run.** `recordAttempt` stamps a `runId` taken once per submission. `attemptsFor(moduleId, context)` returns only the newest run, so a retake supersedes rather than averages. A record with no `runId` predates the field and is returned as one legacy run.
+
+**`competencyGains(pre, post)` is the headline number.** `gained` means the student did *not* have the competency and now does, in that order. A competency already held is not a gain; a pre-test written after the post-test sets `ordered: false` and counts as nothing.
 
 ## Authoring rules
 
@@ -62,19 +75,26 @@ These are not style preferences. Each one is a defect that shipped and was caugh
 
 **A `safety` block must not forbid a test the student is later required to perform.** If an outcome needs live measurements, say so in the safety block and teach the technique.
 
-**No em dashes anywhere in user-visible copy.** Absolute. Applies to lesson text, quiz stems, options, rationales, scenario readings and remedies.
+**Hunt the exploit family before adding items.** Four separate ways to score without reading have been found and fixed, and they are one defect in different clothes: a surface feature correlating with correctness. Keys bunched on one option (43 of 45 on B). The key being the longest option (48 of 56). Pairs mismatched in difficulty. Keys balanced across the whole bank but not within each form, which a student sits one of. **Measure any new items for a fifth** across position, length, phrasing, and anything that differs systematically between form A and form B. `tests/bank.test.ts` guards the four that were found and cannot guard one nobody has looked for.
+
+**Distractors must be wrong, and stay wrong when edited.** Rewriting a wrong option into a fuller, more specific sentence can make it true. That happened twice in one commit. Re-read every distractor you lengthen and confirm a competent technician would still reject it.
+
+**No em dashes anywhere in user-visible copy.** Absolute. Applies to lesson text, quiz and test stems, options, rationales, scenario readings and remedies.
 
 **Red (`--danger`) is reserved for safety hazards.** Never for wrong answers, errors or emphasis.
 
-**Every quiz `competency` string must match a competency of its own outcome character for character,** and quiz ids must be globally unique.
-
-**Spread multiple-choice answer keys.** Options render in authored order, so keys that bunch onto one position make every quiz answerable without reading it.
+**Every `competency` string must match a competency of its own module character for character,** and item ids must be globally unique across the formative quizzes and the bank together.
 
 The curriculum authority is the **DepEd TechPro Grade 12 elective Budget of Work**, organised week by week (`docs/reference/`). It is not TESDA NC II units; do not map content onto those.
 
 ## Guard tests
 
-`tests/activities.test.ts` and `tests/quiz-keys.test.ts` walk the whole content set and turn silent authoring mistakes into build failures: unresolvable activity, scenario or `simId` references, duplicate quiz ids, competency mismatches, hotspot regions outside 0 to 100 percent, a sequence whose display order equals its answer, answer keys bunched on one option, and a key pointing at a rationale that does not explain it. Extend these rather than adding per-module assertions.
+Four suites walk the whole content set and turn silent authoring mistakes into build failures. Extend these rather than adding per-module assertions.
+
+- `tests/activities.test.ts` resolves every activity, scenario and `simId` reference, and checks hotspot regions and sequence orders.
+- `tests/quiz-keys.test.ts` holds the formative items: key spread, and that a key points at the rationale explaining it.
+- `tests/bank.test.ts` holds the test items: 56 pinned, one A and one B per competency, no id colliding with a formative item, key spread **within each form**, and two length tells with a cap on the gap between the forms.
+- `tests/assess.test.ts` pins what a gain means. Three plausible misreadings of `gained` once passed the whole suite; they are now killed by name.
 
 `src/lib/diagnose.ts` is frozen. `requiredTests` returns the *position* of the last implicating test point, which is what makes the taught diagnostic sweep outscore a lucky first guess. Changing `PENALTY`, `FLOOR` or that function rescores every scenario in the app.
 
@@ -82,4 +102,4 @@ The curriculum authority is the **DepEd TechPro Grade 12 elective Budget of Work
 
 - `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` is the binding product spec.
 - `docs/DESIGN.md` is the visual authority: tokens, the nine module tints, motion rules, and an explicit ban list.
-- `docs/superpowers/plans/CARRY-FORWARD.md` records known deferred defects. **Read it before starting new work**; several are load-bearing traps, including that `onEvent` is never wired, that repeat runs append duplicate records, and that a `simId` alone no longer identifies an exercise.
+- `docs/superpowers/plans/CARRY-FORWARD.md` records known deferred defects and is grouped by the plan that raised each one. **Read it before starting new work.** Resolved entries are marked rather than deleted, so check the marker before trusting an entry. The live traps include that `simId` alone no longer identifies an exercise, that success is encoded four different ways across the simulations, that a missing row is not proof of no engagement, and that the export must filter on `participant.research` or the consent screen becomes a false statement.
