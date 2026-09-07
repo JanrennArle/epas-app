@@ -81,7 +81,18 @@ Re-taking a quiz or re-running a simulation appends more rows, and nothing marks
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/store.test.ts`:
+First widen that file's existing import, which currently reads
+`loadState, recordAttempt, recordSim, markOutcomeComplete, STORAGE_KEY`:
+
+```ts
+import {
+  loadState, saveState, recordAttempt, recordSim,
+  markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
+} from '../src/lib/store'
+import type { Attempt } from '../src/lib/store'
+```
+
+Then append:
 
 ```ts
 describe('run identity', () => {
@@ -267,37 +278,54 @@ The fix is to require at least one test point before any fault button is live. T
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/registry.test.tsx`:
+Append to `tests/registry.test.tsx`, and change that file's existing first line from
+`import { render, screen } from '@testing-library/react'` to add `fireEvent`:
 
 ```tsx
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
+```
 
+Use `fireEvent`, not `@testing-library/user-event`. That package is not a dependency of
+this project and the Global Constraints forbid adding one.
+
+```tsx
 describe('naming a fault requires evidence', () => {
   beforeEach(() => localStorage.clear())
 
-  it('leaves every fault button disabled until a test has been run', async () => {
-    const user = userEvent.setup()
-    render(<SystemTroubleshooter moduleId="m2" config={{ scenario: 'fan' }} />)
+  // The safety lines render as checkboxes and all of them must be ticked
+  // before any control in the exercise becomes live.
+  function ackAllSafety() {
+    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box)
+  }
 
-    for (const line of screen.getAllByRole('checkbox')) await user.click(line)
-
-    const welded = screen.getByRole('button', { name: /capacitor/i })
-    expect(welded).toBeDisabled()
+  it('leaves the fault buttons disabled until a test has been run', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeDisabled()
   })
 
-  it('enables them once one test point has been used', async () => {
-    const user = userEvent.setup()
-    render(<SystemTroubleshooter moduleId="m2" config={{ scenario: 'fan' }} />)
+  it('enables them once one test point has been used', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    fireEvent.click(screen.getByRole('button', { name: /^Supply cord\./ }))
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeEnabled()
+  })
 
-    for (const line of screen.getAllByRole('checkbox')) await user.click(line)
-    await user.click(screen.getAllByRole('button', { name: /test|measure|check/i })[0]!)
-
-    expect(screen.getByRole('button', { name: /capacitor/i })).toBeEnabled()
+  it('says why the fault buttons are inert', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByText(/Run at least one test first/)).toBeInTheDocument()
   })
 })
 ```
+
+Two selector details that will waste your time if you change them. The fault button's
+name is matched as an exact string, because the scenario also has a *test point* button
+whose name begins "Run capacitor", and a loose `/capacitor/i` matches both. And the
+assertions target fault buttons rather than test point buttons because only the fault
+buttons use the real `disabled` attribute; test point buttons use `aria-disabled`, which
+`toBeDisabled()` does not read.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -402,7 +430,7 @@ A pure module that draws a form from the bank, grades it, and computes per-compe
 
 **Interfaces:**
 - Consumes: `Attempt` from `src/lib/store.ts`.
-- Produces: `FormId`, `BankItem` (in `types.ts`); `gradeForm(items, responses)`, `competencyGains(pre, post)`, `moduleScore(items, responses)` (in `assess.ts`).
+- Produces: `FormId`, `BankItem` (in `types.ts`); `gradeForm(items, responses)` and `competencyGains(pre, post)` (in `assess.ts`).
 
 - [ ] **Step 1: Add the item type**
 
@@ -650,6 +678,7 @@ Create `tests/bank.test.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest'
+import type { BankItem } from '../src/lib/types'
 import { BANK, bankFor } from '../src/content/bank'
 import { allModules } from '../src/content'
 
@@ -687,6 +716,7 @@ describe('the item bank', () => {
   it('gives every item four options and an answer that indexes them', () => {
     for (const i of BANK) {
       expect(i.options.length, i.id).toBe(4)
+      expect(Number.isInteger(i.answer), `${i.id} answer is not a whole number`).toBe(true)
       expect(i.answer, i.id).toBeGreaterThanOrEqual(0)
       expect(i.answer, i.id).toBeLessThan(4)
     }
@@ -728,10 +758,11 @@ describe('the item bank', () => {
     }
   })
 
-  it('uses no em dashes in anything a student reads', () => {
+  it('uses no long dashes in anything a student reads', () => {
     for (const i of BANK) {
       const copy = [i.stem, ...i.options].join(' ')
-      expect(copy.includes('—'), `${i.id}`).toBe(false)
+      // U+2014 em dash, U+2013 en dash, U+2015 horizontal bar.
+      expect(/[–—―]/.test(copy), `${i.id}`).toBe(false)
     }
   })
 
@@ -787,9 +818,9 @@ export const m1Bank: BankItem[] = [
     stem: 'A customer reports a fault. What does a technician do before opening the appliance?',
     options: [
       'Confirm the symptom for themselves, and note the conditions under which it appears',
-      'Order the part most likely to be at fault',
-      'Strip the appliance down to its boards',
-      'Quote the price of the repair',
+      'Order the part that fails most often on that model and fit it without testing anything',
+      'Strip the appliance down to its bare boards so every part can be inspected at once',
+      'Quote the customer a firm price for the repair before the fault has been seen',
     ],
     answer: 0,
   },
@@ -798,24 +829,24 @@ export const m1Bank: BankItem[] = [
     competency: 'Explain the overview of Electronic Systems Servicing.',
     stem: 'Why does a technician work from the symptom towards the fault rather than replacing likely parts?',
     options: [
-      'Because replacing parts is slower than measuring',
-      'Because parts are difficult to obtain',
-      'Because measurement is required by law',
       'Because a replaced part that was healthy leaves the fault in place and costs the owner money',
+      'Because spare parts are hard to obtain and usually have to be ordered in from another supplier',
+      'Because consumer protection law requires every repair to be backed by a written meter reading',
+      'Because swapping in new parts one at a time always takes longer than making a measurement',
     ],
-    answer: 3,
+    answer: 0,
   },
   {
     id: 'b-m1-c2-a', moduleId: 'm1', pair: 'm1-c2', form: 'A',
     competency: 'Discuss electronic components identification.',
-    stem: 'Which component is polarised, so that fitting it the wrong way round will damage it?',
+    stem: 'A resistor is banded red, violet, brown, gold. What is its value?',
     options: [
-      'A carbon film resistor',
-      'A ceramic capacitor',
-      'An electrolytic capacitor',
-      'A wirewound inductor',
+      '27 ohms',
+      '270 kilohms',
+      '2.7 kilohms',
+      '270 ohms',
     ],
-    answer: 2,
+    answer: 3,
   },
   {
     id: 'b-m1-c2-b', moduleId: 'm1', pair: 'm1-c2', form: 'B',
@@ -823,11 +854,11 @@ export const m1Bank: BankItem[] = [
     stem: 'A resistor is banded brown, black, orange, gold. What is its value?',
     options: [
       '10 ohms',
+      '10 kilohms',
       '1 kilohm',
       '100 ohms',
-      '10 kilohms',
     ],
-    answer: 3,
+    answer: 1,
   },
   {
     id: 'b-m1-c3-a', moduleId: 'm1', pair: 'm1-c3', form: 'A',
@@ -847,9 +878,9 @@ export const m1Bank: BankItem[] = [
     stem: 'Why must a component be tested with the circuit unpowered and at least one leg lifted?',
     options: [
       'Because the rest of the circuit offers other paths, so the reading is of the board and not the component',
-      'Because the reading would be in the wrong units',
-      'Because the component would be damaged by the meter otherwise',
-      'Because a meter cannot read while a circuit is powered',
+      'Because the meter would show the result in the wrong units while the component is still in place',
+      'Because the small test current from the meter would overheat and damage the component while it is still wired in',
+      'Because the meter needs the power off only so that its own internal battery is not drained',
     ],
     answer: 0,
   },
@@ -900,10 +931,10 @@ export const m2Bank: BankItem[] = [
     competency: 'Discuss the procedures for PCB designing, including design software and layout transfer techniques.',
     stem: 'Why is a printed circuit board layout normally transferred as a mirror image of the drawn artwork?',
     options: [
-      'Because the etchant works from the reverse side of the board',
+      'Because the etchant only attacks the copper when the board is worked from its reverse side',
       'Because the toner is pressed face down onto the copper, which flips the pattern',
-      'Because mirrored tracks resist heat better during soldering',
-      'Because design software cannot print in the correct orientation',
+      'Because tracks that are mirrored end up resisting soldering heat better than tracks that are not',
+      'Because the design software is not able to send the artwork to the printer the right way round',
     ],
     answer: 1,
   },
@@ -912,84 +943,84 @@ export const m2Bank: BankItem[] = [
     competency: 'Discuss the procedures for PCB designing, including design software and layout transfer techniques.',
     stem: 'A board comes out of the etchant with several tracks broken. What is the most likely cause?',
     options: [
-      'The etchant was too fresh',
-      'The board was left in the etchant too briefly',
-      'The tracks were drawn too wide in the design software',
+      'The board was rinsed in cold water part way through, which cracked the copper along the tracks',
       'The transferred toner did not adhere completely, so the etchant reached the copper beneath it',
+      'The tracks were drawn far too wide in the design software and shorted into one another',
+      'The board was lifted out of the etchant too early, before the unwanted copper had cleared',
     ],
-    answer: 3,
+    answer: 1,
   },
   {
     id: 'b-m2-c2-a', moduleId: 'm2', pair: 'm2-c2', form: 'A',
     competency: 'Discuss soldering and desoldering.',
     stem: 'A joint looks dull and rounded, and the solder sits on the pad like a bead rather than flowing onto it. What is wrong?',
     options: [
-      'Too much flux was used',
+      'Too much flux was used, and the excess has pushed the molten solder up into a ball',
+      'Nothing is wrong, a dull and rounded bead of solder sitting on the pad is a perfectly sound joint',
+      'The pad was wiped with flux before soldering, which stops the solder bonding to the copper',
       'The joint is cold, because the pad and lead were not brought up to temperature together',
-      'The iron was too hot and burned the solder',
-      'Nothing, this is what a correct joint looks like',
     ],
-    answer: 1,
+    answer: 3,
   },
   {
     id: 'b-m2-c2-b', moduleId: 'm2', pair: 'm2-c2', form: 'B',
     competency: 'Discuss soldering and desoldering.',
-    stem: 'Where should the tip of the iron be placed to make a good through-hole joint?',
+    stem: 'A through-hole joint has a good fillet on the solder side, but no solder has wicked up to the component side. What went wrong?',
     options: [
-      'On the solder, so it melts and runs down into the hole',
-      'On the component lead only, so the pad is not overheated',
-      'Against both the pad and the lead, so heat reaches the two surfaces the solder must wet',
-      'On the pad only, so the component is not overheated',
+      'Too much solder was fed in at once, so the excess sealed over the mouth of the hole before it could flow',
+      'The board was held at an angle, so gravity kept the solder on the lower side',
+      'The iron touched the pad only, so the lead and the hole never reached the temperature the solder needed',
+      'The solder used was too thin a gauge to be able to reach through the hole',
     ],
     answer: 2,
   },
   {
     id: 'b-m2-c3-a', moduleId: 'm2', pair: 'm2-c3', form: 'A',
     competency: 'Discuss the different types of power supplies.',
-    stem: 'In a linear supply, which stage turns the pulsing output of the rectifier into a steadier voltage with ripple on it?',
+    stem: 'A linear supply has a filter capacitor that has lost most of its capacitance. What do you see at the output?',
     options: [
-      'The transformer',
-      'The rectifier itself',
-      'The regulator',
-      'The filter capacitor',
+      'A steady voltage at the correct value',
+      'A large ripple riding on the output',
+      'A voltage higher than it should be',
+      'No output voltage at all',
     ],
-    answer: 3,
+    answer: 1,
   },
   {
     id: 'b-m2-c3-b', moduleId: 'm2', pair: 'm2-c3', form: 'B',
     competency: 'Discuss the different types of power supplies.',
     stem: 'A full wave rectifier is used in place of a half wave one. What changes at the filter capacitor?',
     options: [
-      'Nothing, because the two produce the same waveform',
-      'It is no longer needed at all',
-      'It is recharged half as often, so the ripple is larger',
-      'It is recharged twice as often, so the ripple is smaller for the same capacitance',
+      'Nothing changes, both rectifier types feed the capacitor the very same waveform',
+      'It is recharged twice as often, so the ripple shrinks',
+      'It is recharged only half as often, so the output ripple grows',
+      'The capacitor is no longer needed once a full wave rectifier is fitted',
     ],
-    answer: 3,
+    answer: 1,
   },
   {
     id: 'b-m2-c4-a', moduleId: 'm2', pair: 'm2-c4', form: 'A',
     competency: 'Perform variable regulated power supply assembly.',
     stem: 'A regulator is set for 12 V, but the voltage across the filter capacitor sags to 13 V under load. What happens at the output?',
     options: [
-      'It holds 12 V, because that is what regulation means',
       'It follows the input down, because a regulator needs a few volts more than its output to regulate',
-      'It rises above 12 V to compensate',
-      'It shuts off completely and reads zero',
+      'It holds a steady 12 V, because holding the set value no matter what the input does is what regulation means',
+      'It rises a little above 12 V, as the regulator pushes harder to make up for the low input',
+      'It shuts off completely and the output falls to zero until the input voltage recovers',
     ],
-    answer: 1,
+    answer: 0,
   },
   {
     id: 'b-m2-c4-b', moduleId: 'm2', pair: 'm2-c4', form: 'B',
     competency: 'Perform variable regulated power supply assembly.',
     stem: 'You have assembled a variable supply and the output will not rise above about 9 V, although the control is at maximum. Where do you look first?',
     options: [
+      'At the load on the output, which is most likely drawing far too little current',
+      'At the output terminals, which are most likely shorted together by a stray strand of stripped wire',
+      'At the meter, which is most likely misreading the output by three or four volts',
       'At the transformer and rectifier, because the unregulated voltage feeding the regulator may be too low',
-      'At the output terminals, which are probably shorted',
-      'At the meter, which is probably misreading',
-      'At the load, which is probably too small',
     ],
-    answer: 0,
+    answer: 3,
   },
 ]
 ```
@@ -1006,47 +1037,47 @@ export const m3Bank: BankItem[] = [
     stem: 'Which motor type has no capacitor at all?',
     options: [
       'A permanent split capacitor motor',
-      'A shaded pole motor',
       'A capacitor start motor',
+      'A shaded pole motor',
       'A capacitor start capacitor run motor',
     ],
-    answer: 1,
+    answer: 2,
   },
   {
     id: 'b-m3-c1-b', moduleId: 'm3', pair: 'm3-c1', form: 'B',
     competency: 'Discuss the procedures in servicing appliances with electric motors.',
     stem: 'A motor hums but does not turn, and then runs if the shaft is nudged by hand. What does that point to?',
     options: [
+      'A seized bearing that the nudge is just enough to free for a moment',
       'A loss of starting torque, most often from a failed capacitor',
-      'A seized bearing',
-      'A break in the supply lead',
-      'An open main winding',
+      'A break in the supply lead that the movement of the shaft briefly closes',
+      'An open main winding, which the meter would show as a low resistance across the motor terminals',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
     id: 'b-m3-c2-a', moduleId: 'm3', pair: 'm3-c2', form: 'A',
     competency: 'Apply procedures in servicing appliances with electric motors.',
     stem: 'Before putting an ohmmeter across a motor capacitor, what must you do?',
     options: [
-      'Run the motor briefly so the capacitor is warm',
-      'Set the meter to AC volts first',
       'Isolate the appliance, discharge the capacitor, and confirm with the meter that it reads close to zero volts',
-      'Nothing, because a capacitor holds no charge once the motor has stopped',
+      'Switch the meter to the AC volts range first and take that reading before changing to ohms',
+      'Run the motor for about a minute first, so that the capacitor is warm and reads a little truer',
+      'Nothing at all is needed here, because a motor capacitor cannot hold any charge once the appliance is switched off',
     ],
-    answer: 2,
+    answer: 0,
   },
   {
     id: 'b-m3-c2-b', moduleId: 'm3', pair: 'm3-c2', form: 'B',
     competency: 'Apply procedures in servicing appliances with electric motors.',
     stem: 'A fan motor turns freely by hand and its windings read a sensible resistance, but it still will not start. What remains most likely?',
     options: [
-      'The bearings, despite turning freely',
+      'The bearings, which can drag under load even if the shaft spins freely by hand',
+      'The blade, which must be catching on the housing and holding the motor still',
+      'The windings, because a motor that will not start always has an open winding somewhere',
       'The capacitor, which neither test so far has examined',
-      'The windings, despite the sensible reading',
-      'The blade, which must be fouling the housing',
     ],
-    answer: 1,
+    answer: 3,
   },
 ]
 ```
@@ -1117,10 +1148,10 @@ export const m4Bank: BankItem[] = [
     competency: 'Discuss the procedures in servicing appliances with heating components.',
     stem: 'What is a thermostat in a heating appliance for?',
     options: [
-      'To limit the current the element can draw',
-      'To convert the mains to a lower voltage for the element',
+      'To hold the current the element draws down to a fixed safe limit at all times',
+      'To convert the incoming mains supply down to the lower voltage that the heating element runs on',
       'To open the circuit once the set temperature is reached and close it again as it falls',
-      'To warn the user that the appliance is hot',
+      'To warn the user with a light or a tone whenever the appliance has become hot',
     ],
     answer: 2,
   },
@@ -1129,36 +1160,36 @@ export const m4Bank: BankItem[] = [
     competency: 'Apply procedure in servicing appliances with heating components.',
     stem: 'An iron does not heat. The element measures open. What should you establish before fitting a new element?',
     options: [
+      'Nothing else is needed, because an open element is the whole of the fault here',
       'Whether the thermal cutout has operated, and if so what made it operate',
-      'Nothing, an open element is the whole fault',
-      'Whether the soleplate is scratched',
-      'Whether the flex is long enough',
+      'Whether the soleplate is scratched or pitted enough to need refacing',
+      'Whether the mains flex is long enough to reach a wall socket across the room',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
     id: 'b-m4-c2-b', moduleId: 'm4', pair: 'm4-c2', form: 'B',
     competency: 'Apply procedure in servicing appliances with heating components.',
-    stem: 'You are about to measure the element of an appliance that was in use a moment ago. What is the first thing you do?',
+    stem: 'An iron heats but never switches off, and the soleplate keeps getting hotter. What has failed?',
     options: [
-      'Measure quickly, before it cools',
-      'Let it cool, which is enough on its own',
-      'Switch it to its lowest setting',
-      'Isolate it, then confirm with the meter that the point you will touch is dead',
+      'The heating element has gone open circuit',
+      'The thermal cutout has operated',
+      'The thermostat contacts have welded closed',
+      'The mains flex has a broken core',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c3-a', moduleId: 'm4', pair: 'm4-c3', form: 'A',
     competency: 'Discuss the procedures in servicing rechargeable and electronic-controlled lighting units.',
     stem: 'A rechargeable lamp runs for only a few minutes on a full charge. What does that indicate?',
     options: [
-      'The charger is delivering too much current',
-      'The lamp is being switched on too often',
-      'The light emitting diodes have dimmed with age',
       'The cell has lost capacity and no longer holds the charge it once did',
+      'The lamp is simply being switched on and off far too often between charges',
+      'The light emitting diodes have dimmed with age and now give up sooner',
+      'The charger is pushing too much current into the cell and cutting the run short',
     ],
-    answer: 3,
+    answer: 0,
   },
   {
     id: 'b-m4-c3-b', moduleId: 'm4', pair: 'm4-c3', form: 'B',
@@ -1167,20 +1198,20 @@ export const m4Bank: BankItem[] = [
     options: [
       'Charge it fully once more to see whether it recovers',
       'Run the lamp until the cell is flat, then replace it',
-      'Pierce it to release the pressure before disposal',
       'Isolate it, do not charge it, and do not refit it',
+      'Fit a higher capacity cell so the lamp runs longer',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c4-a', moduleId: 'm4', pair: 'm4-c4', form: 'A',
     competency: 'Demonstrate the procedure in servicing electronic controlled lighting units.',
     stem: 'A string of light emitting diodes wired in series has one open device. What do you see?',
     options: [
-      'Only that one diode is dark and the rest still light',
+      'Only the one failed diode goes dark and the rest of the string stays lit',
       'The whole string is dark, because the current path is broken',
-      'The remaining diodes light more brightly',
-      'The string flickers but stays lit',
+      'The other diodes light more brightly, sharing the voltage the dead one dropped',
+      'The string flickers but stays lit as current finds a way round the break',
     ],
     answer: 1,
   },
@@ -1189,36 +1220,36 @@ export const m4Bank: BankItem[] = [
     competency: 'Demonstrate the procedure in servicing electronic controlled lighting units.',
     stem: 'Why is a current limiting resistor or driver fitted in series with a light emitting diode?',
     options: [
-      'To convert alternating current to direct current for the diode',
-      'To protect the diode from reverse voltage',
-      'To make the diode switch on more quickly',
+      'To turn the alternating mains supply into the direct current that the diode needs to light up',
+      'To protect the diode from reverse voltage that would otherwise puncture the junction',
       'To drop the supply to the diode forward voltage and hold the current at a safe value',
+      'To make the diode switch on and off more quickly and crisply when it is pulsed',
     ],
-    answer: 3,
+    answer: 2,
   },
   {
     id: 'b-m4-c5-a', moduleId: 'm4', pair: 'm4-c5', form: 'A',
     competency: 'Discuss the principles of Closed-Circuit Television (CCTV) system.',
     stem: 'What does the recorder in a closed circuit television system do?',
     options: [
-      'It supplies power to the cameras and nothing else',
-      'It focuses each camera lens remotely',
+      'It only supplies power to the cameras and does nothing with the pictures they send',
+      'It focuses and aims each camera lens by remote control',
+      'It converts the camera signal into a radio broadcast that any receiver nearby can pick up',
       'It receives the video from the cameras, stores it, and presents it for viewing',
-      'It converts the analogue signal to a radio broadcast',
     ],
-    answer: 2,
+    answer: 3,
   },
   {
     id: 'b-m4-c5-b', moduleId: 'm4', pair: 'm4-c5', form: 'B',
     competency: 'Discuss the principles of Closed-Circuit Television (CCTV) system.',
     stem: 'One camera in a working system shows no picture, while the others are normal. What does that prove about the recorder?',
     options: [
+      'That the recorder has failed on that one input and the whole unit needs replacing',
       'That the recorder is working, because it is displaying the other cameras',
-      'That the recorder has failed and needs replacing',
-      'Nothing at all about the recorder',
-      'That the recorder needs its storage cleared',
+      'Nothing at all about the recorder can be told from a single dead camera',
+      'That the recorder has filled its storage and cannot take the extra camera in',
     ],
-    answer: 0,
+    answer: 1,
   },
 ]
 ```
@@ -1234,10 +1265,10 @@ export const m5Bank: BankItem[] = [
     competency: 'Demonstrate the procedure in CCTV system installation.',
     stem: 'Why is a camera normally mounted so that it does not face a window or a bright light?',
     options: [
-      'Because the lens will be damaged by direct light',
-      'Because the cable will overheat',
+      'Because daylight will bleach the colour out of the lens coating in time',
+      'Because the extra brightness makes the camera draw more current and the cable overheats',
       'Because the camera will expose for the bright area and leave the subject in silhouette',
-      'Because the recorder cannot store bright images',
+      'Because the recorder is unable to store the picture at all when one part of the frame is very bright',
     ],
     answer: 2,
   },
@@ -1246,12 +1277,12 @@ export const m5Bank: BankItem[] = [
     competency: 'Demonstrate the procedure in CCTV system installation.',
     stem: 'A camera at the far end of a long cable run has a dim, rolling picture, while the same camera works normally on a short lead at the recorder. What does that point to?',
     options: [
-      'A faulty camera after all',
+      'A faulty camera after all, since the fault has simply taken time to show itself',
+      'The camera being mounted too high, so it is picking up electrical noise from the roof',
+      'A faulty recorder input that only drops out when that channel is selected',
       'Voltage lost along the cable run, so the camera is underpowered at its end',
-      'A faulty recorder input',
-      'The camera being mounted too high',
     ],
-    answer: 1,
+    answer: 3,
   },
   {
     id: 'b-m5-c2-a', moduleId: 'm5', pair: 'm5-c2', form: 'A',
@@ -1259,9 +1290,9 @@ export const m5Bank: BankItem[] = [
     stem: 'Every camera on a system is dead at once. Where do you look first?',
     options: [
       'At what they share, which is the supply and the recorder',
-      'At each camera in turn, starting with the furthest',
-      'At the lens of the first camera',
-      'At the monitor cable',
+      'At each camera in turn, starting with the one furthest away',
+      'At the lens and focus of the first camera in the chain',
+      'At the monitor cable running to the screen you are watching',
     ],
     answer: 0,
   },
@@ -1271,9 +1302,9 @@ export const m5Bank: BankItem[] = [
     stem: 'You need to measure the supply voltage reaching a camera. What is true of that measurement?',
     options: [
       'It must be made with the system powered, because a voltage cannot be measured on a dead circuit',
-      'It must be made with the system isolated, like every other test',
-      'It can be made either way and gives the same reading',
-      'It should be made with the camera disconnected',
+      'It must be made with the system isolated first, the same as every other test on the run',
+      'It can be taken with the system switched on or off and will read the same supply voltage either way',
+      'It should be made with the camera unplugged, so only the cable is left in the reading',
     ],
     answer: 0,
   },
@@ -1333,9 +1364,9 @@ export const m6Bank: BankItem[] = [
     competency: 'Discuss the principles of fire alarm systems.',
     stem: 'What is the purpose of the end of line resistor on a conventional detection zone?',
     options: [
-      'To limit the current drawn by the detectors on that zone',
-      'To drop the panel voltage to the level the detectors need',
-      'To sound the alarm when the zone is triggered',
+      'To hold down the current drawn by all the detectors sitting on that one zone',
+      'To drop the panel voltage to the lower level that the detectors are built to run on',
+      'To sound the alarm on the panel the moment any detector on the zone is triggered',
       'To let the panel tell an open circuit fault from a healthy quiet zone',
     ],
     answer: 3,
@@ -1345,36 +1376,36 @@ export const m6Bank: BankItem[] = [
     competency: 'Discuss the principles of fire alarm systems.',
     stem: 'A manual call point and a smoke detector are on the same zone. What does the panel show when either operates?',
     options: [
+      'Nothing at all until a second device on the zone also operates',
+      'A fault warning on that zone rather than a fire alarm signal',
+      'The exact device that operated, named on the panel display',
       'An alarm on that zone, without saying which device it was',
-      'A fault on that zone rather than an alarm',
-      'The exact device that operated',
-      'Nothing until a second device also operates',
     ],
-    answer: 0,
+    answer: 3,
   },
   {
     id: 'b-m6-c2-a', moduleId: 'm6', pair: 'm6-c2', form: 'A',
     competency: 'Perform the procedure in fire alarm system installation.',
     stem: 'Why must detection cable be kept away from mains cable where the two run together?',
     options: [
-      'Because the mains cable will physically damage it',
-      'Because the two cables are the same colour and would be confused',
       'Because interference coupled from the mains can produce false alarms and faults',
-      'Because the detection cable would overheat',
+      'Because the two cables share a colour and an installer would later confuse them',
+      'Because the mains cable will chafe through the thinner detection cable over time',
+      'Because running beside the mains makes the detection cable heat up and its insulation fail',
     ],
-    answer: 2,
+    answer: 0,
   },
   {
     id: 'b-m6-c2-b', moduleId: 'm6', pair: 'm6-c2', form: 'B',
     competency: 'Perform the procedure in fire alarm system installation.',
     stem: 'After wiring a new zone, the panel reports an open circuit fault on it. What is the most likely cause?',
     options: [
-      'Too many detectors were fitted to the zone',
-      'The panel needs its battery replaced',
-      'The detectors were fitted the wrong way up',
       'The end of line resistor is missing or the loop is broken before it',
+      'The panel needs its standby battery replaced before the zone will read',
+      'The detectors were fitted the wrong way round, so their indicator lamps stay off',
+      'Too many detectors were fitted to the zone for the panel to drive',
     ],
-    answer: 3,
+    answer: 0,
   },
 ]
 ```
@@ -1390,22 +1421,22 @@ export const m7Bank: BankItem[] = [
     competency: 'Perform the procedure in fire alarm system servicing.',
     stem: 'A zone reads open when you measure it looking outward from the first junction. Where is the break?',
     options: [
+      'Inside the panel itself, on the zone terminals',
+      'Between the panel and the first junction, back the way you came',
       'Between the first junction and the last device',
-      'Between the panel and the first junction',
-      'Inside the panel',
-      'The measurement cannot tell you',
+      'The reading on its own cannot tell you which side the break is on',
     ],
-    answer: 0,
+    answer: 2,
   },
   {
     id: 'b-m7-c1-b', moduleId: 'm7', pair: 'm7-c1', form: 'B',
     competency: 'Perform the procedure in fire alarm system servicing.',
     stem: 'Before you disconnect a zone to test it, what must you do first?',
     options: [
-      'Sound the alarm once to check it works',
+      'Sound the sounders right through the building once, so that everyone there knows a test is about to begin',
       'Put the panel into a test or disabled state and tell the people responsible for the building',
-      'Remove the panel battery',
-      'Nothing, a zone can be disconnected at any time',
+      'Take out the panel standby battery so the zone cannot raise a signal while you work',
+      'Nothing special is needed, a detection zone can be disconnected at any time without warning',
     ],
     answer: 1,
   },
@@ -1414,12 +1445,12 @@ export const m7Bank: BankItem[] = [
     competency: 'Discuss audio products and systems.',
     stem: 'What does an amplifier do in an audio chain?',
     options: [
-      'It converts sound into an electrical signal',
-      'It converts the electrical signal back into sound',
+      'It changes the sound in the air into a small electrical signal to pass on down the chain',
       'It raises a small signal to a level that can drive a loudspeaker',
-      'It removes noise from the signal',
+      'It changes the signal back into sound you can hear',
+      'It strips the unwanted noise and hiss out of the signal passing through',
     ],
-    answer: 2,
+    answer: 1,
   },
   {
     id: 'b-m7-c2-b', moduleId: 'm7', pair: 'm7-c2', form: 'B',
@@ -1427,11 +1458,11 @@ export const m7Bank: BankItem[] = [
     stem: 'In what order does a signal pass through a simple public address chain?',
     options: [
       'Loudspeaker, amplifier, mixer, microphone',
-      'Microphone, mixer, amplifier, loudspeaker',
       'Amplifier, microphone, mixer, loudspeaker',
+      'Microphone, mixer, amplifier, loudspeaker',
       'Mixer, microphone, loudspeaker, amplifier',
     ],
-    answer: 1,
+    answer: 2,
   },
 ]
 ```
@@ -1447,10 +1478,10 @@ export const m8Bank: BankItem[] = [
     competency: 'Perform the installation and operation of audio products and systems.',
     stem: 'Why are the loudspeakers placed closer to the audience than the microphones are?',
     options: [
-      'So the cable runs are shorter',
-      'So the audience can see the loudspeakers',
+      'So the speaker cable runs stay short and lose less signal on the way',
+      'So the audience can see the loudspeakers and know where the sound is coming from',
       'So the microphones do not pick up the loudspeakers and set up feedback',
-      'So the amplifier runs cooler',
+      'So the amplifier sits further from the stage lights and runs a little cooler',
     ],
     answer: 2,
   },
@@ -1459,33 +1490,33 @@ export const m8Bank: BankItem[] = [
     competency: 'Perform the installation and operation of audio products and systems.',
     stem: 'A system begins to howl as the volume is raised. What is happening?',
     options: [
-      'The amplifier is being overdriven and is distorting',
+      'The amplifier is being driven past its limit and the howl is the sound of it clipping',
+      'The mains supply is sagging under load and the amplifier is complaining about it',
+      'A loudspeaker cone has split and is buzzing louder as the drive to it goes up',
       'Sound from a loudspeaker is reaching a microphone and going round the loop again',
-      'A loudspeaker has failed',
-      'The mains supply is too low',
     ],
-    answer: 1,
+    answer: 3,
   },
   {
     id: 'b-m8-c2-a', moduleId: 'm8', pair: 'm8-c2', form: 'A',
     competency: 'Perform procedure in servicing audio products and systems.',
     stem: 'One channel of an amplifier is silent. You swap the input leads between channels and the silence stays where it was. What has that told you?',
     options: [
+      'Nothing useful can be drawn from a swap like that',
+      'The fault is in the input lead that carries the signal into the silent channel',
+      'The fault is in the source equipment driving that one channel',
       'The fault is after the input, in the amplifier or its speaker path',
-      'The fault is in the input lead',
-      'The fault is in the source equipment',
-      'Nothing useful',
     ],
-    answer: 0,
+    answer: 3,
   },
   {
     id: 'b-m8-c2-b', moduleId: 'm8', pair: 'm8-c2', form: 'B',
     competency: 'Perform procedure in servicing audio products and systems.',
     stem: 'You measure a loudspeaker marked 8 ohms and read 6.4 ohms across its terminals. What does that mean?',
     options: [
-      'The voice coil is partly shorted and the speaker needs replacing',
-      'The speaker is open circuit',
-      'The meter is faulty',
+      'The voice coil has some shorted turns in it, and those are what have pulled the reading down below the marked eight ohms',
+      'The speaker is open circuit, and 6.4 ohms is the meter reading its own leads and the air gap',
+      'The meter is faulty and is reading about a fifth low across the whole ohms range',
       'This is normal, because the marked figure is an impedance at frequency and the meter reads the coil resistance',
     ],
     answer: 3,
@@ -1549,12 +1580,12 @@ export const m9Bank: BankItem[] = [
     competency: 'Discuss television.',
     stem: 'Which board in a flat screen television has the aerial socket on it?',
     options: [
-      'The main board',
-      'The timing board',
       'The power supply board',
+      'The timing board',
+      'The main board',
       'The backlight',
     ],
-    answer: 0,
+    answer: 2,
   },
   {
     id: 'b-m9-c1-b', moduleId: 'm9', pair: 'm9-c1', form: 'B',
@@ -1563,82 +1594,82 @@ export const m9Bank: BankItem[] = [
     options: [
       'That only the power supply is working',
       'That the panel is cracked',
-      'That the supply and the signal path are both alive',
       'That nothing is working except the standby circuit',
+      'That the supply and the signal path are both alive',
     ],
-    answer: 2,
+    answer: 3,
   },
   {
     id: 'b-m9-c2-a', moduleId: 'm9', pair: 'm9-c2', form: 'A',
     competency: 'Perform the procedure in servicing television.',
     stem: 'You shine a torch at a black screen at a shallow angle and see a faint but complete picture. What does that tell you?',
     options: [
-      'The panel is cracked',
+      'The liquid crystal panel is cracked and the torch is just lighting up the broken part of it',
+      'The set has dropped into standby and the torch is showing the menu behind it',
+      'The main board has failed and the torch is picking up a frozen last frame',
       'The picture is being produced correctly and only the light behind it is missing',
-      'The main board has failed',
-      'The set is in standby',
     ],
-    answer: 1,
+    answer: 3,
   },
   {
     id: 'b-m9-c2-b', moduleId: 'm9', pair: 'm9-c2', form: 'B',
     competency: 'Perform the procedure in servicing television.',
     stem: 'Before touching any board inside a television, what must you have done?',
     options: [
-      'Switched it to standby',
-      'Unplugged it and waited a minute',
+      'Switched it to standby at the set, so the boards are no longer driven while you work',
       'Unplugged it, discharged the filter capacitors, and confirmed with a meter that they read close to zero volts',
-      'Removed the stand',
+      'Unplugged it at the wall and waited a minute before reaching in behind the panel',
+      'Taken off the back cover and the stand so the boards can be reached without strain',
     ],
-    answer: 2,
+    answer: 1,
   },
   {
     id: 'b-m9-c3-a', moduleId: 'm9', pair: 'm9-c3', form: 'A',
     competency: 'Discuss control boards and motor controllers.',
     stem: 'What does a relay let a control board do?',
     options: [
-      'Measure a voltage more accurately',
+      'Measure a voltage on the load side more accurately than the board could on its own',
+      'Hold the last state of the machine in memory for a while after the power is lost',
+      'Turn the alternating mains on the load into the direct current the board runs on',
       'Switch a load that draws far more current than the board itself could carry',
-      'Convert alternating current to direct current',
-      'Store the state of the machine when power is lost',
     ],
-    answer: 1,
+    answer: 3,
   },
   {
     id: 'b-m9-c3-b', moduleId: 'm9', pair: 'm9-c3', form: 'B',
     competency: 'Discuss control boards and motor controllers.',
     stem: 'A capacitor on a control board is visibly bulged. Why does that matter to the rest of the board?',
     options: [
-      'It does not, as long as the board still runs',
-      'It draws extra current and overheats the regulator',
       'It has lost capacitance, so the rail it smooths now carries ripple and the logic behaves unpredictably',
-      'It blocks the signal path through the board',
+      'It has become a dead short across the rail, so the board cannot power up at all any more',
+      'It does not matter at all, as long as the board is still running for now',
+      'It blocks the signal path running through the board, so no data can get past that point once the capacitor has bulged',
     ],
-    answer: 2,
+    answer: 0,
   },
   {
     id: 'b-m9-c4-a', moduleId: 'm9', pair: 'm9-c4', form: 'A',
     competency: 'Perform the procedure in servicing control boards and motor controllers.',
     stem: 'A motor runs but will not stop when the limit switch operates. The switch tests good and the controller input changes state correctly. What do you suspect?',
     options: [
-      'The limit switch after all',
-      'The relay coil is open',
-      'The motor is faulty',
+      'The limit switch after all, since a switch can test good and still fail under load',
       'The relay contacts have welded closed',
+      'The motor is faulty and is running on somehow with no drive reaching it',
+      'The relay coil is open, so the relay never pulled in to run the motor at all',
     ],
-    answer: 3,
+    answer: 1,
   },
   {
     id: 'b-m9-c4-b', moduleId: 'm9', pair: 'm9-c4', form: 'B',
     competency: 'Perform the procedure in servicing control boards and motor controllers.',
     stem: 'You find welded relay contacts and fit a new relay of the same type. Why is the job not finished?',
     options: [
-      'Because the new relay must be run in before use',
-      'Because the controller must be reprogrammed after a relay change',
-      'Because a new relay always needs its coil voltage adjusted',
       'Because the contacts welded from switching more current than they are rated for, and that cause is still there',
+      'Because the controller has to be reprogrammed to recognise the replacement relay before it will drive it at all',
+      'Because a new relay always needs its coil voltage set on a bench before it is fitted',
+      'Because a new relay has to be run in under light load for a while before it is trusted',
     ],
-    answer: 3,
+    answer: 0,
   },
   {
     id: 'b-m9-c5-a', moduleId: 'm9', pair: 'm9-c5', form: 'A',
@@ -1657,36 +1688,36 @@ export const m9Bank: BankItem[] = [
     competency: 'Discuss sensors and actuators.',
     stem: 'A thermistor reads a plausible resistance. Is it proven good?',
     options: [
-      'Yes, the reading is in its normal range',
       'No, because only a reading that changes when you warm it proves it responds',
-      'Yes, provided the circuit around it also works',
-      'No, because a healthy thermistor reads zero',
+      'Yes, a resistance reading that sits within the normal range is enough to pass a thermistor',
+      'Yes, as long as the circuit around the thermistor is also working normally',
+      'No, because a thermistor in good order should read close to zero ohms cold',
     ],
-    answer: 1,
+    answer: 0,
   },
   {
     id: 'b-m9-c6-a', moduleId: 'm9', pair: 'm9-c6', form: 'A',
     competency: 'Perform the procedure in servicing sensors and actuators.',
     stem: 'Why is an actuator tested off the machine rather than in place?',
     options: [
+      'Because the actuator needs to cool down before any test of it is meaningful',
       'Because a jammed mechanism and an open coil look identical until the actuator is free to move',
-      'Because the meter cannot reach it in place',
-      'Because testing it in place would damage the controller',
-      'Because it cannot be given its rated signal in place',
+      'Because a controller output supplies too little current to work an actuator',
+      'Because the actuator cannot be given its full rated signal while it is still wired into the machine',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
     id: 'b-m9-c6-b', moduleId: 'm9', pair: 'm9-c6', form: 'B',
     competency: 'Perform the procedure in servicing sensors and actuators.',
     stem: 'A solenoid does not move when the machine calls for it, but it pulls in strongly when given its rated voltage on the bench. What does that tell you?',
     options: [
-      'The solenoid coil is open',
+      'The solenoid coil must be open, and the strong pull felt on the bench came from the iron frame alone',
+      'The controller output stage has certainly failed and will need to be replaced',
       'The solenoid is good, so the fault is the signal reaching it or a jam in the mechanism',
-      'The controller output has certainly failed',
-      'The solenoid needs replacing anyway',
+      'The solenoid should be replaced anyway, since it has shown itself to be unreliable',
     ],
-    answer: 1,
+    answer: 2,
   },
 ]
 ```
@@ -1761,7 +1792,7 @@ The consent text is shown to sixteen and seventeen year olds, so it says plainly
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `tests/store.test.ts`:
+Add `setConsent` and `hasConsented` to that file's import from `../src/lib/store`, then append:
 
 ```ts
 describe('consent', () => {

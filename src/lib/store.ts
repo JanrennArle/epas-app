@@ -10,6 +10,8 @@ export interface Attempt {
   correct: boolean
   at: string
   context: AttemptContext
+  /** Identifies one sitting. Absent on records written before runs existed. */
+  runId?: string
 }
 
 export interface SimRecord {
@@ -19,6 +21,8 @@ export interface SimRecord {
   score: number
   at: string
   evidence: Record<string, unknown>
+  /** Identifies one sitting. Absent on records written before runs existed. */
+  runId?: string
 }
 
 export interface ModuleProgress {
@@ -28,7 +32,7 @@ export interface ModuleProgress {
 
 export interface StoreV1 {
   schemaVersion: 1
-  participant: { code: string; name?: string; consentedAt?: string }
+  participant: { code: string; name?: string; consentedAt?: string; research?: boolean }
   modules: Record<string, ModuleProgress>
   attempts: Attempt[]
   sims: SimRecord[]
@@ -129,4 +133,60 @@ export function markOutcomeComplete(moduleId: string, outcomeId: string): void {
 
 export function resetAll(): void {
   localStorage.removeItem(STORAGE_KEY)
+}
+
+export function newRunId(): string {
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * The attempts from the most recent sitting of one module and context.
+ * A repeat sitting supersedes an earlier one rather than being averaged
+ * with it, so a student who retakes a pre-test is measured on the retake.
+ * Records written before runs existed share the run `undefined` and are
+ * returned together.
+ */
+export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
+  const all = loadState().attempts.filter(a => a.moduleId === moduleId && a.context === context)
+  if (all.length === 0) return []
+  let newest = all[0]!
+  // `>=` rather than `>` so that when two sittings share a timestamp the
+  // later written one wins. Records are appended, so the last match is the
+  // most recent. With distinct timestamps the two behave identically.
+  for (const a of all) if (a.at >= newest.at) newest = a
+  return all.filter(a => a.runId === newest.runId)
+}
+
+export function hasTaken(moduleId: string, context: AttemptContext): boolean {
+  return attemptsFor(moduleId, context).length > 0
+}
+
+/**
+ * Records consent. The participant code was issued when the store was first
+ * created, so consenting never changes it: a student who consents keeps the
+ * identity their earlier work is already filed under.
+ */
+export function setConsent(name?: string, research = true): void {
+  update(s => {
+    const trimmed = name?.trim()
+    s.participant.consentedAt = new Date().toISOString()
+    s.participant.research = research
+    if (trimmed) s.participant.name = trimmed
+  })
+}
+
+/**
+ * Whether this student agreed to their work being used in the study. A
+ * student who declined still uses the app, because it is their coursework;
+ * the export simply leaves them out. Absent on records written before the
+ * choice existed, which the export must treat as unknown rather than as yes.
+ */
+export function inStudy(): boolean {
+  return loadState().participant.research === true
+}
+
+export function hasConsented(): boolean {
+  return loadState().participant.consentedAt !== undefined
 }

@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
 import { getSim, SIMS } from '../src/interactives/registry'
 import { BlockRenderer } from '../src/ui/blocks/BlockRenderer'
 import type { Block } from '../src/lib/types'
@@ -22,5 +23,34 @@ describe('sim registry', () => {
     const blocks: Block[] = [{ kind: 'interactive', simId: 'not-built' }]
     render(<BlockRenderer blocks={blocks} moduleId="m1" />)
     expect(screen.getByText('This activity is not available yet.')).toBeInTheDocument()
+  })
+})
+
+describe('naming a fault requires evidence', () => {
+  beforeEach(() => localStorage.clear())
+
+  // The safety lines render as checkboxes and all of them must be ticked
+  // before any control in the exercise becomes live.
+  function ackAllSafety() {
+    for (const box of screen.getAllByRole('checkbox')) fireEvent.click(box)
+  }
+
+  it('leaves the fault buttons disabled until a test has been run', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeDisabled()
+  })
+
+  it('enables them once one test point has been used', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    fireEvent.click(screen.getByRole('button', { name: /^Supply cord\./ }))
+    expect(screen.getByRole('button', { name: 'Failed run capacitor' })).toBeEnabled()
+  })
+
+  it('says why the fault buttons are inert', () => {
+    render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
+    ackAllSafety()
+    expect(screen.getByText(/Run at least one test first/)).toBeInTheDocument()
   })
 })

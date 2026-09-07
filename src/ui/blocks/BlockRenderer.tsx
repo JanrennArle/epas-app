@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Block } from '../../lib/types'
+import type { SimEvent } from '../../interactives/types'
 import { getSim } from '../../interactives/registry'
 
 const text: CSSProperties = {
@@ -24,7 +25,11 @@ function Callout({ tone, children }: { tone: 'safety' | 'note'; children: ReactN
   )
 }
 
-export function BlockRenderer({ blocks, moduleId }: { blocks: Block[]; moduleId: string }) {
+export function BlockRenderer({ blocks, moduleId, onSimEvent }: {
+  blocks: Block[]
+  moduleId: string
+  onSimEvent?: (e: SimEvent) => void
+}) {
   return (
     <>
       {blocks.map((b, i) => {
@@ -79,7 +84,7 @@ export function BlockRenderer({ blocks, moduleId }: { blocks: Block[]; moduleId:
           case 'interactive': {
             const Sim = getSim(b.simId)
             if (Sim) {
-              return <Sim key={i} moduleId={moduleId} config={b.config} />
+              return <Sim key={i} moduleId={moduleId} config={b.config} onEvent={onSimEvent} />
             }
             return (
               <p key={i} style={{ ...text, color: 'var(--ink-3)' }}>

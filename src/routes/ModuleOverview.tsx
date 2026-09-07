@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { getModule } from '../content'
-import { loadState } from '../lib/store'
+import { loadState, hasTaken } from '../lib/store'
 
 export default function ModuleOverview() {
   const { moduleId = '' } = useParams()
@@ -39,6 +39,23 @@ export default function ModuleOverview() {
           <li key={c} style={{ fontSize: 13.5, lineHeight: 1.62, color: 'var(--ink-2)', marginBottom: 4 }}>{c}</li>
         ))}
       </ul>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '0 0 20px' }}>
+        <Link to={`/m/${m.id}/test/pre`} className="tile" style={{
+          minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
+          borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
+          fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
+        }}>
+          Pre-test{hasTaken(m.id, 'pretest') ? ' (taken)' : ''}
+        </Link>
+        <Link to={`/m/${m.id}/test/post`} className="tile" style={{
+          minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
+          borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
+          fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
+        }}>
+          Post-test{hasTaken(m.id, 'posttest') ? ' (taken)' : ''}
+        </Link>
+      </div>
 
       <h2 style={{ fontSize: 13, fontWeight: 660, margin: '0 0 8px' }}>Outcomes</h2>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>

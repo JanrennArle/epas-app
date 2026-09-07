@@ -1,7 +1,9 @@
 import {
-  loadState, recordAttempt, recordSim,
-  markOutcomeComplete, STORAGE_KEY,
+  loadState, saveState, recordAttempt, recordSim,
+  markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
+  setConsent, hasConsented,
 } from '../src/lib/store'
+import type { Attempt } from '../src/lib/store'
 
 describe('store', () => {
   it('returns a fresh state with a participant code when empty', () => {
@@ -67,5 +69,122 @@ describe('store', () => {
     expect(s.schemaVersion).toBe(1)
     expect(s.participant.code).toBe('EPAS-OLD123')
     expect(s.attempts).toHaveLength(1)
+  })
+})
+
+describe('run identity', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('gives each run a distinct id', () => {
+    expect(newRunId()).not.toBe(newRunId())
+  })
+
+  it('keeps every attempt rather than overwriting a repeat', () => {
+    const base = { itemId: 'x', moduleId: 'm1', competency: 'C', at: '2026-01-01T00:00:00.000Z', context: 'pretest' as const }
+    recordAttempt({ ...base, correct: false, runId: 'r1' })
+    recordAttempt({ ...base, correct: true, runId: 'r2' })
+    expect(loadState().attempts).toHaveLength(2)
+  })
+
+  it('returns only the newest run when asked for a module and context', () => {
+    const base = { itemId: 'x', moduleId: 'm1', competency: 'C', context: 'pretest' as const }
+    recordAttempt({ ...base, correct: false, runId: 'r1', at: '2026-01-01T00:00:00.000Z' })
+    recordAttempt({ ...base, correct: true, runId: 'r2', at: '2026-01-02T00:00:00.000Z' })
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(1)
+    expect(got[0]?.correct).toBe(true)
+  })
+
+  it('ignores other modules and other contexts', () => {
+    const base = { itemId: 'x', competency: 'C', at: '2026-01-01T00:00:00.000Z', correct: true, runId: 'r1' }
+    recordAttempt({ ...base, moduleId: 'm1', context: 'pretest' })
+    recordAttempt({ ...base, moduleId: 'm2', context: 'pretest' })
+    recordAttempt({ ...base, moduleId: 'm1', context: 'posttest' })
+    expect(attemptsFor('m1', 'pretest')).toHaveLength(1)
+  })
+
+  it('treats a record written before runIds existed as one legacy run', () => {
+    const s = loadState()
+    s.attempts.push({ itemId: 'old', moduleId: 'm1', competency: 'C', correct: true,
+      at: '2025-01-01T00:00:00.000Z', context: 'pretest' } as Attempt)
+    saveState(s)
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(1)
+    expect(got[0]?.runId).toBeUndefined()
+  })
+
+  it('returns every attempt from the newest run, not only the newest attempt', () => {
+    const base = { moduleId: 'm1', context: 'pretest' as const }
+    for (const [n, c] of [['q1', 'C1'], ['q2', 'C2'], ['q3', 'C3']] as const) {
+      recordAttempt({ ...base, itemId: n, competency: c, correct: false, runId: 'r1', at: '2026-01-01T00:00:00.000Z' })
+    }
+    for (const [n, c] of [['q1', 'C1'], ['q2', 'C2'], ['q3', 'C3']] as const) {
+      recordAttempt({ ...base, itemId: n, competency: c, correct: true, runId: 'r2', at: '2026-01-02T00:00:00.000Z' })
+    }
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(3)
+    expect(got.every(a => a.runId === 'r2')).toBe(true)
+    expect(got.map(a => a.competency).sort()).toEqual(['C1', 'C2', 'C3'])
+  })
+
+  it('prefers the later written run when two runs share a timestamp', () => {
+    const base = { moduleId: 'm1', competency: 'C1', itemId: 'q1', context: 'pretest' as const, at: '2026-01-01T00:00:00.000Z' }
+    recordAttempt({ ...base, correct: false, runId: 'r1' })
+    recordAttempt({ ...base, correct: true, runId: 'r2' })
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(1)
+    expect(got[0]?.runId).toBe('r2')
+  })
+
+  it('returns legacy records without a runId together as one run', () => {
+    const s = loadState()
+    for (const c of ['C1', 'C2']) {
+      s.attempts.push({ itemId: `old-${c}`, moduleId: 'm1', competency: c, correct: true,
+        at: '2025-01-01T00:00:00.000Z', context: 'pretest' } as Attempt)
+    }
+    saveState(s)
+    expect(attemptsFor('m1', 'pretest')).toHaveLength(2)
+  })
+
+  it('reports whether a module and context has been taken', () => {
+    expect(hasTaken('m1', 'pretest')).toBe(false)
+    recordAttempt({ itemId: 'x', moduleId: 'm1', competency: 'C', correct: true,
+      at: '2026-01-01T00:00:00.000Z', context: 'pretest', runId: 'r1' })
+    expect(hasTaken('m1', 'pretest')).toBe(true)
+  })
+})
+
+describe('consent', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('starts without consent', () => {
+    expect(hasConsented()).toBe(false)
+  })
+
+  it('records consent with a timestamp', () => {
+    setConsent()
+    expect(hasConsented()).toBe(true)
+    expect(loadState().participant.consentedAt).toBeDefined()
+  })
+
+  it('keeps an optional name', () => {
+    setConsent('Maria')
+    expect(loadState().participant.name).toBe('Maria')
+  })
+
+  it('stores no name when none is given', () => {
+    setConsent()
+    expect(loadState().participant.name).toBeUndefined()
+  })
+
+  it('trims a name and treats blank as none', () => {
+    setConsent('   ')
+    expect(loadState().participant.name).toBeUndefined()
+  })
+
+  it('leaves the participant code that was issued at first load', () => {
+    const code = loadState().participant.code
+    setConsent('Maria')
+    expect(loadState().participant.code).toBe(code)
   })
 })
