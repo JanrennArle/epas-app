@@ -40,12 +40,12 @@ export const m4Bank: BankItem[] = [
   {
     id: 'b-m4-c2-b', moduleId: 'm4', pair: 'm4-c2', form: 'B',
     competency: 'Apply procedure in servicing appliances with heating components.',
-    stem: 'You are about to measure the element of an appliance that was in use a moment ago. What is the first thing you do?',
+    stem: 'An iron heats but never switches off, and the soleplate keeps getting hotter. What has failed?',
     options: [
-      'Measure quickly, before it cools',
-      'Let it cool, which is enough on its own',
-      'Switch it to its lowest setting',
-      'Isolate it, then confirm with the meter that the point you will touch is dead',
+      'The heating element has gone open circuit',
+      'The thermal cutout has operated',
+      'The mains flex has a broken core',
+      'The thermostat contacts have welded closed',
     ],
     answer: 3,
   },
