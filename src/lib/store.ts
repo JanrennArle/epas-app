@@ -152,7 +152,10 @@ export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[
   const all = loadState().attempts.filter(a => a.moduleId === moduleId && a.context === context)
   if (all.length === 0) return []
   let newest = all[0]!
-  for (const a of all) if (a.at > newest.at) newest = a
+  // `>=` rather than `>` so that when two sittings share a timestamp the
+  // later written one wins. Records are appended, so the last match is the
+  // most recent. With distinct timestamps the two behave identically.
+  for (const a of all) if (a.at >= newest.at) newest = a
   return all.filter(a => a.runId === newest.runId)
 }
 

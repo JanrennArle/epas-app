@@ -112,6 +112,39 @@ describe('run identity', () => {
     expect(got[0]?.runId).toBeUndefined()
   })
 
+  it('returns every attempt from the newest run, not only the newest attempt', () => {
+    const base = { moduleId: 'm1', context: 'pretest' as const }
+    for (const [n, c] of [['q1', 'C1'], ['q2', 'C2'], ['q3', 'C3']] as const) {
+      recordAttempt({ ...base, itemId: n, competency: c, correct: false, runId: 'r1', at: '2026-01-01T00:00:00.000Z' })
+    }
+    for (const [n, c] of [['q1', 'C1'], ['q2', 'C2'], ['q3', 'C3']] as const) {
+      recordAttempt({ ...base, itemId: n, competency: c, correct: true, runId: 'r2', at: '2026-01-02T00:00:00.000Z' })
+    }
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(3)
+    expect(got.every(a => a.runId === 'r2')).toBe(true)
+    expect(got.map(a => a.competency).sort()).toEqual(['C1', 'C2', 'C3'])
+  })
+
+  it('prefers the later written run when two runs share a timestamp', () => {
+    const base = { moduleId: 'm1', competency: 'C1', itemId: 'q1', context: 'pretest' as const, at: '2026-01-01T00:00:00.000Z' }
+    recordAttempt({ ...base, correct: false, runId: 'r1' })
+    recordAttempt({ ...base, correct: true, runId: 'r2' })
+    const got = attemptsFor('m1', 'pretest')
+    expect(got).toHaveLength(1)
+    expect(got[0]?.runId).toBe('r2')
+  })
+
+  it('returns legacy records without a runId together as one run', () => {
+    const s = loadState()
+    for (const c of ['C1', 'C2']) {
+      s.attempts.push({ itemId: `old-${c}`, moduleId: 'm1', competency: c, correct: true,
+        at: '2025-01-01T00:00:00.000Z', context: 'pretest' } as Attempt)
+    }
+    saveState(s)
+    expect(attemptsFor('m1', 'pretest')).toHaveLength(2)
+  })
+
   it('reports whether a module and context has been taken', () => {
     expect(hasTaken('m1', 'pretest')).toBe(false)
     recordAttempt({ itemId: 'x', moduleId: 'm1', competency: 'C', correct: true,
