@@ -18,7 +18,7 @@ export const m2Bank: BankItem[] = [
     competency: 'Discuss the procedures for PCB designing, including design software and layout transfer techniques.',
     stem: 'A board comes out of the etchant with several tracks broken. What is the most likely cause?',
     options: [
-      'The etchant was mixed too fresh and strong, so it ate through the tracks along with the waste copper',
+      'The board was rinsed in cold water part way through, which cracked the copper along the tracks',
       'The board was lifted out of the etchant too early, before the unwanted copper had cleared',
       'The tracks were drawn far too wide in the design software and shorted into one another',
       'The transferred toner did not adhere completely, so the etchant reached the copper beneath it',
@@ -32,7 +32,7 @@ export const m2Bank: BankItem[] = [
     options: [
       'Too much flux was used, and the excess has pushed the molten solder up into a ball',
       'The joint is cold, because the pad and lead were not brought up to temperature together',
-      'The iron was far too hot and has burned off the flux before the solder could flow',
+      'The pad was wiped with flux before soldering, which stops the solder bonding to the copper',
       'Nothing is wrong, a dull and rounded bead of solder sitting on the pad is a perfectly sound joint',
     ],
     answer: 1,
@@ -40,12 +40,12 @@ export const m2Bank: BankItem[] = [
   {
     id: 'b-m2-c2-b', moduleId: 'm2', pair: 'm2-c2', form: 'B',
     competency: 'Discuss soldering and desoldering.',
-    stem: 'Where should the tip of the iron be placed to make a good through-hole joint?',
+    stem: 'A through-hole joint has a good fillet on the top side, but no solder has reached the pad underneath. What went wrong?',
     options: [
-      'On the reel of solder, so that it melts first and then runs down into the hole on its own',
-      'On the component lead only, so that the copper pad is never touched by the iron and cannot lift',
-      'Against both the pad and the lead, so heat reaches the two surfaces the solder must wet',
-      'On the copper pad only, so that the heat never reaches the component body and cannot harm it',
+      'Too much solder was fed in at once, so the excess sealed over the hole before it could flow through',
+      'The board was held at an angle, so gravity kept the solder on the upper side',
+      'The iron touched the lead only, so the pad never reached the temperature the solder needed',
+      'The solder used was too thin a gauge to be able to reach through the hole',
     ],
     answer: 2,
   },

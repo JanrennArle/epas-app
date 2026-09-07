@@ -43,7 +43,7 @@ export const m9Bank: BankItem[] = [
     stem: 'Before touching any board inside a television, what must you have done?',
     options: [
       'Switched it to standby at the set, so the boards are no longer driven while you work',
-      'Unplugged it at the wall and then left it standing for a minute so that the supply rails can drain away on their own',
+      'Unplugged it at the wall and waited a minute before reaching in behind the panel',
       'Unplugged it, discharged the filter capacitors, and confirmed with a meter that they read close to zero volts',
       'Taken off the back cover and the stand so the boards can be reached without strain',
     ],
@@ -67,7 +67,7 @@ export const m9Bank: BankItem[] = [
     stem: 'A capacitor on a control board is visibly bulged. Why does that matter to the rest of the board?',
     options: [
       'It does not matter at all, as long as the board is still running for now',
-      'It now draws a heavy leakage current that overheats the regulator feeding that part of the board',
+      'It has become a dead short across the rail, so the board cannot power up at all any more',
       'It has lost capacitance, so the rail it smooths now carries ripple and the logic behaves unpredictably',
       'It blocks the signal path running through the board, so no data can get past that point once the capacitor has bulged',
     ],
@@ -128,7 +128,7 @@ export const m9Bank: BankItem[] = [
     options: [
       'Because a jammed mechanism and an open coil look identical until the actuator is free to move',
       'Because the meter probes cannot get to the actuator terminals while it is still in place',
-      'Because putting a test signal through it in place would feed voltage back and damage the controller',
+      'Because a controller output can never supply the current an actuator needs to operate',
       'Because the actuator cannot be given its full rated signal while it is still wired into the machine',
     ],
     answer: 0,

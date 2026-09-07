@@ -44,7 +44,7 @@ export const m3Bank: BankItem[] = [
     options: [
       'The bearings, which can drag under load even if the shaft spins freely by hand',
       'The capacitor, which neither test so far has examined',
-      'The windings, which could hide a fault that a plain resistance check would miss',
+      'The windings, because a motor that will not start always has an open winding somewhere',
       'The blade, which must be catching on the housing and holding the motor still',
     ],
     answer: 1,

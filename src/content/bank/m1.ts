@@ -6,7 +6,7 @@ export const m1Bank: BankItem[] = [
     competency: 'Explain the overview of Electronic Systems Servicing.',
     stem: 'A customer reports a fault. What does a technician do before opening the appliance?',
     options: [
-      'Order the part that fails most often on that model so it is on hand when the visit begins',
+      'Order the part that fails most often on that model and fit it without testing anything',
       'Confirm the symptom for themselves, and note the conditions under which it appears',
       'Strip the appliance down to its bare boards so every part can be inspected at once',
       'Quote the customer a firm price for the repair before the fault has been seen',
@@ -69,7 +69,7 @@ export const m1Bank: BankItem[] = [
       'Because the rest of the circuit offers other paths, so the reading is of the board and not the component',
       'Because the meter would show the result in the wrong units while the component is still in place',
       'Because the small test current from the meter would overheat and damage the component while it is still wired in',
-      'Because a meter cannot take a resistance reading at all while the circuit around it is still powered',
+      'Because the meter needs the power off only so that its own internal battery is not drained',
     ],
     answer: 0,
   },
