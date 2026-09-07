@@ -82,6 +82,32 @@ describe('competencyGains', () => {
     expect(competencyGains(pre, []).map(g => g.competency)).toEqual(['Alpha', 'Zed'])
   })
 
+  // Without this, `after === true && before !== true` passes the whole
+  // suite, and that reading counts a competency with no baseline as a gain.
+  it('does not count a competency the student never sat before the lesson', () => {
+    const g = competencyGains([], [attempt({ correct: true, context: 'posttest' })])
+    expect(g[0]?.pre).toBe(null)
+    expect(g[0]?.gained).toBe(false)
+  })
+
+  // Without this, dropping `&& after === true` passes the whole suite.
+  it('does not count a competency that is still wrong afterwards', () => {
+    const g = competencyGains(
+      [attempt({ correct: false })],
+      [attempt({ correct: false, context: 'posttest' })],
+    )
+    expect(g[0]?.gained).toBe(false)
+  })
+
+  it('takes the last attempt when one side names a competency twice', () => {
+    const g = competencyGains(
+      [attempt({ itemId: 'i1', correct: true }), attempt({ itemId: 'i2', correct: false })],
+      [attempt({ correct: true, context: 'posttest' })],
+    )
+    expect(g[0]?.pre).toBe(false)
+    expect(g[0]?.gained).toBe(true)
+  })
+
   it('returns nothing when neither side was taken', () => {
     expect(competencyGains([], [])).toEqual([])
   })

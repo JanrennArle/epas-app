@@ -37,7 +37,13 @@ export interface Gain {
  * Per-competency gain across a matched pair of forms. `gained` is
  * deliberately narrow: it means the student did not have the competency
  * and now does. A competency already held before the lesson is not a gain,
- * and reporting it as one would inflate the result.
+ * and reporting it as one would inflate the result. A competency the
+ * student never sat before the lesson is not a gain either, because there
+ * is no baseline to have improved on.
+ *
+ * Where a competency appears more than once on one side, the last attempt
+ * in array order wins. Attempts are appended, so that is the most recently
+ * written one.
  */
 export function competencyGains(pre: Attempt[], post: Attempt[]): Gain[] {
   const preBy = new Map<string, boolean>()
