@@ -1,6 +1,7 @@
 import {
   loadState, saveState, recordAttempt, recordSim,
   markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
+  setConsent, hasConsented,
 } from '../src/lib/store'
 import type { Attempt } from '../src/lib/store'
 
@@ -150,5 +151,40 @@ describe('run identity', () => {
     recordAttempt({ itemId: 'x', moduleId: 'm1', competency: 'C', correct: true,
       at: '2026-01-01T00:00:00.000Z', context: 'pretest', runId: 'r1' })
     expect(hasTaken('m1', 'pretest')).toBe(true)
+  })
+})
+
+describe('consent', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('starts without consent', () => {
+    expect(hasConsented()).toBe(false)
+  })
+
+  it('records consent with a timestamp', () => {
+    setConsent()
+    expect(hasConsented()).toBe(true)
+    expect(loadState().participant.consentedAt).toBeDefined()
+  })
+
+  it('keeps an optional name', () => {
+    setConsent('Maria')
+    expect(loadState().participant.name).toBe('Maria')
+  })
+
+  it('stores no name when none is given', () => {
+    setConsent()
+    expect(loadState().participant.name).toBeUndefined()
+  })
+
+  it('trims a name and treats blank as none', () => {
+    setConsent('   ')
+    expect(loadState().participant.name).toBeUndefined()
+  })
+
+  it('leaves the participant code that was issued at first load', () => {
+    const code = loadState().participant.code
+    setConsent('Maria')
+    expect(loadState().participant.code).toBe(code)
   })
 })

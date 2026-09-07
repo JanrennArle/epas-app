@@ -162,3 +162,20 @@ export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[
 export function hasTaken(moduleId: string, context: AttemptContext): boolean {
   return attemptsFor(moduleId, context).length > 0
 }
+
+/**
+ * Records consent. The participant code was issued when the store was first
+ * created, so consenting never changes it: a student who consents keeps the
+ * identity their earlier work is already filed under.
+ */
+export function setConsent(name?: string): void {
+  update(s => {
+    const trimmed = name?.trim()
+    s.participant.consentedAt = new Date().toISOString()
+    if (trimmed) s.participant.name = trimmed
+  })
+}
+
+export function hasConsented(): boolean {
+  return loadState().participant.consentedAt !== undefined
+}
