@@ -120,4 +120,29 @@ describe('the item bank', () => {
       }
     }
   })
+
+  // A student who reads nothing and picks the longest option must not score
+  // well. This was once true of 48 of the 56 items, on both forms equally,
+  // which made a longest-picker indistinguishable from a real learner.
+  it('does not make the key the longest option often enough to be a strategy', () => {
+    let uniquelyLongest = 0
+    for (const i of BANK) {
+      const lengths = i.options.map((o) => o.length)
+      const longest = Math.max(...lengths)
+      if (lengths[i.answer] === longest && lengths.filter((l) => l === longest).length === 1) {
+        uniquelyLongest++
+      }
+    }
+    const share = uniquelyLongest / BANK.length
+    expect(share, `the key is the longest option in ${uniquelyLongest}/${BANK.length} items`).toBeLessThan(0.4)
+  })
+
+  it('keeps every key close in length to its own distractors', () => {
+    for (const i of BANK) {
+      const others = i.options.filter((_, n) => n !== i.answer).map((o) => o.length)
+      const mean = others.reduce((a, b) => a + b, 0) / others.length
+      const ratio = i.options[i.answer]!.length / mean
+      expect(ratio, `${i.id} key is ${ratio.toFixed(2)}x its distractors`).toBeLessThan(2.2)
+    }
+  })
 })
