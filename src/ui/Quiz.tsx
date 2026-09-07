@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { QuizItem } from '../lib/types'
 import { gradeItem, scoreQuiz } from '../lib/quiz'
-import { recordAttempt } from '../lib/store'
+import { newRunId, recordAttempt } from '../lib/store'
 
 export function Quiz({ items, moduleId, onFinish }: {
   items: QuizItem[]
@@ -12,6 +12,7 @@ export function Quiz({ items, moduleId, onFinish }: {
   const [submitted, setSubmitted] = useState(false)
 
   function submit() {
+    const runId = newRunId()
     for (const item of items) {
       recordAttempt({
         itemId: item.id,
@@ -20,6 +21,7 @@ export function Quiz({ items, moduleId, onFinish }: {
         correct: gradeItem(item, responses[item.id]),
         at: new Date().toISOString(),
         context: 'formative',
+        runId,
       })
     }
     setSubmitted(true)
