@@ -100,6 +100,7 @@ Four suites walk the whole content set and turn silent authoring mistakes into b
 
 ## Reference documents
 
+- `docs/superpowers/plans/STATUS.md` says what is built, what is left, and what the next plan must honour. Start here after a break.
 - `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` is the binding product spec.
 - `docs/DESIGN.md` is the visual authority: tokens, the nine module tints, motion rules, and an explicit ban list.
 - `docs/superpowers/plans/CARRY-FORWARD.md` records known deferred defects and is grouped by the plan that raised each one. **Read it before starting new work.** Resolved entries are marked rather than deleted, so check the marker before trusting an entry. The live traps include that `simId` alone no longer identifies an exercise, that success is encoded four different ways across the simulations, that a missing row is not proof of no engagement, and that the export must filter on `participant.research` or the consent screen becomes a false statement.
