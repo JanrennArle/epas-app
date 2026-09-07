@@ -430,7 +430,7 @@ A pure module that draws a form from the bank, grades it, and computes per-compe
 
 **Interfaces:**
 - Consumes: `Attempt` from `src/lib/store.ts`.
-- Produces: `FormId`, `BankItem` (in `types.ts`); `gradeForm(items, responses)`, `competencyGains(pre, post)`, `moduleScore(items, responses)` (in `assess.ts`).
+- Produces: `FormId`, `BankItem` (in `types.ts`); `gradeForm(items, responses)` and `competencyGains(pre, post)` (in `assess.ts`).
 
 - [ ] **Step 1: Add the item type**
 
