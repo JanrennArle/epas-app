@@ -274,6 +274,33 @@ describe('csvRow', () => {
     expect(row[head.indexOf('pre__m1-c1')]).toBe(1)
   })
 
+  // A pre-test retaken after the post-test is not a before-and-after
+  // measurement. competencyGains refuses to count it; the row must agree.
+  it('leaves the gain empty when the pre-test was sat after the post-test', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      attempts: [
+        att({ correct: false, context: 'pretest', at: '2026-03-01T00:00:00.000Z' }),
+        att({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
+      ],
+    }))
+    expect(row[head.indexOf('pre__m1-c1')]).toBe(0)
+    expect(row[head.indexOf('post__m1-c1')]).toBe(1)
+    expect(row[head.indexOf('gain__m1-c1')]).toBe('')
+  })
+
+  it('still maps an attempt whose competency text no longer matches the bank', () => {
+    const head = csvHeader()
+    const reworded = 'Explain the overview of Electronic Systems Servicing'
+    const row = csvRow(state({
+      attempts: [
+        att({ itemId: 'b-m1-c1-a', competency: reworded, correct: false, context: 'pretest', at: '2026-01-01T00:00:00.000Z' }),
+        att({ itemId: 'b-m1-c1-b', competency: reworded, correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
+      ],
+    }))
+    expect(row[head.indexOf('gain__m1-c1')]).toBe(1)
+  })
+
   it('writes the survey answers and the free text', () => {
     const head = csvHeader()
     const row = csvRow(state({ survey: { fs1: 4, respondent: 'student', comments: 'clear' } }))

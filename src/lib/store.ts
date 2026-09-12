@@ -142,9 +142,13 @@ export function newRunId(): string {
 }
 
 /**
- * The attempts from the most recent sitting of one module and context,
- * given any list of attempts. Pure, so the export can apply it to another
- * student's file. `attemptsFor` is this function over the local store.
+ * The attempts from the most recent sitting of one module and context, given
+ * any list of attempts. A repeat sitting supersedes an earlier one rather
+ * than being averaged with it, so a student who retakes a test is measured on
+ * the retake. Records written before runs existed share the run `undefined`
+ * and are returned together.
+ *
+ * Pure, so the export can apply the same rule to another student's file.
  */
 export function newestRun(
   attempts: Attempt[],
@@ -161,6 +165,7 @@ export function newestRun(
   return all.filter(a => a.runId === newest.runId)
 }
 
+/** `newestRun` over the local store. */
 export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
   return newestRun(loadState().attempts, moduleId, context)
 }

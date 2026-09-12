@@ -143,6 +143,17 @@ export function csvRow(state: StoreV1): Cell[] {
     studyFlag(state),
   ]
 
+  // An attempt stores the competency text, which is what competencyGains keys
+  // by, and the bank item id, which identifies the pair exactly. Build the
+  // bridge from the attempts themselves so a competency reworded between
+  // terms still lands in its own column instead of emptying it, which would
+  // be indistinguishable from the student never having sat it.
+  const pairOfCompetency = new Map<string, string>()
+  for (const a of state.attempts) {
+    const item = BANK.find(i => i.id === a.itemId)
+    if (item) pairOfCompetency.set(a.competency, item.pair)
+  }
+
   // Gains are computed per module by the assessment engine, then indexed by
   // competency text, which is what an Attempt carries. The bank maps that
   // text back to the pair id the columns are keyed by.
@@ -151,18 +162,20 @@ export function csvRow(state: StoreV1): Cell[] {
     const pre = newestRun(state.attempts, m.id, 'pretest')
     const post = newestRun(state.attempts, m.id, 'posttest')
     for (const g of competencyGains(pre, post)) {
-      const item = BANK.find(i => i.moduleId === m.id && i.competency === g.competency)
-      if (item) byPair.set(item.pair, g)
+      const pair = pairOfCompetency.get(g.competency)
+        ?? BANK.find(i => i.moduleId === m.id && i.competency === g.competency)?.pair
+      if (pair) byPair.set(pair, g)
     }
   }
 
+  // Numbers, not the strings '1' and '0'. csvCell guards any TEXT beginning
+  // with a dash, so numeric data kept as text would be silently prefixed the
+  // day a column carries a negative value. Numbers bypass that path. The
+  // rendered CSV is identical either way.
+  const bit = (v: boolean | null | undefined) => (v === true ? 1 : v === false ? 0 : '')
+
   for (const c of competencyColumns()) {
     const g = byPair.get(c.pair)
-    // Numbers, not the strings '1' and '0'. Numeric data must not go through
-    // csvCell's text path: that path guards anything starting with a dash, so
-    // a negative value emitted as a string would be silently prefixed. The
-    // rendered CSV is identical either way.
-    const bit = (v: boolean | null | undefined) => (v === true ? 1 : v === false ? 0 : '')
     row.push(bit(g?.pre), bit(g?.post))
     // A gain needs both sides, sat in that order. Anything else is missing
     // data rather than an absence of learning, so the cell stays empty.
