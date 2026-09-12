@@ -136,14 +136,14 @@ export const LIKERT: readonly string[] = [
  */
 export const SURVEY: SurveyItem[] = [
   { id: 'fs1', category: 'Functional Suitability', text: 'The app covers the EPAS topics I need for this subject.' },
-  { id: 'fs2', category: 'Functional Suitability', text: 'The lessons and tests match what our Budget of Work says we should learn.' },
+  { id: 'fs2', category: 'Functional Suitability', text: 'The lessons match what our Budget of Work says we should learn.' },
   { id: 'fs3', category: 'Functional Suitability', text: 'The simulations behave the way the real equipment does.' },
   { id: 'fs4', category: 'Functional Suitability', text: 'The app does what I expect it to do when I use it.' },
 
   { id: 'rl1', category: 'Reliability', text: 'The app keeps working without crashing or freezing.' },
   { id: 'rl2', category: 'Reliability', text: 'My answers and my progress are still there when I come back to it.' },
   { id: 'rl3', category: 'Reliability', text: 'The app keeps working when the internet connection drops.' },
-  { id: 'rl4', category: 'Reliability', text: 'When something goes wrong, I can carry on without losing my work.' },
+  { id: 'rl4', category: 'Reliability', text: 'The app is ready to use whenever I open it.' },
 
   { id: 'us1', category: 'Usability', text: 'I could work out how to use the app without being taught.' },
   { id: 'us2', category: 'Usability', text: 'It is easy to find the module or the lesson I am looking for.' },
@@ -156,8 +156,8 @@ export const SURVEY: SurveyItem[] = [
   { id: 'pe4', category: 'Performance Efficiency', text: 'The app still works well on an older or cheaper phone.' },
 
   { id: 'po1', category: 'Portability', text: 'The app works on the device I normally use.' },
-  { id: 'po2', category: 'Portability', text: 'The app works on a phone and on a computer alike.' },
-  { id: 'po3', category: 'Portability', text: 'Installing or opening the app was straightforward.' },
+  { id: 'po2', category: 'Portability', text: 'The app fits the screen of the device I use without zooming or scrolling sideways.' },
+  { id: 'po3', category: 'Portability', text: 'Getting the app open on my device was straightforward.' },
   { id: 'po4', category: 'Portability', text: 'I could use this app in place of a printed module or handout.' },
 ]
 ```
@@ -325,10 +325,10 @@ Expected: PASS.
 Create `src/routes/Evaluate.tsx`:
 
 ```tsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { LIKERT, SURVEY, SURVEY_CATEGORIES } from '../content/survey'
-import { setSurvey, surveyAnswers } from '../lib/store'
+import { inStudy, setSurvey, surveyAnswers } from '../lib/store'
 import type { RespondentType } from '../lib/types'
 
 const RESPONDENTS: { value: RespondentType; label: string }[] = [
@@ -339,20 +339,27 @@ const RESPONDENTS: { value: RespondentType; label: string }[] = [
 
 export default function Evaluate() {
   const [answers, setAnswers] = useState<Record<string, number | string>>(() => surveyAnswers())
-  const [saved, setSaved] = useState(false)
 
   const answered = SURVEY.filter(i => typeof answers[i.id] === 'number').length
   const ready = answered === SURVEY.length && typeof answers.respondent === 'string'
 
   function set(key: string, value: number | string) {
-    setSaved(false)
-    setAnswers(a => ({ ...a, [key]: value }))
+    const next = { ...answers, [key]: value }
+    setAnswers(next)
+    setSurvey(next)
   }
 
-  function save() {
-    setSurvey(answers)
-    setSaved(true)
-  }
+  // Typed text is written a short moment after typing stops. Writing on every
+  // keystroke would serialise the whole store per character, which on the low
+  // end Android phones these students use shows up as typing lag. Writing only
+  // when the field is left loses text whenever the page goes without a focus
+  // change first, which is what the back button, a closed tab and the phone
+  // backgrounding the app all do. A radio click is saved immediately above and
+  // this simply rewrites the same record, which is harmless.
+  useEffect(() => {
+    const t = setTimeout(() => setSurvey(answers), 600)
+    return () => clearTimeout(t)
+  }, [answers])
 
   return (
     <div style={{ maxWidth: '60ch' }}>
@@ -363,6 +370,12 @@ export default function Evaluate() {
         Twenty statements about the app itself, not about what you learned. Say how far you
         agree with each one. Your answers stay on this device until you export them.
       </p>
+      {!inStudy() && (
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
+          You chose not to take part in the study, so these answers stay on this device and
+          will not be in what your teacher reports. You are welcome to answer them anyway.
+        </p>
+      )}
       <p style={{ fontSize: 13, color: 'var(--ink-3)', margin: '0 0 18px' }}>
         {answered} of {SURVEY.length} answered
       </p>
@@ -427,7 +440,7 @@ export default function Evaluate() {
       </label>
       <textarea
         value={typeof answers.comments === 'string' ? answers.comments : ''}
-        onChange={e => set('comments', e.target.value)}
+        onChange={e => setAnswers(a => ({ ...a, comments: e.target.value }))}
         rows={4}
         style={{
           width: '100%', padding: '10px 12px', borderRadius: 10,
@@ -436,22 +449,11 @@ export default function Evaluate() {
           margin: '0 0 18px', resize: 'vertical',
         }} />
 
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-        <button onClick={save} disabled={!ready} className="tile" style={{
-          minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-          background: ready ? 'var(--accent)' : 'var(--line)',
-          color: ready ? 'var(--on-accent)' : 'var(--ink-3)',
-          font: 'inherit', fontSize: 14, fontWeight: 600,
-          cursor: ready ? 'pointer' : 'default',
-        }}>
-          {ready ? 'Save my answers' : 'Answer every statement to save'}
-        </button>
-        {saved && (
-          <span role="status" style={{ fontSize: 13, color: 'var(--pass)' }}>
-            Saved on this device.
-          </span>
-        )}
-      </div>
+      <p role="status" style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: 0 }}>
+        {ready
+          ? 'All twenty answered. Your answers are saved on this device.'
+          : 'Your answers are saved on this device as you go. There is nothing to submit here.'}
+      </p>
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '18px 0 0' }}>
         Your answers go to your teacher only when you hand them in from{' '}
@@ -1569,7 +1571,7 @@ export default function Teacher() {
 }
 ```
 
-- [ ] **Step 6: Add the route**
+- [ ] **Step 6: Add the route and exempt it from the consent gate**
 
 In `src/App.tsx`. It is deliberately absent from the nav in `src/ui/Shell.tsx`; the teacher reaches it by typing the address.
 
@@ -1580,6 +1582,23 @@ import Teacher from './routes/Teacher'
 ```tsx
   { path: '/teacher', element: <Shell><Teacher /></Shell> },
 ```
+
+`src/ui/Shell.tsx` currently sends every route except `/consent` to the consent screen. A
+teacher opening this tool on their own machine would therefore be shown a screen that opens
+"This app is part of a study your teacher is running", and would have to consent as though
+they were one of their own students before they could merge anything, leaving a stray
+participant record on their laptop. The teacher tool reads files it is handed and writes no
+student data, so exempt it too. Change the gate to:
+
+```tsx
+  const OPEN = ['/consent', '/teacher']
+  if (!OPEN.includes(pathname) && !hasConsented()) {
+    return <Navigate to="/consent" replace />
+  }
+```
+
+Keep `/evaluate` gated. A teacher or an expert validator answering the survey is a
+respondent whose answers are research data, so they do need a participant record.
 
 - [ ] **Step 7: Typecheck and run the whole suite**
 

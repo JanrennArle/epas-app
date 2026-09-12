@@ -6,6 +6,7 @@ const NAV = [
   { to: '/', label: 'Modules' },
   { to: '/labs', label: 'Labs' },
   { to: '/progress', label: 'Progress' },
+  { to: '/evaluate', label: 'Evaluate' },
 ]
 
 export function Shell({ children }: { children: ReactNode }) {
@@ -15,7 +16,8 @@ export function Shell({ children }: { children: ReactNode }) {
   // gate all of them. Gating the module map alone let a typed or restored URL
   // reach a lesson or a test, and the test routes write attempt records, so a
   // student could have had data stored before consenting to anything.
-  if (pathname !== '/consent' && !hasConsented()) {
+  const OPEN = ['/consent', '/teacher']
+  if (!OPEN.includes(pathname) && !hasConsented()) {
     return <Navigate to="/consent" replace />
   }
 

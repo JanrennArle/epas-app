@@ -142,14 +142,20 @@ export function newRunId(): string {
 }
 
 /**
- * The attempts from the most recent sitting of one module and context.
- * A repeat sitting supersedes an earlier one rather than being averaged
- * with it, so a student who retakes a pre-test is measured on the retake.
- * Records written before runs existed share the run `undefined` and are
- * returned together.
+ * The attempts from the most recent sitting of one module and context, given
+ * any list of attempts. A repeat sitting supersedes an earlier one rather
+ * than being averaged with it, so a student who retakes a test is measured on
+ * the retake. Records written before runs existed share the run `undefined`
+ * and are returned together.
+ *
+ * Pure, so the export can apply the same rule to another student's file.
  */
-export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
-  const all = loadState().attempts.filter(a => a.moduleId === moduleId && a.context === context)
+export function newestRun(
+  attempts: Attempt[],
+  moduleId: string,
+  context: AttemptContext,
+): Attempt[] {
+  const all = attempts.filter(a => a.moduleId === moduleId && a.context === context)
   if (all.length === 0) return []
   let newest = all[0]!
   // `>=` rather than `>` so that when two sittings share a timestamp the
@@ -157,6 +163,11 @@ export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[
   // most recent. With distinct timestamps the two behave identically.
   for (const a of all) if (a.at >= newest.at) newest = a
   return all.filter(a => a.runId === newest.runId)
+}
+
+/** `newestRun` over the local store. */
+export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
+  return newestRun(loadState().attempts, moduleId, context)
 }
 
 export function hasTaken(moduleId: string, context: AttemptContext): boolean {
@@ -173,7 +184,13 @@ export function setConsent(name?: string, research = true): void {
     const trimmed = name?.trim()
     s.participant.consentedAt = new Date().toISOString()
     s.participant.research = research
-    if (trimmed) s.participant.name = trimmed
+    if (research) {
+      if (trimmed) s.participant.name = trimmed
+    } else {
+      // Withdrawing takes the name with it. Leaving it would hand the teacher
+      // a named file from a student who asked not to be in the study.
+      delete s.participant.name
+    }
   })
 }
 
@@ -189,4 +206,54 @@ export function inStudy(): boolean {
 
 export function hasConsented(): boolean {
   return loadState().participant.consentedAt !== undefined
+}
+
+/**
+ * Replaces the whole survey record. The survey is an opinion of the app
+ * rather than a performance that can improve, so a second pass corrects
+ * the first instead of being kept beside it as another run.
+ */
+export function setSurvey(answers: Record<string, number | string>): void {
+  update(s => {
+    const kept: Record<string, number | string> = {}
+    for (const [k, v] of Object.entries(answers)) {
+      // A blank string is an erased answer, not an answer of "". Storing it
+      // makes an empty comment look like a comment that was left.
+      if (typeof v === 'string' && v.trim() === '') continue
+      kept[k] = v
+    }
+    s.survey = kept
+  })
+}
+
+export function surveyAnswers(): Record<string, number | string> {
+  return loadState().survey ?? {}
+}
+
+/**
+ * The teacher tool's gate lives under its own key, outside the participant
+ * record, for two reasons: handing a device to the next student clears the
+ * record and must not clear this, and a student's export is a copy of the
+ * record and must never contain it.
+ *
+ * This keeps a curious student out of a screen that is empty until files are
+ * loaded into it. It is not protection against anyone determined, and the
+ * screen says so rather than implying otherwise.
+ */
+const TEACHER_PIN_KEY = `${STORAGE_KEY}.teacher.pin`
+
+export function teacherPin(): string | undefined {
+  try {
+    return localStorage.getItem(TEACHER_PIN_KEY) ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function setTeacherPin(pin: string): void {
+  try {
+    localStorage.setItem(TEACHER_PIN_KEY, pin)
+  } catch {
+    // Storage full or blocked. The tool still works for this session.
+  }
 }
