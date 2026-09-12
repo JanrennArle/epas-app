@@ -196,8 +196,11 @@ describe('competencyColumns', () => {
 describe('csvHeader', () => {
   const head = csvHeader()
 
-  it('starts with the participant identity', () => {
-    expect(head.slice(0, 4)).toEqual(['participant_code', 'name', 'consented_at', 'in_study'])
+  it('starts with the participant identity and where the row came from', () => {
+    expect(head.slice(0, 6)).toEqual([
+      'participant_code', 'name', 'consented_at', 'in_study',
+      'exported_at', 'files_from_student',
+    ])
   })
 
   it('carries three columns for every competency', () => {
@@ -307,6 +310,22 @@ describe('csvRow', () => {
     expect(row[head.indexOf('sq_fs1')]).toBe(4)
     expect(row[head.indexOf('respondent')]).toBe('student')
     expect(row[head.indexOf('comments')]).toBe('clear')
+  })
+
+  // The teacher sees a repeat hand-in on screen, but the saved file is what is
+  // archived beside the paper and has to say so itself.
+  it('records where the row came from', () => {
+    const head = csvHeader()
+    const row = csvRow(state(), { exportedAt: '2026-09-13T00:00:00.000Z', filesFromStudent: 2 })
+    expect(row[head.indexOf('exported_at')]).toBe('2026-09-13T00:00:00.000Z')
+    expect(row[head.indexOf('files_from_student')]).toBe(2)
+  })
+
+  it('leaves the provenance blank when it is not given', () => {
+    const head = csvHeader()
+    const row = csvRow(state())
+    expect(row[head.indexOf('exported_at')]).toBe('')
+    expect(row[head.indexOf('files_from_student')]).toBe('')
   })
 
   it('records whether the student agreed to take part', () => {

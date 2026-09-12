@@ -70,21 +70,19 @@ export function exportKey(f: LoadedFile): string {
  * sit in several folders can select them in more than one go.
  *
  * Re-supplying the same export replaces it. Supplying a different export from
- * the same student keeps both, which is what lets a disagreement be seen. A
- * file that previously parsed and now fails is evicted, so the screen never
- * reports a stale success beside its own failure.
+ * the same student keeps both, which is what lets a disagreement be seen.
+ *
+ * Nothing is ever evicted by filename. An earlier version dropped a loaded
+ * file when a file of the same NAME later failed to read, which reopened the
+ * defect this whole module exists to close: every export is called
+ * `epas-<code>.json`, so a corrupt file could silently evict the same
+ * student's recorded refusal and leave only their agreement behind. An export
+ * that has already been read successfully stays read; a file that fails is
+ * reported as a failure beside it.
  */
-export function addLoaded(
-  previous: LoadedFile[],
-  incoming: LoadedFile[],
-  failedNames: string[],
-): LoadedFile[] {
+export function addLoaded(previous: LoadedFile[], incoming: LoadedFile[]): LoadedFile[] {
   const replacing = new Set(incoming.map(exportKey))
-  const failed = new Set(failedNames)
-  return [
-    ...previous.filter(p => !replacing.has(exportKey(p)) && !failed.has(p.file)),
-    ...incoming,
-  ]
+  return [...previous.filter(p => !replacing.has(exportKey(p))), ...incoming]
 }
 
 /** The students whose work belongs in the merged table. */
@@ -104,7 +102,7 @@ export function excludedStudents(groups: StudentGroup[]): StudentGroup[] {
  */
 export function whyLeftOut(g: StudentGroup): string {
   if (g.conflicted) {
-    return 'handed in files that disagree about taking part, so nothing of theirs is included until you have one file from them'
+    return 'handed in files that disagree about taking part, so nothing of theirs is included until they hand in once more'
   }
   if (g.files.some(f => f.research === false)) {
     return 'chose not to take part in the study'

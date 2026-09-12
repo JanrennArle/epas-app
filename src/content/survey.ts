@@ -25,7 +25,7 @@ export const LIKERT: readonly string[] = [
  */
 export const SURVEY: SurveyItem[] = [
   { id: 'fs1', category: 'Functional Suitability', text: 'The app covers the EPAS topics I need for this subject.' },
-  { id: 'fs2', category: 'Functional Suitability', text: 'The lessons match what our Budget of Work says we should learn.' },
+  { id: 'fs2', category: 'Functional Suitability', text: 'The lessons cover what we were told we would study this term.' },
   { id: 'fs3', category: 'Functional Suitability', text: 'The simulations behave the way the real equipment does.' },
   { id: 'fs4', category: 'Functional Suitability', text: 'The app does what I expect it to do when I use it.' },
 
@@ -42,7 +42,7 @@ export const SURVEY: SurveyItem[] = [
   { id: 'pe1', category: 'Performance Efficiency', text: 'The app opens quickly on my device.' },
   { id: 'pe2', category: 'Performance Efficiency', text: 'Screens and simulations respond without me having to wait.' },
   { id: 'pe3', category: 'Performance Efficiency', text: 'The app does not slow my device down while I am using it.' },
-  { id: 'pe4', category: 'Performance Efficiency', text: 'The app still works well on an older or cheaper phone.' },
+  { id: 'pe4', category: 'Performance Efficiency', text: 'The app works without taking up much space on the device.' },
 
   { id: 'po1', category: 'Portability', text: 'The app works on the device I normally use.' },
   { id: 'po2', category: 'Portability', text: 'The app fits the screen of the device I use without zooming or scrolling sideways.' },

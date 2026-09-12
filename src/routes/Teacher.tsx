@@ -58,7 +58,7 @@ export default function Teacher() {
       })
     }
     const failedNames = bad.map(b => b.file)
-    setLoaded(prev => addLoaded(prev, ok, failedNames))
+    setLoaded(prev => addLoaded(prev, ok))
     setRejected(prev => [
       ...prev.filter(p => !failedNames.includes(p.file) && !ok.some(o => o.file === p.file)),
       ...bad,
@@ -176,7 +176,7 @@ export default function Teacher() {
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <button
-          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(g => csvRow(g.newest.state))])}
+          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(g => csvRow(g.newest.state, { exportedAt: g.newest.exportedAt, filesFromStudent: g.files.length }))])}
           disabled={included.length === 0}
           className="tile"
           style={{

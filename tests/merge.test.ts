@@ -170,25 +170,32 @@ describe('accumulating files across several selections', () => {
   it('keeps both exports from one student even though they share a filename', () => {
     const first = file({ code: 'A', file: 'epas-A.json', research: true, exportedAt: '2026-01-01T00:00:00.000Z' })
     const second = file({ code: 'A', file: 'epas-A.json', research: false, exportedAt: '2026-03-01T00:00:00.000Z' })
-    const loaded = addLoaded(addLoaded([], [first], []), [second], [])
+    const loaded = addLoaded(addLoaded([], [first]), [second])
     expect(loaded).toHaveLength(2)
     expect(includedStudents(groupByStudent(loaded))).toEqual([])
   })
 
   it('replaces an export that is supplied twice', () => {
     const f = file({ code: 'A', exportedAt: '2026-01-01T00:00:00.000Z' })
-    expect(addLoaded([f], [f], [])).toHaveLength(1)
+    expect(addLoaded([f], [f])).toHaveLength(1)
   })
 
   it('keeps files from different students', () => {
     const a = file({ code: 'A' })
     const b = file({ code: 'B' })
-    expect(addLoaded([a], [b], [])).toHaveLength(2)
+    expect(addLoaded([a], [b])).toHaveLength(2)
   })
 
-  it('evicts a file that previously parsed and now fails to read', () => {
-    const f = file({ code: 'A', file: 'epas-A.json' })
-    expect(addLoaded([f], [], ['epas-A.json'])).toEqual([])
+  // Never by filename. Every export is called epas-<code>.json, so evicting on
+  // name let a corrupt file silently remove the same student's recorded
+  // refusal and leave only their agreement behind.
+  it('does not drop an export that was already read because a later file of the same name fails', () => {
+    const refusal = file({ code: 'A', file: 'epas-A.json', research: false, exportedAt: '2026-01-01T00:00:00.000Z' })
+    const agreement = file({ code: 'A', file: 'epas-A.json', research: true, exportedAt: '2026-03-01T00:00:00.000Z' })
+    const afterCorruptFile = addLoaded([refusal], [])
+    const loaded = addLoaded(afterCorruptFile, [agreement])
+    expect(loaded).toHaveLength(2)
+    expect(includedStudents(groupByStudent(loaded))).toEqual([])
   })
 
   it('identifies an export by student and time, not by filename', () => {

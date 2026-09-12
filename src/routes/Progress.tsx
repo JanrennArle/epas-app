@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { allModules } from '../content'
 import { competencyGains } from '../lib/assess'
 import { csvHeader, csvRow, toBundle } from '../lib/export'
-import { attemptsFor, hasTaken, loadState } from '../lib/store'
+import { attemptsFor, hasTaken, inStudy, loadState } from '../lib/store'
 import { downloadCsv, downloadJson } from '../ui/download'
 import { SURVEY } from '../content/survey'
 import type { CSSProperties } from 'react'
@@ -71,6 +71,12 @@ export default function Progress() {
       </div>
 
       <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 6px' }}>Hand your results in</h2>
+      {!inStudy() && (
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
+          You chose not to take part in the study. Your teacher can still see your work, and
+          it stays out of anything they report. Handing in is your choice either way.
+        </p>
+      )}
       <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px' }}>
         Nothing has left this device. Saving a file is how your work reaches your teacher.
         Send them the JSON file; it holds everything. The CSV is the same results as one
@@ -92,7 +98,7 @@ export default function Progress() {
         }}>
           Save my results for my teacher
         </button>
-        <button onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state)])} className="tile" style={{
+        <button onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])} className="tile" style={{
           minHeight: 44, padding: '11px 18px', borderRadius: 10,
           border: '1px solid var(--line)', background: 'var(--surface)',
           color: 'var(--ink)', font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',

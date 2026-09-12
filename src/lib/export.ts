@@ -124,7 +124,7 @@ export function competencyColumns(): CompetencyColumn[] {
 }
 
 export function csvHeader(): string[] {
-  const head = ['participant_code', 'name', 'consented_at', 'in_study']
+  const head = ['participant_code', 'name', 'consented_at', 'in_study', 'exported_at', 'files_from_student']
   for (const c of competencyColumns()) head.push(`pre__${c.pair}`, `post__${c.pair}`, `gain__${c.pair}`)
   for (const item of SURVEY) head.push(`sq_${item.id}`)
   head.push('respondent', 'comments')
@@ -138,12 +138,26 @@ function studyFlag(state: StoreV1): string {
   return 'unknown'
 }
 
-export function csvRow(state: StoreV1): Cell[] {
+/**
+ * Where the row came from. The teacher sees a repeat hand-in on screen, but
+ * the saved file is what is archived beside the paper, so it has to carry its
+ * own provenance rather than relying on someone remembering.
+ */
+export interface RowProvenance {
+  /** When the export this row was built from was saved. */
+  exportedAt?: string
+  /** How many files the teacher held for this student. */
+  filesFromStudent?: number
+}
+
+export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
   const row: Cell[] = [
     state.participant.code,
     state.participant.name ?? '',
     state.participant.consentedAt ?? '',
     studyFlag(state),
+    from.exportedAt ?? '',
+    from.filesFromStudent ?? '',
   ]
 
   // An attempt stores the competency text, which is what competencyGains keys
@@ -203,6 +217,8 @@ export function codebookRows(): Cell[][] {
   rows.push(['name', 'identity', '', 'Optional, blank where the student stayed anonymous'])
   rows.push(['consented_at', 'identity', '', 'When the consent screen was answered'])
   rows.push(['in_study', 'identity', '', 'yes, no, or unknown for a record written before the choice existed'])
+  rows.push(['exported_at', 'identity', '', 'When the export this row was built from was saved'])
+  rows.push(['files_from_student', 'identity', '', 'How many files were held for this student. More than one means they handed in twice'])
 
   for (const c of competencyColumns()) {
     rows.push([`pre__${c.pair}`, 'pre-test', c.moduleId, `1 correct, 0 wrong, blank not sat. ${c.competency}`])

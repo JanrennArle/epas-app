@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { LIKERT, SURVEY, SURVEY_CATEGORIES } from '../content/survey'
 import { inStudy, setSurvey, surveyAnswers } from '../lib/store'
@@ -34,6 +34,15 @@ export default function Evaluate() {
     return () => clearTimeout(t)
   }, [answers])
 
+  // The debounce above cancels its timer on every change, including the last
+  // one before this screen goes away, so text typed and followed by tapping a
+  // link inside 600ms was written nowhere. Flush whatever is current on the
+  // way out. The ref exists because an unmount effect must not depend on
+  // `answers`, or it would run on every keystroke.
+  const latest = useRef(answers)
+  latest.current = answers
+  useEffect(() => () => { setSurvey(latest.current) }, [])
+
   return (
     <div style={{ maxWidth: '60ch' }}>
       <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>
@@ -49,6 +58,10 @@ export default function Evaluate() {
           will not be in what your teacher reports. You are welcome to answer them anyway.
         </p>
       )}
+      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
+        The statements are written from a student's point of view. If you are a teacher or
+        an expert validator, answer them as you would for the students who will use this.
+      </p>
       <p style={{ fontSize: 13, color: 'var(--ink-3)', margin: '0 0 18px' }}>
         {answered} of {SURVEY.length} answered
       </p>
