@@ -1,6 +1,6 @@
 # Project status
 
-Last updated 2026-09-07, after plan 6 merged.
+Last updated 2026-09-12, after plan 7 was written.
 
 ## Where things stand
 
@@ -18,16 +18,20 @@ Six of the eight steps in the spec's build order (section 14 of `docs/superpower
 
 ## What is left
 
-Two plans. Neither has been written yet.
+Three plans. Plan 7 is written; 8 and 9 are not.
 
-**Plan 7: survey, export, teacher tool, task sheets**
+**Plan 7: survey, export, teacher merge** (`2026-09-12-epas-research-output.md`, 6 tasks)
 
-- ISO/IEC 25010 evaluation survey, 20 items, five categories, held as data so it can be replaced without code changes.
-- `/progress` export: CSV for statistical software, JSON for lossless transfer.
-- `/teacher`: merges a set of student JSON files into one CSV, a row per student, pre/post/gain columns per competency.
-- The eight Budget of Work performance task sheets, with rubrics visible to the student from the start.
+- ISO/IEC 25010 evaluation survey, 20 items, five categories, held as data.
+- `/progress`: the student's own view, plus JSON and CSV downloads.
+- `/teacher`: PIN gated, merges student JSON files into one class CSV, plus a codebook.
 
-**Plan 8: packaging and deployment**
+**Plan 8: student surfaces**
+
+- The eight Budget of Work performance task sheets at `/tasks/:taskId`, with rubrics visible to the student from the start. These add columns to the export built in plan 7 rather than a second format.
+- The `/labs` gallery and `/labs/:simId`, which the nav already advertises and which currently dead-ends. Open question for that plan: whether a simulation run started from Labs counts as research data or is marked practice and excluded, the way formative quizzes are.
+
+**Plan 9: packaging and deployment**
 
 - `vite-plugin-pwa` with Workbox precaching the whole app; the service worker prompts to update rather than reloading, so it never interrupts a test in progress.
 - Offline verification on a real phone.
