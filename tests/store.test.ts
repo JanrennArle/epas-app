@@ -1,7 +1,7 @@
 import {
   loadState, saveState, recordAttempt, recordSim,
   markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
-  setConsent, hasConsented,
+  setConsent, hasConsented, setSurvey, surveyAnswers, resetAll,
 } from '../src/lib/store'
 import type { Attempt } from '../src/lib/store'
 
@@ -186,5 +186,37 @@ describe('consent', () => {
     const code = loadState().participant.code
     setConsent('Maria')
     expect(loadState().participant.code).toBe(code)
+  })
+})
+
+describe('survey answers', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('starts empty', () => {
+    expect(surveyAnswers()).toEqual({})
+  })
+
+  it('keeps what was answered', () => {
+    setSurvey({ fs1: 4, respondent: 'student' })
+    expect(surveyAnswers()).toEqual({ fs1: 4, respondent: 'student' })
+  })
+
+  // The survey measures an opinion, not a performance, so a second pass is
+  // a correction rather than a new attempt. There is no run history here.
+  it('replaces an earlier answer rather than appending to it', () => {
+    setSurvey({ fs1: 2 })
+    setSurvey({ fs1: 5 })
+    expect(surveyAnswers()).toEqual({ fs1: 5 })
+  })
+
+  it('survives a reload through the store', () => {
+    setSurvey({ us1: 3, comments: 'the torch test was the clearest part' })
+    expect(loadState().survey).toEqual({ us1: 3, comments: 'the torch test was the clearest part' })
+  })
+
+  it('is cleared when the device is handed to a new participant', () => {
+    setSurvey({ fs1: 4 })
+    resetAll()
+    expect(surveyAnswers()).toEqual({})
   })
 })

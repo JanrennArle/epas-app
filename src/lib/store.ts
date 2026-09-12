@@ -190,3 +190,16 @@ export function inStudy(): boolean {
 export function hasConsented(): boolean {
   return loadState().participant.consentedAt !== undefined
 }
+
+/**
+ * Replaces the whole survey record. The survey is an opinion of the app
+ * rather than a performance that can improve, so a second pass corrects
+ * the first instead of being kept beside it as another run.
+ */
+export function setSurvey(answers: Record<string, number | string>): void {
+  update(s => { s.survey = { ...answers } })
+}
+
+export function surveyAnswers(): Record<string, number | string> {
+  return loadState().survey ?? {}
+}

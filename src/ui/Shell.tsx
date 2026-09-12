@@ -6,6 +6,7 @@ const NAV = [
   { to: '/', label: 'Modules' },
   { to: '/labs', label: 'Labs' },
   { to: '/progress', label: 'Progress' },
+  { to: '/evaluate', label: 'Evaluate' },
 ]
 
 export function Shell({ children }: { children: ReactNode }) {
