@@ -44,6 +44,21 @@ describe('csvCell', () => {
   it('quotes a value with a leading or trailing space, which some readers trim', () => {
     expect(csvCell(' padded ')).toBe('" padded "')
   })
+
+  it('prefixes text a spreadsheet would run as a formula', () => {
+    expect(csvCell('=1+1')).toBe("'=1+1")
+    expect(csvCell('@someone')).toBe("'@someone")
+    expect(csvCell('+SUM(A1)')).toBe("'+SUM(A1)")
+  })
+
+  it('guards a comment that opens with a dash, as a student writing a list would', () => {
+    expect(csvCell('-the torch test was clearest')).toBe("'-the torch test was clearest")
+  })
+
+  // Only text is guarded. A negative number must keep its sign.
+  it('leaves a negative number alone', () => {
+    expect(csvCell(-5)).toBe('-5')
+  })
 })
 
 describe('csvLine and toCsv', () => {
@@ -117,5 +132,31 @@ describe('parseBundle', () => {
 
   it('rejects an empty file', () => {
     expect(parseBundle('').ok).toBe(false)
+  })
+
+  it('rejects a JSON array', () => {
+    const r = parseBundle('[1,2,3]')
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/not an EPAS export/i)
+  })
+
+  it('rejects a bare JSON null', () => {
+    expect(parseBundle('null').ok).toBe(false)
+  })
+
+  it('rejects a bare JSON string', () => {
+    expect(parseBundle('"hello"').ok).toBe(false)
+  })
+
+  it('calls a non-numeric version a malformed file rather than a newer one', () => {
+    const r = parseBundle('{"format":"epas-export","formatVersion":"1","exportedAt":"x","state":{}}')
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/not an EPAS export/i)
+  })
+
+  it('rejects a version it does not recognise', () => {
+    const r = parseBundle('{"format":"epas-export","formatVersion":0,"exportedAt":"x","state":{}}')
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.reason).toMatch(/unrecognised version/i)
   })
 })
