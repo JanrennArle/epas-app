@@ -325,7 +325,7 @@ Expected: PASS.
 Create `src/routes/Evaluate.tsx`:
 
 ```tsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { LIKERT, SURVEY, SURVEY_CATEGORIES } from '../content/survey'
 import { inStudy, setSurvey, surveyAnswers } from '../lib/store'
@@ -348,6 +348,18 @@ export default function Evaluate() {
     setAnswers(next)
     setSurvey(next)
   }
+
+  // Typed text is written a short moment after typing stops. Writing on every
+  // keystroke would serialise the whole store per character, which on the low
+  // end Android phones these students use shows up as typing lag. Writing only
+  // when the field is left loses text whenever the page goes without a focus
+  // change first, which is what the back button, a closed tab and the phone
+  // backgrounding the app all do. A radio click is saved immediately above and
+  // this simply rewrites the same record, which is harmless.
+  useEffect(() => {
+    const t = setTimeout(() => setSurvey(answers), 600)
+    return () => clearTimeout(t)
+  }, [answers])
 
   return (
     <div style={{ maxWidth: '60ch' }}>
@@ -426,20 +438,9 @@ export default function Evaluate() {
       <label style={{ display: 'block', fontSize: 13, fontWeight: 600, margin: '0 0 6px', color: 'var(--ink)' }}>
         Anything else you want to say (optional)
       </label>
-      {/*
-        Typed text is held locally and written once the field is left. The
-        radios persist on every click because a click is rare; a keystroke is
-        not, and persisting serialises the whole store, which on the low end
-        Android phones these students use would show up as typing lag.
-      */}
       <textarea
         value={typeof answers.comments === 'string' ? answers.comments : ''}
         onChange={e => setAnswers(a => ({ ...a, comments: e.target.value }))}
-        onBlur={e => {
-          const next = { ...answers, comments: e.target.value }
-          setAnswers(next)
-          setSurvey(next)
-        }}
         rows={4}
         style={{
           width: '100%', padding: '10px 12px', borderRadius: 10,
