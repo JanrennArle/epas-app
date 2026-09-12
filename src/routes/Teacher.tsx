@@ -1,77 +1,25 @@
 import { useMemo, useState } from 'react'
 import { codebookRows, csvHeader, csvRow, parseBundle } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
+import { excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
+import type { LoadedFile } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
-import type { StoreV1 } from '../lib/store'
 import type { CSSProperties } from 'react'
-
-interface Loaded {
-  file: string
-  code: string
-  state: StoreV1
-  research: boolean | undefined
-  exportedAt: string
-}
 
 interface Rejected {
   file: string
   reason: string
 }
 
-interface Group {
-  code: string
-  files: Loaded[]
-  /** Every file for this student says they agreed. */
-  agreed: boolean
-  /** Files for this student disagree about taking part. */
-  conflicted: boolean
-  /** The file to use, the most recently exported of the group. */
-  newest: Loaded
-}
-
 const note: CSSProperties = {
   fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px',
-}
-
-/**
- * Consent is decided per student, not per file. A student can revisit the
- * consent screen and change their answer while keeping the same code, so two
- * files under one code can disagree. Any disagreement excludes them and says
- * so: picking the newer file would be inferring consent from a timestamp,
- * and the promise we made was that nothing of theirs is included.
- */
-function group(loaded: Loaded[]): Group[] {
-  const byCode = new Map<string, Loaded[]>()
-  for (const l of loaded) byCode.set(l.code, [...(byCode.get(l.code) ?? []), l])
-  return [...byCode.entries()].map(([code, files]) => {
-    const answers = new Set(files.map(f => f.research === true))
-    let newest = files[0]!
-    for (const f of files) if (f.exportedAt >= newest.exportedAt) newest = f
-    return {
-      code,
-      files,
-      agreed: files.every(f => f.research === true),
-      conflicted: answers.size > 1,
-      newest,
-    }
-  })
-}
-
-function whyLeftOut(g: Group): string {
-  if (g.conflicted) {
-    return 'handed in files that disagree about taking part, so nothing of theirs is included until you have one file from them'
-  }
-  if (g.files.every(f => f.research === false)) {
-    return 'chose not to take part in the study'
-  }
-  return 'handed in a file that predates the consent choice, which is not treated as agreement'
 }
 
 export default function Teacher() {
   const [unlocked, setUnlocked] = useState(false)
   const [pin, setPin] = useState('')
   const [pinError, setPinError] = useState('')
-  const [loaded, setLoaded] = useState<Loaded[]>([])
+  const [loaded, setLoaded] = useState<LoadedFile[]>([])
   const [rejected, setRejected] = useState<Rejected[]>([])
 
   function unlock() {
@@ -88,7 +36,7 @@ export default function Teacher() {
 
   async function take(files: FileList | null) {
     if (!files || files.length === 0) return
-    const ok: Loaded[] = []
+    const ok: LoadedFile[] = []
     const bad: Rejected[] = []
     for (const file of Array.from(files)) {
       let text: string
@@ -122,9 +70,9 @@ export default function Teacher() {
     setRejected([])
   }
 
-  const groups = useMemo(() => group(loaded), [loaded])
-  const included = groups.filter(g => g.agreed && !g.conflicted)
-  const excluded = groups.filter(g => !g.agreed || g.conflicted)
+  const groups = useMemo(() => groupByStudent(loaded), [loaded])
+  const included = includedStudents(groups)
+  const excluded = excludedStudents(groups)
   const repeated = groups.filter(g => g.files.length > 1)
 
   if (!unlocked) {

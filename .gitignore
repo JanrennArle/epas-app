@@ -5,3 +5,6 @@ dist/
 *.tsbuildinfo
 .DS_Store
 *.local
+
+# browser tool scratch
+.playwright-mcp/
