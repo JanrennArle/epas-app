@@ -1569,7 +1569,7 @@ export default function Teacher() {
 }
 ```
 
-- [ ] **Step 6: Add the route**
+- [ ] **Step 6: Add the route and exempt it from the consent gate**
 
 In `src/App.tsx`. It is deliberately absent from the nav in `src/ui/Shell.tsx`; the teacher reaches it by typing the address.
 
@@ -1580,6 +1580,23 @@ import Teacher from './routes/Teacher'
 ```tsx
   { path: '/teacher', element: <Shell><Teacher /></Shell> },
 ```
+
+`src/ui/Shell.tsx` currently sends every route except `/consent` to the consent screen. A
+teacher opening this tool on their own machine would therefore be shown a screen that opens
+"This app is part of a study your teacher is running", and would have to consent as though
+they were one of their own students before they could merge anything, leaving a stray
+participant record on their laptop. The teacher tool reads files it is handed and writes no
+student data, so exempt it too. Change the gate to:
+
+```tsx
+  const OPEN = ['/consent', '/teacher']
+  if (!OPEN.includes(pathname) && !hasConsented()) {
+    return <Navigate to="/consent" replace />
+  }
+```
+
+Keep `/evaluate` gated. A teacher or an expert validator answering the survey is a
+respondent whose answers are research data, so they do need a participant record.
 
 - [ ] **Step 7: Typecheck and run the whole suite**
 
