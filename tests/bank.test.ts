@@ -45,6 +45,20 @@ describe('the item bank', () => {
     }
   })
 
+  // The export bridges an attempt to its column through the competency text
+  // when a legacy record carries no usable bank id. Two competencies sharing
+  // wording would file one module's gain under the other module's column, and
+  // the resulting row would look entirely normal.
+  it('gives no two competencies the same wording', () => {
+    const byText = new Map<string, string>()
+    for (const i of BANK) {
+      const seen = byText.get(i.competency)
+      expect(seen === undefined || seen === i.pair,
+        `${i.competency} is used by both ${seen} and ${i.pair}`).toBe(true)
+      byText.set(i.competency, i.pair)
+    }
+  })
+
   it('gives every item four options and an answer that indexes them', () => {
     for (const i of BANK) {
       expect(i.options.length, i.id).toBe(4)
