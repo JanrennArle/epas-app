@@ -55,6 +55,38 @@ export function groupByStudent(loaded: LoadedFile[]): StudentGroup[] {
   })
 }
 
+/**
+ * Identifies one export. Deliberately NOT the filename: every export a student
+ * saves is called `epas-<code>.json`, so a student's before and after files
+ * collide on name. Keying accumulation by name dropped the earlier one, which
+ * silently undid the whole point of grouping by consent.
+ */
+export function exportKey(f: LoadedFile): string {
+  return `${f.code}|${f.exportedAt}`
+}
+
+/**
+ * Folds newly read files into those already loaded, so a teacher whose files
+ * sit in several folders can select them in more than one go.
+ *
+ * Re-supplying the same export replaces it. Supplying a different export from
+ * the same student keeps both, which is what lets a disagreement be seen. A
+ * file that previously parsed and now fails is evicted, so the screen never
+ * reports a stale success beside its own failure.
+ */
+export function addLoaded(
+  previous: LoadedFile[],
+  incoming: LoadedFile[],
+  failedNames: string[],
+): LoadedFile[] {
+  const replacing = new Set(incoming.map(exportKey))
+  const failed = new Set(failedNames)
+  return [
+    ...previous.filter(p => !replacing.has(exportKey(p)) && !failed.has(p.file)),
+    ...incoming,
+  ]
+}
+
 /** The students whose work belongs in the merged table. */
 export function includedStudents(groups: StudentGroup[]): StudentGroup[] {
   return groups.filter(g => g.agreed && !g.conflicted)
@@ -74,7 +106,7 @@ export function whyLeftOut(g: StudentGroup): string {
   if (g.conflicted) {
     return 'handed in files that disagree about taking part, so nothing of theirs is included until you have one file from them'
   }
-  if (g.files.every(f => f.research === false)) {
+  if (g.files.some(f => f.research === false)) {
     return 'chose not to take part in the study'
   }
   return 'handed in a file that predates the consent choice, which is not treated as agreement'

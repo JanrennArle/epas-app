@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { codebookRows, csvHeader, csvRow, parseBundle } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
-import { excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
+import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
 import type { LoadedFile } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
 import type { CSSProperties } from 'react'
@@ -57,17 +57,21 @@ export default function Teacher() {
         exportedAt: result.bundle.exportedAt,
       })
     }
-    // Added to what is already loaded, so a teacher whose files sit in several
-    // folders can select them in more than one go without losing the earlier
-    // batch. Files are keyed by name, so selecting the same one twice replaces
-    // rather than duplicates it.
-    setLoaded(prev => [...prev.filter(p => !ok.some(o => o.file === p.file)), ...ok])
-    setRejected(prev => [...prev.filter(p => !bad.some(b => b.file === p.file)), ...bad])
+    const failedNames = bad.map(b => b.file)
+    setLoaded(prev => addLoaded(prev, ok, failedNames))
+    setRejected(prev => [
+      ...prev.filter(p => !failedNames.includes(p.file) && !ok.some(o => o.file === p.file)),
+      ...bad,
+    ])
   }
+
+  const fileInput = useRef<HTMLInputElement>(null)
 
   function clearAll() {
     setLoaded([])
     setRejected([])
+    // Otherwise the browser keeps showing "3 files" beside an empty screen.
+    if (fileInput.current) fileInput.current.value = ''
   }
 
   const groups = useMemo(() => groupByStudent(loaded), [loaded])
@@ -115,7 +119,7 @@ export default function Teacher() {
       </p>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', margin: '14px 0 18px' }}>
-        <input type="file" accept="application/json,.json" multiple
+        <input ref={fileInput} type="file" accept="application/json,.json" multiple
           onChange={e => { void take(e.target.files) }}
           style={{ font: 'inherit', fontSize: 13.5, color: 'var(--ink-2)' }} />
         {loaded.length + rejected.length > 0 && (
@@ -142,7 +146,8 @@ export default function Teacher() {
               <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)' }}>
                 {excluded.map(g => (
                   <li key={g.code} style={{ marginBottom: 4 }}>
-                    <strong style={{ fontFamily: 'var(--font-mono)' }}>{g.code}</strong> {whyLeftOut(g)}.
+                    <strong style={{ fontFamily: 'var(--font-mono)' }}>{g.code}</strong> {whyLeftOut(g)}.{' '}
+                    <span style={{ color: 'var(--ink-3)' }}>({g.files.map(f => f.file).join(', ')})</span>
                   </li>
                 ))}
               </ul>

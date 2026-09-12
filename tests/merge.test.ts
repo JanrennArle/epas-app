@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { StoreV1 } from '../src/lib/store'
 import type { LoadedFile } from '../src/lib/merge'
 import {
-  excludedStudents, groupByStudent, includedStudents, whyLeftOut,
+  addLoaded, excludedStudents, exportKey, groupByStudent, includedStudents, whyLeftOut,
 } from '../src/lib/merge'
 
 function state(code: string, research?: boolean): StoreV1 {
@@ -160,5 +160,67 @@ describe('whyLeftOut', () => {
     for (const x of excludedStudents(g)) {
       expect(whyLeftOut(x).length, x.code).toBeGreaterThan(10)
     }
+  })
+})
+
+describe('accumulating files across several selections', () => {
+  // Every export a student saves is named `epas-<code>.json`, so keying this
+  // by filename drops a student's earlier file and makes a later change of
+  // mind invisible. That silently undoes the whole point of grouping.
+  it('keeps both exports from one student even though they share a filename', () => {
+    const first = file({ code: 'A', file: 'epas-A.json', research: true, exportedAt: '2026-01-01T00:00:00.000Z' })
+    const second = file({ code: 'A', file: 'epas-A.json', research: false, exportedAt: '2026-03-01T00:00:00.000Z' })
+    const loaded = addLoaded(addLoaded([], [first], []), [second], [])
+    expect(loaded).toHaveLength(2)
+    expect(includedStudents(groupByStudent(loaded))).toEqual([])
+  })
+
+  it('replaces an export that is supplied twice', () => {
+    const f = file({ code: 'A', exportedAt: '2026-01-01T00:00:00.000Z' })
+    expect(addLoaded([f], [f], [])).toHaveLength(1)
+  })
+
+  it('keeps files from different students', () => {
+    const a = file({ code: 'A' })
+    const b = file({ code: 'B' })
+    expect(addLoaded([a], [b], [])).toHaveLength(2)
+  })
+
+  it('evicts a file that previously parsed and now fails to read', () => {
+    const f = file({ code: 'A', file: 'epas-A.json' })
+    expect(addLoaded([f], [], ['epas-A.json'])).toEqual([])
+  })
+
+  it('identifies an export by student and time, not by filename', () => {
+    const a = file({ code: 'A', file: 'epas-A.json', exportedAt: '2026-01-01T00:00:00.000Z' })
+    const b = file({ code: 'A', file: 'epas-A.json', exportedAt: '2026-03-01T00:00:00.000Z' })
+    expect(exportKey(a)).not.toBe(exportKey(b))
+  })
+})
+
+describe('which file a row is built from', () => {
+  it('reports the newest of two agreeing exports', () => {
+    const g = groupByStudent([
+      file({ code: 'A', file: 'old.json', research: true, exportedAt: '2026-01-01T00:00:00.000Z' }),
+      file({ code: 'A', file: 'new.json', research: true, exportedAt: '2026-03-01T00:00:00.000Z' }),
+    ])
+    expect(includedStudents(g)[0]?.newest.file).toBe('new.json')
+  })
+
+  it('breaks a tie on exportedAt toward the last file loaded', () => {
+    const at = '2026-01-01T00:00:00.000Z'
+    const g = groupByStudent([
+      file({ code: 'A', file: 'first.json', exportedAt: at }),
+      file({ code: 'A', file: 'second.json', exportedAt: at }),
+    ])
+    expect(g[0]?.newest.file).toBe('second.json')
+  })
+
+  it('tells a student who declined in one file that they declined, not that the file predates the question', () => {
+    const g = groupByStudent([
+      file({ code: 'A', research: false }),
+      file({ code: 'A', research: undefined }),
+    ])
+    expect(whyLeftOut(g[0]!)).toMatch(/chose not to take part/i)
   })
 })
