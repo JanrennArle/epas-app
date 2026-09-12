@@ -94,6 +94,9 @@ export function parseBundle(text: string): ParseResult {
   if (typeof code !== 'string' || code.length === 0) {
     return { ok: false, reason: 'This export has no participant code.' }
   }
+  if (!Array.isArray(b.state?.attempts)) {
+    return { ok: false, reason: 'This export is missing its answers.' }
+  }
   return { ok: true, bundle: b as ExportBundle }
 }
 

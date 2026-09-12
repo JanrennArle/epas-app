@@ -15,7 +15,8 @@ export default function Progress() {
   const state = loadState()
   const modules = allModules()
   const code = state.participant.code
-  const surveyDone = SURVEY.every(i => typeof state.survey?.[i.id] === 'number')
+  const answeredCount = SURVEY.filter(i => typeof state.survey?.[i.id] === 'number').length
+  const surveyDone = answeredCount === SURVEY.length && typeof state.survey?.respondent === 'string'
 
   return (
     <div style={{ maxWidth: '70ch' }}>
@@ -77,9 +78,9 @@ export default function Progress() {
       </p>
       {!surveyDone && (
         <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
-          You have not finished the{' '}
-          <Link to="/evaluate" style={{ color: 'var(--accent)' }}>evaluation survey</Link> yet.
-          You can still hand in, but the survey columns will be empty.
+          You have answered {answeredCount} of {SURVEY.length} statements in the{' '}
+          <Link to="/evaluate" style={{ color: 'var(--accent)' }}>evaluation survey</Link>.
+          You can still hand in, but the unanswered ones will be blank.
         </p>
       )}
 

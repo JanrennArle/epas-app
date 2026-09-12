@@ -20,7 +20,7 @@ function save(filename: string, text: string, mime: string): void {
  * happened from looking at the file.
  */
 export function downloadCsv(filename: string, rows: Cell[][]): void {
-  save(filename, '﻿' + toCsv(rows), 'text/csv;charset=utf-8')
+  save(filename, '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8')
 }
 
 export function downloadJson(filename: string, value: unknown): void {

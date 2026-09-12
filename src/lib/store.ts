@@ -184,7 +184,13 @@ export function setConsent(name?: string, research = true): void {
     const trimmed = name?.trim()
     s.participant.consentedAt = new Date().toISOString()
     s.participant.research = research
-    if (trimmed) s.participant.name = trimmed
+    if (research) {
+      if (trimmed) s.participant.name = trimmed
+    } else {
+      // Withdrawing takes the name with it. Leaving it would hand the teacher
+      // a named file from a student who asked not to be in the study.
+      delete s.participant.name
+    }
   })
 }
 

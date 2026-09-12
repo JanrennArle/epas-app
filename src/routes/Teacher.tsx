@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { codebookRows, csvHeader, csvRow, parseBundle } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
 import { downloadCsv } from '../ui/download'
@@ -9,8 +9,8 @@ interface Loaded {
   file: string
   code: string
   state: StoreV1
-  included: boolean
-  why?: string
+  research: boolean | undefined
+  exportedAt: string
 }
 
 interface Rejected {
@@ -18,8 +18,53 @@ interface Rejected {
   reason: string
 }
 
+interface Group {
+  code: string
+  files: Loaded[]
+  /** Every file for this student says they agreed. */
+  agreed: boolean
+  /** Files for this student disagree about taking part. */
+  conflicted: boolean
+  /** The file to use, the most recently exported of the group. */
+  newest: Loaded
+}
+
 const note: CSSProperties = {
   fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px',
+}
+
+/**
+ * Consent is decided per student, not per file. A student can revisit the
+ * consent screen and change their answer while keeping the same code, so two
+ * files under one code can disagree. Any disagreement excludes them and says
+ * so: picking the newer file would be inferring consent from a timestamp,
+ * and the promise we made was that nothing of theirs is included.
+ */
+function group(loaded: Loaded[]): Group[] {
+  const byCode = new Map<string, Loaded[]>()
+  for (const l of loaded) byCode.set(l.code, [...(byCode.get(l.code) ?? []), l])
+  return [...byCode.entries()].map(([code, files]) => {
+    const answers = new Set(files.map(f => f.research === true))
+    let newest = files[0]!
+    for (const f of files) if (f.exportedAt >= newest.exportedAt) newest = f
+    return {
+      code,
+      files,
+      agreed: files.every(f => f.research === true),
+      conflicted: answers.size > 1,
+      newest,
+    }
+  })
+}
+
+function whyLeftOut(g: Group): string {
+  if (g.conflicted) {
+    return 'handed in files that disagree about taking part, so nothing of theirs is included until you have one file from them'
+  }
+  if (g.files.every(f => f.research === false)) {
+    return 'chose not to take part in the study'
+  }
+  return 'handed in a file that predates the consent choice, which is not treated as agreement'
 }
 
 export default function Teacher() {
@@ -42,34 +87,45 @@ export default function Teacher() {
   }
 
   async function take(files: FileList | null) {
-    if (!files) return
+    if (!files || files.length === 0) return
     const ok: Loaded[] = []
     const bad: Rejected[] = []
     for (const file of Array.from(files)) {
-      const result = parseBundle(await file.text())
+      let text: string
+      try {
+        text = await file.text()
+      } catch {
+        bad.push({ file: file.name, reason: 'This file could not be read from the disk.' })
+        continue
+      }
+      const result = parseBundle(text)
       if (!result.ok) { bad.push({ file: file.name, reason: result.reason }); continue }
       const state = result.bundle.state
-      const research = state.participant.research
       ok.push({
         file: file.name,
         code: state.participant.code,
         state,
-        included: research === true,
-        why: research === false
-          ? 'This student chose not to take part in the study'
-          : research === undefined
-            ? 'This file predates the consent choice, so it is not treated as agreement'
-            : undefined,
+        research: state.participant.research,
+        exportedAt: result.bundle.exportedAt,
       })
     }
-    setLoaded(ok)
-    setRejected(bad)
+    // Added to what is already loaded, so a teacher whose files sit in several
+    // folders can select them in more than one go without losing the earlier
+    // batch. Files are keyed by name, so selecting the same one twice replaces
+    // rather than duplicates it.
+    setLoaded(prev => [...prev.filter(p => !ok.some(o => o.file === p.file)), ...ok])
+    setRejected(prev => [...prev.filter(p => !bad.some(b => b.file === p.file)), ...bad])
   }
 
-  const included = loaded.filter(l => l.included)
-  const excluded = loaded.filter(l => !l.included)
-  const codes = included.map(l => l.code)
-  const duplicates = [...new Set(codes.filter((c, i) => codes.indexOf(c) !== i))]
+  function clearAll() {
+    setLoaded([])
+    setRejected([])
+  }
+
+  const groups = useMemo(() => group(loaded), [loaded])
+  const included = groups.filter(g => g.agreed && !g.conflicted)
+  const excluded = groups.filter(g => !g.agreed || g.conflicted)
+  const repeated = groups.filter(g => g.files.length > 1)
 
   if (!unlocked) {
     const first = teacherPin() === undefined
@@ -105,13 +161,22 @@ export default function Teacher() {
       <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>Merge a class</h1>
       <p style={note}>
         Select the JSON files your students handed in. Everything happens on this device;
-        nothing is uploaded. You get one table with a row per student, and a codebook that
-        explains what each column means.
+        nothing is uploaded. You can select more than once if your files sit in different
+        folders. You get one table with a row per student, and a codebook that explains
+        what each column means.
       </p>
 
-      <input type="file" accept="application/json,.json" multiple
-        onChange={e => { void take(e.target.files) }}
-        style={{ font: 'inherit', fontSize: 13.5, margin: '14px 0 18px', color: 'var(--ink-2)' }} />
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', margin: '14px 0 18px' }}>
+        <input type="file" accept="application/json,.json" multiple
+          onChange={e => { void take(e.target.files) }}
+          style={{ font: 'inherit', fontSize: 13.5, color: 'var(--ink-2)' }} />
+        {loaded.length + rejected.length > 0 && (
+          <button onClick={clearAll} style={{
+            background: 'none', border: 0, padding: 0, font: 'inherit', fontSize: 13,
+            color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
+          }}>Start again</button>
+        )}
+      </div>
 
       {loaded.length + rejected.length > 0 && (
         <div style={{
@@ -119,27 +184,29 @@ export default function Teacher() {
           borderRadius: 14, padding: 16, margin: '0 0 18px',
         }}>
           <p style={{ ...note, color: 'var(--ink)', fontWeight: 600 }}>
-            {included.length} student{included.length === 1 ? '' : 's'} will be in the table.
+            {included.length} student{included.length === 1 ? '' : 's'} will be in the table,
+            from {loaded.length} file{loaded.length === 1 ? '' : 's'}.
           </p>
 
           {excluded.length > 0 && (
             <>
               <p style={{ ...note, margin: '12px 0 4px', fontWeight: 600 }}>Left out on purpose</p>
               <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)' }}>
-                {excluded.map(l => (
-                  <li key={l.file} style={{ marginBottom: 4 }}>
-                    <strong style={{ fontFamily: 'var(--font-mono)' }}>{l.code}</strong> from {l.file}. {l.why}.
+                {excluded.map(g => (
+                  <li key={g.code} style={{ marginBottom: 4 }}>
+                    <strong style={{ fontFamily: 'var(--font-mono)' }}>{g.code}</strong> {whyLeftOut(g)}.
                   </li>
                 ))}
               </ul>
             </>
           )}
 
-          {duplicates.length > 0 && (
+          {repeated.length > 0 && (
             <p role="alert" style={{ ...note, margin: '12px 0 0', color: 'var(--caution)' }}>
-              The same participant code appears more than once: {duplicates.join(', ')}. That is
-              usually one student handing in twice, or two students who were never given separate
-              codes on a shared machine. Check before you analyse.
+              {repeated.map(g => g.code).join(', ')} appear{repeated.length === 1 ? 's' : ''} in more
+              than one file. Where the files agree, the most recent one is used. Check before you
+              analyse: this is usually one student handing in twice, or two students who were never
+              given separate codes on a shared machine.
             </p>
           )}
 
@@ -156,7 +223,7 @@ export default function Teacher() {
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <button
-          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(l => csvRow(l.state))])}
+          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(g => csvRow(g.newest.state))])}
           disabled={included.length === 0}
           className="tile"
           style={{
