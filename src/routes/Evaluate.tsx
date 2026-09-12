@@ -99,9 +99,20 @@ export default function Evaluate() {
       <label style={{ display: 'block', fontSize: 13, fontWeight: 600, margin: '0 0 6px', color: 'var(--ink)' }}>
         Anything else you want to say (optional)
       </label>
+      {/*
+        Typed text is held locally and written once the field is left. The
+        radios persist on every click because a click is rare; a keystroke is
+        not, and persisting serialises the whole store, which on the low end
+        Android phones these students use would show up as typing lag.
+      */}
       <textarea
         value={typeof answers.comments === 'string' ? answers.comments : ''}
-        onChange={e => set('comments', e.target.value)}
+        onChange={e => setAnswers(a => ({ ...a, comments: e.target.value }))}
+        onBlur={e => {
+          const next = { ...answers, comments: e.target.value }
+          setAnswers(next)
+          setSurvey(next)
+        }}
         rows={4}
         style={{
           width: '100%', padding: '10px 12px', borderRadius: 10,

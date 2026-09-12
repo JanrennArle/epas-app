@@ -328,7 +328,7 @@ Create `src/routes/Evaluate.tsx`:
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { LIKERT, SURVEY, SURVEY_CATEGORIES } from '../content/survey'
-import { setSurvey, surveyAnswers } from '../lib/store'
+import { inStudy, setSurvey, surveyAnswers } from '../lib/store'
 import type { RespondentType } from '../lib/types'
 
 const RESPONDENTS: { value: RespondentType; label: string }[] = [
@@ -339,19 +339,14 @@ const RESPONDENTS: { value: RespondentType; label: string }[] = [
 
 export default function Evaluate() {
   const [answers, setAnswers] = useState<Record<string, number | string>>(() => surveyAnswers())
-  const [saved, setSaved] = useState(false)
 
   const answered = SURVEY.filter(i => typeof answers[i.id] === 'number').length
   const ready = answered === SURVEY.length && typeof answers.respondent === 'string'
 
   function set(key: string, value: number | string) {
-    setSaved(false)
-    setAnswers(a => ({ ...a, [key]: value }))
-  }
-
-  function save() {
-    setSurvey(answers)
-    setSaved(true)
+    const next = { ...answers, [key]: value }
+    setAnswers(next)
+    setSurvey(next)
   }
 
   return (
@@ -363,6 +358,12 @@ export default function Evaluate() {
         Twenty statements about the app itself, not about what you learned. Say how far you
         agree with each one. Your answers stay on this device until you export them.
       </p>
+      {!inStudy() && (
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
+          You chose not to take part in the study, so these answers stay on this device and
+          will not be in what your teacher reports. You are welcome to answer them anyway.
+        </p>
+      )}
       <p style={{ fontSize: 13, color: 'var(--ink-3)', margin: '0 0 18px' }}>
         {answered} of {SURVEY.length} answered
       </p>
@@ -425,9 +426,20 @@ export default function Evaluate() {
       <label style={{ display: 'block', fontSize: 13, fontWeight: 600, margin: '0 0 6px', color: 'var(--ink)' }}>
         Anything else you want to say (optional)
       </label>
+      {/*
+        Typed text is held locally and written once the field is left. The
+        radios persist on every click because a click is rare; a keystroke is
+        not, and persisting serialises the whole store, which on the low end
+        Android phones these students use would show up as typing lag.
+      */}
       <textarea
         value={typeof answers.comments === 'string' ? answers.comments : ''}
-        onChange={e => set('comments', e.target.value)}
+        onChange={e => setAnswers(a => ({ ...a, comments: e.target.value }))}
+        onBlur={e => {
+          const next = { ...answers, comments: e.target.value }
+          setAnswers(next)
+          setSurvey(next)
+        }}
         rows={4}
         style={{
           width: '100%', padding: '10px 12px', borderRadius: 10,
@@ -436,22 +448,11 @@ export default function Evaluate() {
           margin: '0 0 18px', resize: 'vertical',
         }} />
 
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-        <button onClick={save} disabled={!ready} className="tile" style={{
-          minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-          background: ready ? 'var(--accent)' : 'var(--line)',
-          color: ready ? 'var(--on-accent)' : 'var(--ink-3)',
-          font: 'inherit', fontSize: 14, fontWeight: 600,
-          cursor: ready ? 'pointer' : 'default',
-        }}>
-          {ready ? 'Save my answers' : 'Answer every statement to save'}
-        </button>
-        {saved && (
-          <span role="status" style={{ fontSize: 13, color: 'var(--pass)' }}>
-            Saved on this device.
-          </span>
-        )}
-      </div>
+      <p role="status" style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: 0 }}>
+        {ready
+          ? 'All twenty answered. Your answers are saved on this device.'
+          : 'Your answers are saved on this device as you go. There is nothing to submit here.'}
+      </p>
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '18px 0 0' }}>
         Your answers go to your teacher only when you hand them in from{' '}
