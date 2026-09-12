@@ -45,6 +45,8 @@ npx vitest run -t "returns an empty string for an unknown test point"
 | `activity.ts` | One scorer serving all three activity formats |
 | `quiz.ts` | Formative quiz grading |
 | `assess.ts` | Test-form grading and per-competency learning gain |
+| `export.ts` | CSV quoting, the JSON bundle, and the 112 column row and codebook |
+| `merge.ts` | Which students' work belongs in a merged class table |
 | `store.ts` | The only localStorage owner (key `epas.v1`) |
 
 The UI is deliberately not unit-tested. Put behaviour worth testing in an engine, then test the engine, then check the screen in a browser.
@@ -77,6 +79,8 @@ These are not style preferences. Each one is a defect that shipped and was caugh
 
 **Hunt the exploit family before adding items.** Four separate ways to score without reading have been found and fixed, and they are one defect in different clothes: a surface feature correlating with correctness. Keys bunched on one option (43 of 45 on B). The key being the longest option (48 of 56). Pairs mismatched in difficulty. Keys balanced across the whole bank but not within each form, which a student sits one of. **Measure any new items for a fifth** across position, length, phrasing, and anything that differs systematically between form A and form B. `tests/bank.test.ts` guards the four that were found and cannot guard one nobody has looked for.
 
+**Consent is decided per student, and the rule is not the risky part.** The consent screen promises a declining student that nothing of theirs reaches the teacher's report. That promise broke three times while the export was built, and every time it broke in the glue rather than in the rule: consent decided per file, then an accumulation key on the filename, then an eviction key on the filename. Every export a student saves is named `epas-<code>.json`, so anything keyed on a filename silently merges two different sittings. `src/lib/merge.ts` owns the whole path now. Change it there, with tests, never in a component.
+
 **Distractors must be wrong, and stay wrong when edited.** Rewriting a wrong option into a fuller, more specific sentence can make it true. That happened twice in one commit. Re-read every distractor you lengthen and confirm a competent technician would still reject it.
 
 **No em dashes anywhere in user-visible copy.** Absolute. Applies to lesson text, quiz and test stems, options, rationales, scenario readings and remedies.
@@ -95,6 +99,9 @@ Four suites walk the whole content set and turn silent authoring mistakes into b
 - `tests/quiz-keys.test.ts` holds the formative items: key spread, and that a key points at the rationale explaining it.
 - `tests/bank.test.ts` holds the test items: 56 pinned, one A and one B per competency, no id colliding with a formative item, key spread **within each form**, and two length tells with a cap on the gap between the forms.
 - `tests/assess.test.ts` pins what a gain means. Three plausible misreadings of `gained` once passed the whole suite; they are now killed by name.
+- `tests/survey.test.ts` holds the twenty evaluation items: four per category, unique ids, none colliding with the two reserved keys.
+- `tests/export.test.ts` holds the CSV. Quoting, the formula guard, the defensive bundle parser, and that the header, the row and the codebook agree.
+- `tests/merge.test.ts` holds the consent rule. **Read its comments before changing anything about how files reach `groupByStudent`.**
 
 `src/lib/diagnose.ts` is frozen. `requiredTests` returns the *position* of the last implicating test point, which is what makes the taught diagnostic sweep outscore a lucky first guess. Changing `PENALTY`, `FLOOR` or that function rescores every scenario in the app.
 
