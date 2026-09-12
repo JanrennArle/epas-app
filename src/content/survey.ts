@@ -32,7 +32,7 @@ export const SURVEY: SurveyItem[] = [
   { id: 'rl1', category: 'Reliability', text: 'The app keeps working without crashing or freezing.' },
   { id: 'rl2', category: 'Reliability', text: 'My answers and my progress are still there when I come back to it.' },
   { id: 'rl3', category: 'Reliability', text: 'The app keeps working when the internet connection drops.' },
-  { id: 'rl4', category: 'Reliability', text: 'I can use the app without worrying that it will lose my work.' },
+  { id: 'rl4', category: 'Reliability', text: 'The app is ready to use whenever I open it.' },
 
   { id: 'us1', category: 'Usability', text: 'I could work out how to use the app without being taught.' },
   { id: 'us2', category: 'Usability', text: 'It is easy to find the module or the lesson I am looking for.' },
