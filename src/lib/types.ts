@@ -55,3 +55,24 @@ export interface BankItem {
   options: string[]
   answer: number
 }
+
+export type SurveyCategory =
+  | 'Functional Suitability'
+  | 'Reliability'
+  | 'Usability'
+  | 'Performance Efficiency'
+  | 'Portability'
+
+/** Who is answering. The paper reports the three groups separately. */
+export type RespondentType = 'student' | 'teacher' | 'expert'
+
+/**
+ * One ISO/IEC 25010 evaluation statement, answered on a five point Likert
+ * scale. The id is the CSV column name, so it must stay stable once data
+ * has been collected: changing it silently renames a column mid-study.
+ */
+export interface SurveyItem {
+  id: string
+  category: SurveyCategory
+  text: string
+}
