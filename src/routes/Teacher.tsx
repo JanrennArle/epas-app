@@ -147,7 +147,7 @@ export default function Teacher() {
                 {excluded.map(g => (
                   <li key={g.code} style={{ marginBottom: 4 }}>
                     <strong style={{ fontFamily: 'var(--font-mono)' }}>{g.code}</strong> {whyLeftOut(g)}.{' '}
-                    <span style={{ color: 'var(--ink-3)' }}>({g.files.map(f => f.file).join(', ')})</span>
+                    <span style={{ color: 'var(--ink-3)' }}>({[...new Set(g.files.map(f => f.file))].join(', ')})</span>
                   </li>
                 ))}
               </ul>
