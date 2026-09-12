@@ -6,6 +6,7 @@ import LessonReader from './routes/LessonReader'
 import Consent from './routes/Consent'
 import Assessment from './routes/Assessment'
 import Evaluate from './routes/Evaluate'
+import Progress from './routes/Progress'
 
 function NotBuiltYet() {
   return (
@@ -27,6 +28,7 @@ const router = createHashRouter([
   { path: '/m/:moduleId/test/:phase', element: <Shell><Assessment /></Shell> },
   { path: '/consent', element: <Shell><Consent /></Shell> },
   { path: '/evaluate', element: <Shell><Evaluate /></Shell> },
+  { path: '/progress', element: <Shell><Progress /></Shell> },
   { path: '*', element: <Shell><NotBuiltYet /></Shell> },
 ])
 
