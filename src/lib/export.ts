@@ -158,12 +158,16 @@ export function csvRow(state: StoreV1): Cell[] {
 
   for (const c of competencyColumns()) {
     const g = byPair.get(c.pair)
-    const bit = (v: boolean | null | undefined) => (v === true ? '1' : v === false ? '0' : '')
+    // Numbers, not the strings '1' and '0'. Numeric data must not go through
+    // csvCell's text path: that path guards anything starting with a dash, so
+    // a negative value emitted as a string would be silently prefixed. The
+    // rendered CSV is identical either way.
+    const bit = (v: boolean | null | undefined) => (v === true ? 1 : v === false ? 0 : '')
     row.push(bit(g?.pre), bit(g?.post))
     // A gain needs both sides, sat in that order. Anything else is missing
     // data rather than an absence of learning, so the cell stays empty.
     const measurable = g !== undefined && g.ordered && g.pre !== null && g.post !== null
-    row.push(measurable ? (g.gained ? '1' : '0') : '')
+    row.push(measurable ? (g.gained ? 1 : 0) : '')
   }
 
   const survey = state.survey ?? {}

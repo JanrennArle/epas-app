@@ -241,9 +241,9 @@ describe('csvRow', () => {
         att({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
       ],
     }))
-    expect(row[head.indexOf('pre__m1-c1')]).toBe('0')
-    expect(row[head.indexOf('post__m1-c1')]).toBe('1')
-    expect(row[head.indexOf('gain__m1-c1')]).toBe('1')
+    expect(row[head.indexOf('pre__m1-c1')]).toBe(0)
+    expect(row[head.indexOf('post__m1-c1')]).toBe(1)
+    expect(row[head.indexOf('gain__m1-c1')]).toBe(1)
   })
 
   it('does not score a gain where the competency was already held', () => {
@@ -254,7 +254,7 @@ describe('csvRow', () => {
         att({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
       ],
     }))
-    expect(row[head.indexOf('gain__m1-c1')]).toBe('0')
+    expect(row[head.indexOf('gain__m1-c1')]).toBe(0)
   })
 
   it('leaves the gain empty when only one side was sat', () => {
@@ -271,7 +271,7 @@ describe('csvRow', () => {
         att({ correct: true, runId: 'r2', at: '2026-01-02T00:00:00.000Z' }),
       ],
     }))
-    expect(row[head.indexOf('pre__m1-c1')]).toBe('1')
+    expect(row[head.indexOf('pre__m1-c1')]).toBe(1)
   })
 
   it('writes the survey answers and the free text', () => {
