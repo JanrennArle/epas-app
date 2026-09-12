@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { StoreV1 } from '../src/lib/store'
-import { csvCell, csvLine, parseBundle, toBundle, toCsv } from '../src/lib/export'
+import type { Attempt, StoreV1 } from '../src/lib/store'
+import {
+  codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow,
+  parseBundle, toBundle, toCsv,
+} from '../src/lib/export'
 
 function state(over: Partial<StoreV1> = {}): StoreV1 {
   return {
@@ -158,5 +161,156 @@ describe('parseBundle', () => {
     const r = parseBundle('{"format":"epas-export","formatVersion":0,"exportedAt":"x","state":{}}')
     expect(r.ok).toBe(false)
     if (!r.ok) expect(r.reason).toMatch(/unrecognised version/i)
+  })
+})
+
+function att(over: Partial<Attempt> = {}): Attempt {
+  return {
+    itemId: 'x', moduleId: 'm1', competency: 'Explain the overview of Electronic Systems Servicing.',
+    correct: true, at: '2026-01-01T00:00:00.000Z', context: 'pretest', runId: 'r1', ...over,
+  }
+}
+
+describe('competencyColumns', () => {
+  const cols = competencyColumns()
+
+  it('gives one column group per competency in the bank', () => {
+    expect(cols.length).toBe(28)
+  })
+
+  it('keys each group by a pair id rather than by the competency sentence', () => {
+    expect(cols[0]?.pair).toMatch(/^m\d+-c\d+$/)
+  })
+
+  it('carries the module and the full competency text for the codebook', () => {
+    const c = cols[0]!
+    expect(c.moduleId).toMatch(/^m\d+$/)
+    expect(c.competency.length).toBeGreaterThan(10)
+  })
+
+  it('returns them in a stable order across calls', () => {
+    expect(competencyColumns().map(c => c.pair)).toEqual(cols.map(c => c.pair))
+  })
+})
+
+describe('csvHeader', () => {
+  const head = csvHeader()
+
+  it('starts with the participant identity', () => {
+    expect(head.slice(0, 4)).toEqual(['participant_code', 'name', 'consented_at', 'in_study'])
+  })
+
+  it('carries three columns for every competency', () => {
+    expect(head.filter(h => h.startsWith('pre__')).length).toBe(28)
+    expect(head.filter(h => h.startsWith('post__')).length).toBe(28)
+    expect(head.filter(h => h.startsWith('gain__')).length).toBe(28)
+  })
+
+  it('carries one column per survey item plus the respondent and the comments', () => {
+    expect(head.filter(h => h.startsWith('sq_')).length).toBe(20)
+    expect(head).toContain('respondent')
+    expect(head).toContain('comments')
+  })
+
+  it('uses no character that would need quoting in a header', () => {
+    for (const h of head) expect(/[",\r\n]/.test(h), h).toBe(false)
+  })
+
+  it('repeats no column name', () => {
+    expect(new Set(head).size).toBe(head.length)
+  })
+})
+
+describe('csvRow', () => {
+  it('is exactly as wide as the header', () => {
+    expect(csvRow(state()).length).toBe(csvHeader().length)
+  })
+
+  it('reports a competency never sat as an empty cell rather than a zero', () => {
+    const head = csvHeader()
+    const row = csvRow(state())
+    const i = head.indexOf('pre__m1-c1')
+    expect(row[i]).toBe('')
+  })
+
+  it('writes 1 and 0 for a competency answered right and wrong', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      attempts: [
+        att({ correct: false, context: 'pretest', at: '2026-01-01T00:00:00.000Z' }),
+        att({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
+      ],
+    }))
+    expect(row[head.indexOf('pre__m1-c1')]).toBe('0')
+    expect(row[head.indexOf('post__m1-c1')]).toBe('1')
+    expect(row[head.indexOf('gain__m1-c1')]).toBe('1')
+  })
+
+  it('does not score a gain where the competency was already held', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      attempts: [
+        att({ correct: true, context: 'pretest', at: '2026-01-01T00:00:00.000Z' }),
+        att({ correct: true, context: 'posttest', at: '2026-02-01T00:00:00.000Z' }),
+      ],
+    }))
+    expect(row[head.indexOf('gain__m1-c1')]).toBe('0')
+  })
+
+  it('leaves the gain empty when only one side was sat', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ attempts: [att({ correct: false, context: 'pretest' })] }))
+    expect(row[head.indexOf('gain__m1-c1')]).toBe('')
+  })
+
+  it('reports only the newest run of a retaken test', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      attempts: [
+        att({ correct: false, runId: 'r1', at: '2026-01-01T00:00:00.000Z' }),
+        att({ correct: true, runId: 'r2', at: '2026-01-02T00:00:00.000Z' }),
+      ],
+    }))
+    expect(row[head.indexOf('pre__m1-c1')]).toBe('1')
+  })
+
+  it('writes the survey answers and the free text', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ survey: { fs1: 4, respondent: 'student', comments: 'clear' } }))
+    expect(row[head.indexOf('sq_fs1')]).toBe(4)
+    expect(row[head.indexOf('respondent')]).toBe('student')
+    expect(row[head.indexOf('comments')]).toBe('clear')
+  })
+
+  it('records whether the student agreed to take part', () => {
+    const head = csvHeader()
+    expect(csvRow(state({ participant: { code: 'X', research: true } }))[head.indexOf('in_study')]).toBe('yes')
+    expect(csvRow(state({ participant: { code: 'X', research: false } }))[head.indexOf('in_study')]).toBe('no')
+  })
+
+  // A record written before the choice existed is unknown, not consent.
+  it('reports an absent research field as unknown rather than as yes', () => {
+    const head = csvHeader()
+    expect(csvRow(state({ participant: { code: 'X' } }))[head.indexOf('in_study')]).toBe('unknown')
+  })
+})
+
+describe('codebookRows', () => {
+  const rows = codebookRows()
+
+  it('starts with a header', () => {
+    expect(rows[0]).toEqual(['column', 'kind', 'module', 'meaning'])
+  })
+
+  it('explains every competency column and every survey column', () => {
+    const named = rows.slice(1).map(r => r[0])
+    expect(named).toContain('pre__m1-c1')
+    expect(named).toContain('gain__m1-c1')
+    expect(named).toContain('sq_fs1')
+  })
+
+  it('names every column the header emits', () => {
+    const named = new Set(rows.slice(1).map(r => r[0]))
+    for (const h of csvHeader()) expect(named.has(h), `${h} is not in the codebook`).toBe(true)
   })
 })

@@ -142,14 +142,16 @@ export function newRunId(): string {
 }
 
 /**
- * The attempts from the most recent sitting of one module and context.
- * A repeat sitting supersedes an earlier one rather than being averaged
- * with it, so a student who retakes a pre-test is measured on the retake.
- * Records written before runs existed share the run `undefined` and are
- * returned together.
+ * The attempts from the most recent sitting of one module and context,
+ * given any list of attempts. Pure, so the export can apply it to another
+ * student's file. `attemptsFor` is this function over the local store.
  */
-export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
-  const all = loadState().attempts.filter(a => a.moduleId === moduleId && a.context === context)
+export function newestRun(
+  attempts: Attempt[],
+  moduleId: string,
+  context: AttemptContext,
+): Attempt[] {
+  const all = attempts.filter(a => a.moduleId === moduleId && a.context === context)
   if (all.length === 0) return []
   let newest = all[0]!
   // `>=` rather than `>` so that when two sittings share a timestamp the
@@ -157,6 +159,10 @@ export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[
   // most recent. With distinct timestamps the two behave identically.
   for (const a of all) if (a.at >= newest.at) newest = a
   return all.filter(a => a.runId === newest.runId)
+}
+
+export function attemptsFor(moduleId: string, context: AttemptContext): Attempt[] {
+  return newestRun(loadState().attempts, moduleId, context)
 }
 
 export function hasTaken(moduleId: string, context: AttemptContext): boolean {
