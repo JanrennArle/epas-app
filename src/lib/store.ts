@@ -197,7 +197,16 @@ export function hasConsented(): boolean {
  * the first instead of being kept beside it as another run.
  */
 export function setSurvey(answers: Record<string, number | string>): void {
-  update(s => { s.survey = { ...answers } })
+  update(s => {
+    const kept: Record<string, number | string> = {}
+    for (const [k, v] of Object.entries(answers)) {
+      // A blank string is an erased answer, not an answer of "". Storing it
+      // makes an empty comment look like a comment that was left.
+      if (typeof v === 'string' && v.trim() === '') continue
+      kept[k] = v
+    }
+    s.survey = kept
+  })
 }
 
 export function surveyAnswers(): Record<string, number | string> {
