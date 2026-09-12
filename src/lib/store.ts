@@ -223,3 +223,31 @@ export function setSurvey(answers: Record<string, number | string>): void {
 export function surveyAnswers(): Record<string, number | string> {
   return loadState().survey ?? {}
 }
+
+/**
+ * The teacher tool's gate lives under its own key, outside the participant
+ * record, for two reasons: handing a device to the next student clears the
+ * record and must not clear this, and a student's export is a copy of the
+ * record and must never contain it.
+ *
+ * This keeps a curious student out of a screen that is empty until files are
+ * loaded into it. It is not protection against anyone determined, and the
+ * screen says so rather than implying otherwise.
+ */
+const TEACHER_PIN_KEY = `${STORAGE_KEY}.teacher.pin`
+
+export function teacherPin(): string | undefined {
+  try {
+    return localStorage.getItem(TEACHER_PIN_KEY) ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function setTeacherPin(pin: string): void {
+  try {
+    localStorage.setItem(TEACHER_PIN_KEY, pin)
+  } catch {
+    // Storage full or blocked. The tool still works for this session.
+  }
+}

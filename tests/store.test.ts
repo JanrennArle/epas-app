@@ -2,6 +2,7 @@ import {
   loadState, saveState, recordAttempt, recordSim,
   markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
   setConsent, hasConsented, setSurvey, surveyAnswers, resetAll,
+  teacherPin, setTeacherPin,
 } from '../src/lib/store'
 import type { Attempt } from '../src/lib/store'
 
@@ -218,5 +219,32 @@ describe('survey answers', () => {
     setSurvey({ fs1: 4 })
     resetAll()
     expect(surveyAnswers()).toEqual({})
+  })
+})
+
+describe('the teacher PIN', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('is unset until one is chosen', () => {
+    expect(teacherPin()).toBeUndefined()
+  })
+
+  it('keeps what was set', () => {
+    setTeacherPin('2468')
+    expect(teacherPin()).toBe('2468')
+  })
+
+  // It belongs to the teacher's machine, not to the student record, so
+  // handing the device to a new participant must not clear it and a
+  // student's export must never carry it.
+  it('survives handing the device to a new participant', () => {
+    setTeacherPin('2468')
+    resetAll()
+    expect(teacherPin()).toBe('2468')
+  })
+
+  it('is not part of the exported student state', () => {
+    setTeacherPin('2468')
+    expect(JSON.stringify(loadState())).not.toContain('2468')
   })
 })
