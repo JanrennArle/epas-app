@@ -5,8 +5,19 @@ import { allModules } from '../src/content'
 const moduleIds = new Set(allModules().map(m => m.id))
 
 describe('the performance tasks', () => {
-  it('has a registry', () => {
-    expect(TASKS.length).toBeGreaterThanOrEqual(0)
+  // Pinned, not just non-empty: a refactor that dropped a sheet would
+  // otherwise leave every loop below quietly running on a shorter course.
+  it('holds the eight Budget of Work tasks', () => {
+    expect(TASKS.length).toBe(8)
+  })
+
+  // The Budget of Work alternates individual and group, and a student looking
+  // for the group tasks should find them where the course put them.
+  it('alternates individual and group as the Budget of Work does', () => {
+    expect(TASKS.map(t => t.kind)).toEqual([
+      'individual', 'group', 'individual', 'group',
+      'individual', 'group', 'individual', 'group',
+    ])
   })
 
   it('gives every task a unique id', () => {
