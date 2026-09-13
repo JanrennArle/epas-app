@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { codebookRows, csvHeader, csvRow, parseBundle } from '../lib/export'
+import { codebookRows, csvHeader, csvRow, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
 import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
 import type { LoadedFile } from '../lib/merge'
@@ -194,6 +194,19 @@ export default function Teacher() {
           color: 'var(--ink)', font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
         }}>
           Save the codebook
+        </button>
+        <button
+          onClick={() => downloadCsv('epas-rubric-sheet.csv', rubricRows(included.map(g => ({ code: g.code }))))}
+          disabled={included.length === 0}
+          className="tile"
+          style={{
+            minHeight: 44, padding: '11px 18px', borderRadius: 10,
+            border: '1px solid var(--line)', background: 'var(--surface)',
+            color: included.length ? 'var(--ink)' : 'var(--ink-3)',
+            font: 'inherit', fontSize: 14, fontWeight: 600,
+            cursor: included.length ? 'pointer' : 'default',
+          }}>
+          Save the rubric scoring sheet
         </button>
       </div>
     </div>

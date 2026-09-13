@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Attempt, StoreV1 } from '../src/lib/store'
 import {
   codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow,
-  parseBundle, toBundle, toCsv,
+  parseBundle, rubricRows, toBundle, toCsv,
 } from '../src/lib/export'
 
 function state(over: Partial<StoreV1> = {}): StoreV1 {
@@ -358,5 +358,100 @@ describe('codebookRows', () => {
   it('names every column the header emits', () => {
     const named = new Set(rows.slice(1).map(r => r[0]))
     for (const h of csvHeader()) expect(named.has(h), `${h} is not in the codebook`).toBe(true)
+  })
+})
+
+describe('task and engagement columns', () => {
+  it('carries three columns for every performance task', () => {
+    const head = csvHeader()
+    expect(head.filter(h => h.endsWith('_steps_done')).length).toBe(8)
+    expect(head.filter(h => h.endsWith('_steps_total')).length).toBe(8)
+    expect(head.filter(h => h.endsWith('_notes')).length).toBe(8)
+  })
+
+  it('carries the five engagement columns', () => {
+    const head = csvHeader()
+    for (const c of ['lessons_completed', 'formative_attempted', 'formative_correct', 'sims_run', 'sims_distinct']) {
+      expect(head, c).toContain(c)
+    }
+  })
+
+  it('is still exactly as wide as the header', () => {
+    expect(csvRow(state()).length).toBe(csvHeader().length)
+  })
+
+  it('reports an untouched task as zero of its step count, not as blank', () => {
+    const head = csvHeader()
+    const row = csvRow(state())
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(0)
+    expect(row[head.indexOf('task_t1_steps_total')]).toBeGreaterThan(0)
+  })
+
+  it('counts the steps a student ticked', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 2, 4] } } }))
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(3)
+  })
+
+  // A tick is the student's own record, so the count must not exceed the
+  // sheet: a stale index from an edited sheet would otherwise report six of
+  // five and nobody would notice until the analysis.
+  it('never reports more steps done than the sheet has', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 1, 2, 3, 4, 5, 6, 7, 99] } } }))
+    const done = row[head.indexOf('task_t1_steps_done')] as number
+    const total = row[head.indexOf('task_t1_steps_total')] as number
+    expect(done).toBeLessThanOrEqual(total)
+  })
+
+  it('counts engagement from the store', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      modules: { m1: { completedOutcomes: ['lo1', 'lo2'] }, m2: { completedOutcomes: ['lo1'] } },
+      attempts: [
+        { itemId: 'a', moduleId: 'm1', competency: 'C', correct: true, at: '2026-01-01T00:00:00.000Z', context: 'formative' },
+        { itemId: 'b', moduleId: 'm1', competency: 'C', correct: false, at: '2026-01-01T00:00:00.000Z', context: 'formative' },
+        { itemId: 'c', moduleId: 'm1', competency: 'C', correct: true, at: '2026-01-01T00:00:00.000Z', context: 'pretest' },
+      ],
+      sims: [
+        { simId: 'multimeter', moduleId: 'm1', score: 1, at: '2026-01-01T00:00:00.000Z', evidence: {} },
+        { simId: 'multimeter', moduleId: 'm1', score: 1, at: '2026-01-02T00:00:00.000Z', evidence: {} },
+        { simId: 'psu', moduleId: 'm2', score: 1, at: '2026-01-03T00:00:00.000Z', evidence: {} },
+      ],
+    }))
+    expect(row[head.indexOf('lessons_completed')]).toBe(3)
+    expect(row[head.indexOf('formative_attempted')]).toBe(2)
+    expect(row[head.indexOf('formative_correct')]).toBe(1)
+    expect(row[head.indexOf('sims_run')]).toBe(3)
+    expect(row[head.indexOf('sims_distinct')]).toBe(2)
+  })
+
+  it('explains every new column in the codebook', () => {
+    const named = new Set(codebookRows().slice(1).map(r => r[0]))
+    for (const h of csvHeader()) expect(named.has(h), `${h} is not in the codebook`).toBe(true)
+  })
+})
+
+describe('rubricRows', () => {
+  const rows = rubricRows([{ code: 'EPAS-AAAA11' }])
+
+  it('starts with a header', () => {
+    expect(rows[0]).toEqual(['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score'])
+  })
+
+  it('gives one row per student per task per criterion', () => {
+    expect(rows.length - 1).toBe(33)
+  })
+
+  it('leaves the score blank for the teacher to fill in', () => {
+    expect(rows[1]?.[5]).toBe('')
+  })
+
+  it('repeats the whole sheet for a second student', () => {
+    expect(rubricRows([{ code: 'A' }, { code: 'B' }]).length - 1).toBe(66)
+  })
+
+  it('returns only a header for no students', () => {
+    expect(rubricRows([])).toHaveLength(1)
   })
 })

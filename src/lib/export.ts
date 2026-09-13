@@ -1,6 +1,7 @@
 import { allModules } from '../content'
 import { BANK } from '../content/bank'
 import { SURVEY } from '../content/survey'
+import { TASKS } from '../content/tasks'
 import { competencyGains } from './assess'
 import type { StoreV1 } from './store'
 import { newestRun } from './store'
@@ -127,6 +128,8 @@ export function csvHeader(): string[] {
   const head = ['participant_code', 'name', 'consented_at', 'in_study', 'exported_at', 'files_from_student']
   for (const c of competencyColumns()) head.push(`pre__${c.pair}`, `post__${c.pair}`, `gain__${c.pair}`)
   for (const item of SURVEY) head.push(`sq_${item.id}`)
+  for (const t of TASKS) head.push(`task_${t.id}_steps_done`, `task_${t.id}_steps_total`, `task_${t.id}_notes`)
+  head.push('lessons_completed', 'formative_attempted', 'formative_correct', 'sims_run', 'sims_distinct')
   head.push('respondent', 'comments')
   return head
 }
@@ -202,6 +205,26 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
 
   const survey = state.survey ?? {}
   for (const item of SURVEY) row.push(survey[item.id] ?? '')
+
+  for (const t of TASKS) {
+    const p = state.tasks?.[t.id]
+    // Clamped to the sheet. A tick is stored as an index, so a sheet edited
+    // between terms could leave an index that no longer exists, and reporting
+    // six of five would not be noticed until the analysis.
+    const done = p ? p.checked.filter(i => i >= 0 && i < t.steps.length).length : 0
+    row.push(done, t.steps.length, p?.notes ?? '')
+  }
+
+  const lessons = Object.values(state.modules).reduce((n, m) => n + m.completedOutcomes.length, 0)
+  const formative = state.attempts.filter(a => a.context === 'formative')
+  row.push(
+    lessons,
+    formative.length,
+    formative.filter(a => a.correct).length,
+    state.sims.length,
+    new Set(state.sims.map(s => s.simId)).size,
+  )
+
   row.push(survey.respondent ?? '', survey.comments ?? '')
 
   return row
@@ -229,8 +252,42 @@ export function codebookRows(): Cell[][] {
   for (const item of SURVEY) {
     rows.push([`sq_${item.id}`, 'survey', '', `1 to 5, strongly disagree to strongly agree. ${item.category}: ${item.text}`])
   }
+
+  for (const t of TASKS) {
+    rows.push([`task_${t.id}_steps_done`, 'task', t.modules.join(' '), `Steps the student ticked on ${t.title}. Their own record of what they did, not evidence that they did it`])
+    rows.push([`task_${t.id}_steps_total`, 'task', t.modules.join(' '), `How many steps that sheet has`])
+    rows.push([`task_${t.id}_notes`, 'task', t.modules.join(' '), `What the student wrote on ${t.title}`])
+  }
+  rows.push(['lessons_completed', 'engagement', '', 'Learning outcomes marked complete across all nine modules'])
+  rows.push(['formative_attempted', 'engagement', '', 'Formative quiz items answered inside lessons. Excluded from the gain'])
+  rows.push(['formative_correct', 'engagement', '', 'How many of those were right'])
+  rows.push(['sims_run', 'engagement', '', 'Simulation runs recorded, including repeats and runs started from Labs'])
+  rows.push(['sims_distinct', 'engagement', '', 'How many different simulations were run at least once'])
+
   rows.push(['respondent', 'survey', '', 'student, teacher, or expert'])
   rows.push(['comments', 'survey', '', 'Free text, optional'])
 
+  return rows
+}
+
+/**
+ * The sheet a teacher scores by hand. A performance task is judged by watching
+ * a student work at a bench, so the app supplies the criteria, the maximum for
+ * each, and a blank column. Deriving a score from ticked checkboxes would
+ * produce a number that looks like an assessment and is not one.
+ *
+ * Every task is listed for every student, whether or not they ticked anything,
+ * so the teacher gets a complete sheet rather than one with gaps they have to
+ * notice.
+ */
+export function rubricRows(students: { code: string }[]): Cell[][] {
+  const rows: Cell[][] = [['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score']]
+  for (const s of students) {
+    for (const t of TASKS) {
+      for (const r of t.rubric) {
+        rows.push([s.code, t.id, t.title, r.criterion, r.points, ''])
+      }
+    }
+  }
   return rows
 }
