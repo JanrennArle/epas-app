@@ -9,7 +9,7 @@ export const t5: PerformanceTask = {
   modules: ['m4', 'm5'],
   safety: [
     'The camera side is low voltage, but the power supply that feeds it is not. Treat the supply as mains until you have proved otherwise.',
-    'Two of the checks below need the system powered. Clip your probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them.',
+    'Several of the checks below need the system powered. Clip your probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them.',
     'Isolate the supply before you cut, strip or re-terminate any cable. A connector made up live is a short waiting to happen.',
     'A camera on a bracket at height is a falling object. Support it before you loosen anything.',
     'Never work at height on your own. Somebody stays at the foot of the ladder for as long as you are on it.',

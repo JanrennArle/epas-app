@@ -23,7 +23,7 @@ export const t6: PerformanceTask = {
     'Correct what you found, remaking terminations properly rather than twisting conductors together.',
     'Reconnect the zone and confirm the panel shows it healthy with no fault light.',
     'Prove one device on the zone while the panel is still in test, so the proof does not sound an alarm the building was not warned about.',
-    'Only then take the panel out of test, and tell the building the system is back in service.',
+    'Reset the panel, restore the device you proved, and only then take the panel out of test and tell the building the system is back in service.',
   ],
   rubric: [
     { criterion: 'Preparation', descriptor: 'The panel is put into test and the building is told before any work begins.', points: 5 },

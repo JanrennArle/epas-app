@@ -17,7 +17,7 @@ export const t3: PerformanceTask = {
     'Confirm the fault for yourself and write down exactly what the appliance does and does not do.',
     'Unplug the appliance, open it, and look for anything obvious: a burnt smell, a discoloured lead, a loose terminal.',
     'With the appliance still unplugged, check continuity through the supply cord from the plug pins to the internal terminals, flexing the cord at the plug and at the entry while you watch the meter, because a break there shows only while it moves.',
-    'Still unplugged, check continuity from the earth pin of the plug to any exposed metal the user can touch.',
+    'Still unplugged, and only if the appliance has an earth pin, check continuity from that pin to any exposed metal the user can touch. A double insulated appliance has no earth to check.',
     'Still unplugged, test the switch, the thermal cutout, and the winding or element, one at a time, and write each reading down.',
     'If the appliance has a capacitor, discharge it first, then measure it and compare against the value marked on it.',
     'Replace what the readings condemned, and nothing that they did not.',
