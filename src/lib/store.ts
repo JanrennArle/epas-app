@@ -281,6 +281,12 @@ export function taskProgress(taskId: string): TaskProgress {
  * Replaces one task's record. Replace rather than merge, or unticking a step
  * would leave it ticked, which is the sort of thing a student would notice
  * only after handing in.
+ *
+ * Because it replaces, **the caller must pass the whole record**. Sending
+ * `checked` without carrying the existing `notes` through erases the note, and
+ * the student would have no way of knowing. `checked` is stored in ascending
+ * order, so the sequence a student ticked in is not recoverable; nothing needs
+ * it, and the export counts ticks rather than reading their order.
  */
 export function setTaskProgress(taskId: string, progress: TaskProgress): void {
   update(s => {
