@@ -23,7 +23,7 @@ export const t3: PerformanceTask = {
     'Measure the capacitor against the value marked on it, with one of its leads lifted so the winding is not reading in parallel with it.',
     'Replace what the readings condemned, and nothing that they did not.',
     'Reassemble the appliance completely, then plug it in and run it through every speed or heat setting.',
-    'If anything still needs attention, unplug the appliance again before you reopen it, and repeat the test once it is closed.',
+    'If anything still needs attention, unplug the appliance, discharge the capacitor again and confirm it reads close to zero volts before you reopen it, because the run you just did recharged it. Then repeat the test once it is closed.',
   ],
   rubric: [
     { criterion: 'Diagnosis', descriptor: 'The faulty part is identified from measurements rather than from guessing, and the readings are written down.', points: 6 },

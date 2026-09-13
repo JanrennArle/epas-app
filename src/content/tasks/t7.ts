@@ -9,7 +9,8 @@ export const t7: PerformanceTask = {
   modules: ['m8', 'm9'],
   safety: [
     'The filter capacitors in an amplifier supply hold their charge after the mains is removed. Discharge them through a bleeder resistor and confirm with a meter that they read close to zero volts before touching the board.',
-    'Several of the checks below need the unit powered, and where you may move a probe live depends on which side of the transformer you are on. On the mains side, the inlet, the fuse and the primary, clip both probes on with the unit off and switch off again before you move either of them. On the low voltage side after the transformer, where the rail and signal comparisons happen, you may move one probe with the unit running, with the other clipped to the board ground and your free hand off the chassis.',
+    'Several of the checks below need the unit powered, and you cannot tell by looking which points are safe to probe while it is. The mains half of a control board is live wherever it reaches, including parts that look like ordinary low voltage components. So before you power anything, go over the board with your teacher and have them mark which points are on the mains side. Treat the inlet and the fuse as mains whatever else is marked.',
+    'At the mains points, clip both probes on with the unit unplugged, and unplug it again before you move either of them. Switching off is not enough: an inlet and a fuse stay live with the switch off. At the points your teacher marked safe, which is where the rail and signal comparisons below are taken, you may move one probe with the unit running, with the other clipped to the board ground and your free hand off the chassis.',
     'Turn the volume fully down before you switch on again. A fault can put full output into a speaker without warning, and that damages both the speaker and your hearing.',
     'Handle the board by its edges. Static from your hands damages semiconductors in ways that do not show up until later.',
   ],
@@ -27,6 +28,6 @@ export const t7: PerformanceTask = {
     { criterion: 'Narrowing the fault', descriptor: 'The affected channel and stage are identified before the case is opened, and the signal path is followed in order.', points: 6 },
     { criterion: 'Measurement', descriptor: 'Rails and signals are measured at the right points with the right meter setting, and readings are written down.', points: 5 },
     { criterion: 'Repair quality', descriptor: 'The replacement matches the original rating, the joints are sound, and the board is handled by its edges.', points: 5 },
-    { criterion: 'Safe working', descriptor: 'The capacitors were proved discharged before contact, the mains side was probed only with the unit off, and the volume was down at switch on.', points: 6 },
+    { criterion: 'Safe working', descriptor: 'The mains points were agreed with the teacher before anything was powered, the capacitors were proved discharged before contact, the mains points were probed only with the unit unplugged, and the volume was down at switch on.', points: 6 },
   ],
 }

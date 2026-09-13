@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { classTable, codebookRows, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
-import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
+import { addLoaded, excludedStudents, groupByStudent, includedStudents, markingList, whyLeftOut } from '../lib/merge'
 import type { LoadedFile, StudentGroup } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
 import type { CSSProperties } from 'react'
@@ -97,12 +97,9 @@ export default function Teacher() {
   const groups = useMemo(() => groupByStudent(loaded), [loaded])
   const included = includedStudents(groups)
   const excluded = excludedStudents(groups)
-  // The marking grid covers everyone who handed in, both lists. A student who
-  // declined the study is still a student whose performance tasks you have to
-  // mark, and the grid holds nothing of theirs: a code, the criteria, and an
-  // empty column. The consent rule governs what is reported, which is the
-  // class table, and that still comes from `included` alone.
-  const marking = groups.map(g => ({ code: g.code })).sort((a, b) => a.code.localeCompare(b.code))
+  // Who the blank marking grid covers is a consent question, so merge.ts
+  // decides it, next to the filter the class table uses.
+  const marking = markingList(groups)
   const repeated = groups.filter(g => g.files.length > 1)
 
   if (!unlocked) {
@@ -240,12 +237,14 @@ export default function Teacher() {
         </button>
       </div>
 
-      <p style={{ ...note, marginTop: 12, color: 'var(--ink-3)', fontSize: 12.5 }}>
-        The class table holds the {included.length === 1 ? 'one student' : `${included.length} students`} who
-        agreed to take part. The rubric scoring sheet is a blank marking grid and covers
-        all {marking.length}, because a student who declined the study is still a student
-        whose performance tasks you mark.
-      </p>
+      {marking.length > 0 && (
+        <p style={{ ...note, marginTop: 12, color: 'var(--ink-3)', fontSize: 12.5 }}>
+          The class table holds the {included.length === 1 ? 'one student' : `${included.length} students`} who
+          agreed to take part. The rubric scoring sheet is a blank marking grid and covers
+          all {marking.length}, because a student who declined the study is still a student
+          whose performance tasks you mark.
+        </p>
+      )}
 
       {unreadable.length > 0 && (
         <div role="status" style={{

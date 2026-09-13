@@ -164,9 +164,12 @@ describe('the labs gallery', () => {
    * complete key. A student reading the gallery scores without opening
    * anything.
    *
-   * Checked for every format rather than the one it was found in, which is
-   * the mistake the first version of this guard made. Answer ids are single
-   * words, which is what makes this checkable, so the suite pins that too.
+   * This one covers the activity cards; the scenario cards have their own
+   * below, because their answer is a fault and not an ordering. Between them
+   * they reach every card, which the first version of this guard did not:
+   * it checked sequences only, and the match and hotspot blurbs had the same
+   * leak. Answer ids are single words, which is what makes this checkable, so
+   * the suite pins that too.
    */
   it('never names its own answers on the card that opens it', () => {
     for (const lab of LABS) {
@@ -187,7 +190,7 @@ describe('the labs gallery', () => {
   })
 
   /**
-   * The same rule for the ten scenario cards, whose answer is a fault rather
+   * The same rule for the scenario cards, whose answer is a fault rather
    * than an ordering.
    *
    * The card carries the symptom, which is what a customer says and what a
@@ -218,6 +221,9 @@ describe('the labs gallery', () => {
         ...words(scenario.appliance),
       ])
       const telling = words(actual.label).filter(w => !shared.has(w) && w.length > 3)
+      // With nothing left to check, the assertion below passes on an empty
+      // list and this card is silently unguarded.
+      expect(telling, `${lab.id} has a fault name distinguishable in words`).not.toHaveLength(0)
       const copy = new Set(words(`${lab.title} ${lab.blurb}`))
       const leaked = telling.filter(w => copy.has(w))
       expect(leaked, `${lab.id} names ${leaked.join(', ')} on its card`).toHaveLength(0)

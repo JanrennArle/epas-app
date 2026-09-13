@@ -90,6 +90,24 @@ export function includedStudents(groups: StudentGroup[]): StudentGroup[] {
   return groups.filter(g => g.agreed && !g.conflicted)
 }
 
+/**
+ * Everyone who handed in, for the blank marking grid.
+ *
+ * This is the one output that is not filtered by consent, and it lives here
+ * beside the filter rather than in the screen that downloads it, because the
+ * consent promise broke three times in exactly that kind of glue. The reason
+ * it is unfiltered: declining the study keeps a student's results out of what
+ * the teacher reports, which is `includedStudents` and the class table built
+ * from it. It does not stop them being a class member whose performance tasks
+ * are marked, and the grid carries nothing of theirs, only the code, the
+ * criteria and an empty column. Sorted so the grid is the same every time.
+ */
+export function markingList(groups: StudentGroup[]): { code: string }[] {
+  return groups
+    .map(g => ({ code: g.code }))
+    .sort((a, b) => a.code.localeCompare(b.code))
+}
+
 /** The students deliberately left out, which the teacher is shown. */
 export function excludedStudents(groups: StudentGroup[]): StudentGroup[] {
   return groups.filter(g => !g.agreed || g.conflicted)

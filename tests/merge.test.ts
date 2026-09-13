@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { StoreV1 } from '../src/lib/store'
 import type { LoadedFile } from '../src/lib/merge'
 import {
-  addLoaded, excludedStudents, exportKey, groupByStudent, includedStudents, whyLeftOut,
+  addLoaded, excludedStudents, exportKey, groupByStudent, includedStudents, markingList, whyLeftOut,
 } from '../src/lib/merge'
 
 function state(code: string, research?: boolean): StoreV1 {
@@ -127,6 +127,43 @@ describe('who is in the merged table', () => {
     ])
     expect(includedStudents(g).map(x => x.code)).toEqual(['A'])
     expect(excludedStudents(g).map(x => x.code).sort()).toEqual(['B', 'C'])
+  })
+})
+
+describe('the marking list', () => {
+  // The one output consent does not filter, and the reason it does not is the
+  // consent screen's own sentence: taking part is optional, the coursework is
+  // not. A student left off this list is a student whose performance tasks
+  // nobody marks.
+  it('covers the students who declined as well as the ones who agreed', () => {
+    const g = groupByStudent([
+      file({ code: 'B', research: false }),
+      file({ code: 'A', research: true }),
+    ])
+    expect(markingList(g).map(x => x.code)).toEqual(['A', 'B'])
+    expect(includedStudents(g).map(x => x.code)).toEqual(['A'])
+  })
+
+  it('covers a student whose files disagree about taking part', () => {
+    const g = groupByStudent([
+      file({ code: 'A', file: 'one.json', research: true, exportedAt: '2026-01-01T00:00:00.000Z' }),
+      file({ code: 'A', file: 'two.json', research: false, exportedAt: '2026-02-01T00:00:00.000Z' }),
+    ])
+    expect(markingList(g).map(x => x.code)).toEqual(['A'])
+    expect(includedStudents(g)).toEqual([])
+  })
+
+  // It carries a code and nothing else, which is what makes covering a
+  // declining student compatible with the promise made to them.
+  it('carries nothing but the code', () => {
+    const g = groupByStudent([file({ code: 'A', research: false })])
+    expect(markingList(g)).toEqual([{ code: 'A' }])
+  })
+
+  it('is in the same order however the files arrived', () => {
+    const codes = ['C', 'A', 'B']
+    const g = groupByStudent(codes.map(code => file({ code, research: true })))
+    expect(markingList(g).map(x => x.code)).toEqual(['A', 'B', 'C'])
   })
 })
 

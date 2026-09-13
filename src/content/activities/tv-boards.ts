@@ -17,7 +17,9 @@ export const tvBoards: HotspotActivityData = {
     { kind: 'text', x: 200, y: 236, text: 'Rear view, back cover removed', anchor: 'middle' },
   ],
   // Not in the order the questions ask for them, forwards or backwards. See
-  // the note in control-board.ts.
+  // the note in control-board.ts. The regions are placed by coordinate rather
+  // than listed, so this is a weaker tell than the match version, but it is
+  // still the tab order and the DOM order, and it costs nothing to remove.
   regions: [
     { id: 'backlight', label: 'Backlight', xPct: 50, yPct: 53 },
     { id: 'panel', label: 'Panel', xPct: 50, yPct: 27.5 },

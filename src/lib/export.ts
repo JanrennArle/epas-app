@@ -344,7 +344,7 @@ export function codebookRows(): Cell[][] {
     rows.push([`task_${t.id}_notes`, 'task', t.modules.join(' '), `What the student wrote on ${t.title}`])
   }
   rows.push(['lessons_completed', 'engagement', '', 'Learning outcomes marked complete across all nine modules. One outcome is one lesson in this app, so this counts outcomes'])
-  rows.push(['formative_attempted', 'engagement', '', 'Formative quiz answers recorded inside lessons, including repeats: the quiz starts again on every visit to a lesson and shows the student why each option is right, so a determined student can raise this without learning anything. Excluded from the gain, and not a measure of how many distinct items were seen'])
+  rows.push(['formative_attempted', 'engagement', '', 'Formative quiz answers recorded inside lessons, including repeats: the quiz starts again on every visit to a lesson and explains the option the student chose, so a determined student can raise this without learning anything. Excluded from the gain, and not a measure of how many distinct items were seen'])
   rows.push(['formative_correct', 'engagement', '', 'How many of those answers were right, on the same counting, repeats included'])
   rows.push(['sims_run', 'engagement', '', 'Simulation runs recorded, including repeats and runs started from Labs'])
   rows.push(['sims_distinct', 'engagement', '', 'How many different simulations were run at least once'])
@@ -356,25 +356,18 @@ export function codebookRows(): Cell[][] {
 }
 
 /**
- * The sheet a teacher scores by hand. A performance task is judged by watching
- * a student work at a bench, so the app supplies the criteria, the maximum for
- * each, and a blank column. Deriving a score from ticked checkboxes would
- * produce a number that looks like an assessment and is not one.
+ * The sheet a teacher scores by hand: one row per student per rubric
+ * criterion. A performance task is judged by watching a student work at a
+ * bench, so the app supplies the criteria, the maximum for each, and a blank
+ * column. Deriving a score from ticked checkboxes would produce a number that
+ * looks like an assessment and is not one.
  *
- * Every task is listed for every student, whether or not they ticked anything,
- * so the teacher gets a complete sheet rather than one with gaps they have to
- * notice.
- */
-/**
- * The blank marking grid, one row per student per rubric criterion.
- *
- * Every student who handed in a file belongs on it, including the ones who
- * declined the study. Declining keeps a student's results out of what the
- * teacher reports; it does not stop them being a class member whose
- * performance tasks must be marked, which is what the consent screen means by
- * "it is your coursework either way". Nothing of the student's is in these
- * rows: the code, the sheet, the criterion, the maximum, and an empty column
- * for the teacher to write in.
+ * Every task is listed for every student, whether or not they ticked
+ * anything, so the teacher gets a complete sheet rather than one with gaps
+ * they have to notice. Who the students are is `markingList` in `merge.ts`,
+ * which is the one output consent does not filter, and the reason it does not
+ * is there beside the filter. Nothing of the student's is in these rows: the
+ * code, the sheet, the criterion, the maximum, and an empty column.
  */
 export function rubricRows(students: { code: string }[]): Cell[][] {
   const rows: Cell[][] = [['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score']]
