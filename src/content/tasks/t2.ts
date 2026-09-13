@@ -20,7 +20,7 @@ export const t2: PerformanceTask = {
     'Connect the test instruments first, then apply power for the first time with one person watching the current draw.',
     'Work through the functional tests the schematic calls for, and write each reading down as you take it rather than at the end.',
     'Take the power off and discharge the filter capacitors before anyone touches the board to correct something.',
-    'Repeat the functional tests after every correction, not only after the last one.',
+    'Restore the power and repeat the functional tests after every correction, not only after the last one.',
   ],
   rubric: [
     { criterion: 'Reading the schematic', descriptor: 'The built circuit matches the schematic, including component values and orientation.', points: 5 },
