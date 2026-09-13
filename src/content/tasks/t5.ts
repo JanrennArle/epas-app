@@ -22,7 +22,7 @@ export const t5: PerformanceTask = {
     'Isolate the supply, then inspect the run for damage and open each termination, because a connector made up badly is the commonest fault on these systems and you cannot see inside one without opening it.',
     'Still isolated, re-terminate or replace whatever the measurements and the inspection condemned.',
     'Restore the supply and confirm the picture at the recorder, in daylight and again with the room darkened if the camera claims night operation.',
-    'Tidy and support the cable run so the repair does not become next term problem for somebody else.',
+    'Tidy and support the cable run so that this repair is not the fault somebody finds next term.',
   ],
   rubric: [
     { criterion: 'Narrowing the fault', descriptor: 'What the working cameras prove is used to narrow the search before anything is opened.', points: 6 },
