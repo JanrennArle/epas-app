@@ -2,7 +2,7 @@ import {
   loadState, saveState, recordAttempt, recordSim,
   markOutcomeComplete, newRunId, attemptsFor, hasTaken, STORAGE_KEY,
   setConsent, hasConsented, setSurvey, surveyAnswers, resetAll,
-  teacherPin, setTeacherPin,
+  teacherPin, setTeacherPin, taskProgress, setTaskProgress,
 } from '../src/lib/store'
 import type { Attempt } from '../src/lib/store'
 
@@ -246,5 +246,54 @@ describe('the teacher PIN', () => {
   it('is not part of the exported student state', () => {
     setTeacherPin('2468')
     expect(JSON.stringify(loadState())).not.toContain('2468')
+  })
+})
+
+describe('performance task progress', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('starts with nothing ticked', () => {
+    expect(taskProgress('t1')).toEqual({ checked: [] })
+  })
+
+  it('keeps what was ticked', () => {
+    setTaskProgress('t1', { checked: [0, 2] })
+    expect(taskProgress('t1').checked).toEqual([0, 2])
+  })
+
+  it('keeps each task separate', () => {
+    setTaskProgress('t1', { checked: [0] })
+    setTaskProgress('t2', { checked: [1, 2] })
+    expect(taskProgress('t1').checked).toEqual([0])
+    expect(taskProgress('t2').checked).toEqual([1, 2])
+  })
+
+  // `checked` is a set of step indices, not a log of taps. One index stored
+  // twice would report ten steps done out of nine in the class CSV.
+  it('stores a step index once however many times it arrives', () => {
+    setTaskProgress('t1', { checked: [0, 0, 0, 2, 2] })
+    expect(taskProgress('t1').checked).toEqual([0, 2])
+  })
+
+  it('stamps when the sheet was last touched', () => {
+    setTaskProgress('t1', { checked: [0] })
+    expect(taskProgress('t1').at).toBeDefined()
+  })
+
+  it('drops a blank note rather than storing an empty string', () => {
+    setTaskProgress('t1', { checked: [], notes: '   ' })
+    expect(taskProgress('t1').notes).toBeUndefined()
+  })
+
+  it('replaces rather than merging, so unticking actually unticks', () => {
+    setTaskProgress('t1', { checked: [0, 1, 2] })
+    setTaskProgress('t1', { checked: [0] })
+    expect(taskProgress('t1').checked).toEqual([0])
+  })
+
+  it('is cleared when the device is handed to a new participant', () => {
+    setTaskProgress('t1', { checked: [0] })
+    resetAll()
+    expect(taskProgress('t1')).toEqual({ checked: [] })
   })
 })

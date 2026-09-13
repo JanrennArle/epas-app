@@ -17,11 +17,15 @@ export const flatIronParts: HotspotActivityData = {
     { kind: 'line', x1: 78, y1: 100, x2: 26, y2: 86, width: 5 },
     { kind: 'text', x: 200, y: 190, text: 'Side view, cover removed', anchor: 'middle' },
   ],
+  // Deliberately not in the order the questions ask for them. See the note in
+  // control-board.ts. The regions are placed by coordinate rather than listed,
+  // so this is a weaker tell than the match version, but it is still the tab
+  // order and the DOM order, and it costs nothing to remove.
   regions: [
-    { id: 'element', label: 'Heating element', xPct: 50, yPct: 78 },
-    { id: 'thermostat', label: 'Thermostat', xPct: 63, yPct: 56 },
     { id: 'fuse', label: 'Thermal fuse', xPct: 37, yPct: 56 },
     { id: 'cord', label: 'Cord entry', xPct: 13, yPct: 47 },
+    { id: 'element', label: 'Heating element', xPct: 50, yPct: 78 },
+    { id: 'thermostat', label: 'Thermostat', xPct: 63, yPct: 56 },
   ],
   items: [
     { id: 'q1', prompt: 'Which part turns electricity into the heat that reaches the plate?', answer: 'element' },

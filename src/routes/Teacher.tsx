@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
-import { codebookRows, csvHeader, csvRow, parseBundle } from '../lib/export'
+import { classTable, codebookRows, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
-import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
-import type { LoadedFile } from '../lib/merge'
+import { addLoaded, excludedStudents, groupByStudent, includedStudents, markingList, whyLeftOut } from '../lib/merge'
+import type { LoadedFile, StudentGroup } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
 import type { CSSProperties } from 'react'
 
@@ -15,12 +15,30 @@ const note: CSSProperties = {
   fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px',
 }
 
+/** What `classTable` needs from a merged student, and nothing more. */
+function forExport(g: StudentGroup) {
+  return {
+    code: g.code,
+    state: g.newest.state,
+    from: {
+      inStudy: 'yes',
+      exportedAt: g.newest.exportedAt,
+      filesFromStudent: g.files.length,
+    },
+  }
+}
+
 export default function Teacher() {
   const [unlocked, setUnlocked] = useState(false)
   const [pin, setPin] = useState('')
   const [pinError, setPinError] = useState('')
   const [loaded, setLoaded] = useState<LoadedFile[]>([])
   const [rejected, setRejected] = useState<Rejected[]>([])
+  // Students whose file was read and accepted but could not be turned into a
+  // row. Kept in state so the teacher is told on screen; a table that
+  // silently replaced a student with blanks would be found in the analysis,
+  // months later, by someone who could no longer ask them to hand in again.
+  const [unreadable, setUnreadable] = useState<string[]>([])
 
   function unlock() {
     const stored = teacherPin()
@@ -70,6 +88,8 @@ export default function Teacher() {
   function clearAll() {
     setLoaded([])
     setRejected([])
+    // Or the gaps panel keeps naming students from the class that just left.
+    setUnreadable([])
     // Otherwise the browser keeps showing "3 files" beside an empty screen.
     if (fileInput.current) fileInput.current.value = ''
   }
@@ -77,6 +97,9 @@ export default function Teacher() {
   const groups = useMemo(() => groupByStudent(loaded), [loaded])
   const included = includedStudents(groups)
   const excluded = excludedStudents(groups)
+  // Who the blank marking grid covers is a consent question, so merge.ts
+  // decides it, next to the filter the class table uses.
+  const marking = markingList(groups)
   const repeated = groups.filter(g => g.files.length > 1)
 
   if (!unlocked) {
@@ -176,7 +199,11 @@ export default function Teacher() {
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <button
-          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(g => csvRow(g.newest.state, { exportedAt: g.newest.exportedAt, filesFromStudent: g.files.length }))])}
+          onClick={() => {
+            const table = classTable(included.map(forExport))
+            setUnreadable(table.unreadable)
+            downloadCsv('epas-class.csv', table.rows)
+          }}
           disabled={included.length === 0}
           className="tile"
           style={{
@@ -195,7 +222,51 @@ export default function Teacher() {
         }}>
           Save the codebook
         </button>
+        <button
+          onClick={() => downloadCsv('epas-rubric-sheet.csv', rubricRows(marking))}
+          disabled={marking.length === 0}
+          className="tile"
+          style={{
+            minHeight: 44, padding: '11px 18px', borderRadius: 10,
+            border: '1px solid var(--line)', background: 'var(--surface)',
+            color: marking.length ? 'var(--ink)' : 'var(--ink-3)',
+            font: 'inherit', fontSize: 14, fontWeight: 600,
+            cursor: marking.length ? 'pointer' : 'default',
+          }}>
+          Save the rubric scoring sheet
+        </button>
       </div>
+
+      {marking.length > 0 && (
+        <p style={{ ...note, marginTop: 12, color: 'var(--ink-3)', fontSize: 12.5 }}>
+          The class table holds the {included.length === 1 ? 'one student' : `${included.length} students`} who
+          agreed to take part. The rubric scoring sheet is a blank marking grid and covers
+          all {marking.length}, because a student who declined the study is still a student
+          whose performance tasks you mark.
+        </p>
+      )}
+
+      {unreadable.length > 0 && (
+        <div role="status" style={{
+          fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)', marginTop: 14,
+          background: 'var(--surface)', border: '1px solid var(--line)',
+          borderLeft: '3px solid var(--caution)', borderRadius: '0 10px 10px 0',
+          padding: '11px 13px',
+        }}>
+          <strong style={{
+            display: 'block', fontSize: 11, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: 'var(--caution)', marginBottom: 6,
+          }}>Saved, with gaps</strong>
+          <p style={{ margin: '0 0 6px' }}>
+            The table saved, but {unreadable.length === 1 ? 'one student' : `${unreadable.length} students`} could
+            not be read into a row. Those rows carry the code and nothing else, so the table is
+            still usable. Ask them to export and hand in again.
+          </p>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            {unreadable.map(code => <li key={code} style={{ marginBottom: 2 }}>{code}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

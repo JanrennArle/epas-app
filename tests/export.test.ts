@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { Attempt, StoreV1 } from '../src/lib/store'
 import {
-  codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow,
-  parseBundle, toBundle, toCsv,
+  classTable, codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow, failedRow,
+  parseBundle, rubricRows, toBundle, toCsv,
 } from '../src/lib/export'
 
 function state(over: Partial<StoreV1> = {}): StoreV1 {
@@ -358,5 +358,246 @@ describe('codebookRows', () => {
   it('names every column the header emits', () => {
     const named = new Set(rows.slice(1).map(r => r[0]))
     for (const h of csvHeader()) expect(named.has(h), `${h} is not in the codebook`).toBe(true)
+  })
+})
+
+describe('task and engagement columns', () => {
+  it('carries three columns for every performance task', () => {
+    const head = csvHeader()
+    expect(head.filter(h => h.endsWith('_steps_done')).length).toBe(8)
+    expect(head.filter(h => h.endsWith('_steps_total')).length).toBe(8)
+    expect(head.filter(h => h.endsWith('_notes')).length).toBe(8)
+  })
+
+  it('carries the five engagement columns', () => {
+    const head = csvHeader()
+    for (const c of ['lessons_completed', 'formative_attempted', 'formative_correct', 'sims_run', 'sims_distinct']) {
+      expect(head, c).toContain(c)
+    }
+  })
+
+  it('is still exactly as wide as the header', () => {
+    expect(csvRow(state()).length).toBe(csvHeader().length)
+  })
+
+  it('reports an untouched task as zero of its step count, not as blank', () => {
+    const head = csvHeader()
+    const row = csvRow(state())
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(0)
+    expect(row[head.indexOf('task_t1_steps_total')]).toBeGreaterThan(0)
+  })
+
+  it('counts the steps a student ticked', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 2, 4] } } }))
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(3)
+  })
+
+  // A teacher merges files collected from thirty phones. parseBundle proves
+  // the code and the attempts array and nothing else, so a truncated or
+  // hand-edited file must cost that student's figures rather than throwing
+  // and taking the whole class table with it.
+  it('builds a row from a file whose task, module and sim records are the wrong type', () => {
+    const broken = {
+      ...state(),
+      tasks: { t1: { checked: 'nope' } },
+      modules: null,
+      sims: undefined,
+    } as unknown as StoreV1
+    const head = csvHeader()
+    const row = csvRow(broken)
+    expect(row.length).toBe(head.length)
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(0)
+    expect(row[head.indexOf('lessons_completed')]).toBe(0)
+    expect(row[head.indexOf('sims_run')]).toBe(0)
+    expect(row[head.indexOf('participant_code')]).toBe(state().participant.code)
+  })
+
+  // The arrays parseBundle proves the existence of and nothing about the
+  // contents of. A null inside either one used to throw on the first read.
+  it('builds a row from a file with a null inside its attempts or sims', () => {
+    const broken = {
+      ...state(),
+      attempts: [null, undefined],
+      sims: [null],
+    } as unknown as StoreV1
+    const head = csvHeader()
+    const row = csvRow(broken)
+    expect(row.length).toBe(head.length)
+    expect(row[head.indexOf('formative_attempted')]).toBe(0)
+    expect(row[head.indexOf('sims_run')]).toBe(0)
+  })
+
+  // An outcome list that arrived as a string would otherwise be counted by
+  // its character length: 'lo1' exported as three lessons completed.
+  it('does not count the characters of a string as completed lessons', () => {
+    const broken = {
+      ...state(),
+      modules: { m1: { completedOutcomes: 'lo1' } },
+    } as unknown as StoreV1
+    const head = csvHeader()
+    expect(csvRow(broken)[head.indexOf('lessons_completed')]).toBe(0)
+  })
+
+  describe('the row for a file that could not be read at all', () => {
+    const head = csvHeader()
+
+    it('is the width of the table and names the student', () => {
+      const row = failedRow('EPAS-ZZZZZZ')
+      expect(row.length).toBe(head.length)
+      expect(row[head.indexOf('participant_code')]).toBe('EPAS-ZZZZZZ')
+    })
+
+    // A zero is a mark a student can earn. A blank is not, and that is the
+    // whole difference between a gap in the data and a fabricated result.
+    it('carries no figures that could be read as zeros the student earned', () => {
+      const row = failedRow('EPAS-ZZZZZZ')
+      for (const column of ['lessons_completed', 'sims_run', 'task_t1_steps_done', 'gain__m1-c1']) {
+        expect(row[head.indexOf(column)], column).toBe('')
+      }
+    })
+
+    // A row saying `no` or blank here is dropped by the first filter any
+    // analyst writes, and the student would vanish rather than show as a gap.
+    it('keeps what the merge already knew without reading the file', () => {
+      const row = failedRow('EPAS-ZZZZZZ', {
+        inStudy: 'yes', exportedAt: '2026-09-13T01:00:00.000Z', filesFromStudent: 2,
+      })
+      expect(row[head.indexOf('in_study')]).toBe('yes')
+      expect(row[head.indexOf('exported_at')]).toBe('2026-09-13T01:00:00.000Z')
+      expect(row[head.indexOf('files_from_student')]).toBe(2)
+    })
+
+    it('says unknown rather than no when the merge did not say', () => {
+      expect(failedRow('EPAS-ZZZZZZ')[head.indexOf('in_study')]).toBe('unknown')
+    })
+  })
+
+  // The marking grid goes to every student who handed in, the declining ones
+  // included, so what it may contain is a consent question. It may contain
+  // nothing of theirs, and this is what holds it to that.
+  describe('the rubric scoring sheet', () => {
+    it('carries nothing about a student except the code', () => {
+      const head = ['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score']
+      const rows = rubricRows([{ code: 'EPAS-AAAAAA' }])
+      expect(rows[0]).toEqual(head)
+      for (const row of rows.slice(1)) {
+        expect(row).toHaveLength(head.length)
+        expect(row[0]).toBe('EPAS-AAAAAA')
+        expect(row[5], 'the score column is the teacher to fill in').toBe('')
+      }
+    })
+  })
+
+  describe('the class table', () => {
+    it('starts with the header and carries one row per student', () => {
+      const t = classTable([
+        { code: 'EPAS-AAAAAA', state: state(), from: {} },
+        { code: 'EPAS-BBBBBB', state: state(), from: {} },
+      ])
+      expect(t.rows).toHaveLength(3)
+      expect(t.rows[0]).toEqual(csvHeader())
+      expect(t.unreadable).toEqual([])
+    })
+
+    // The failure this exists for: one student's file throwing inside the
+    // download handler and the teacher getting no class table at all.
+    it('keeps the other students when one file cannot be turned into a row', () => {
+      const exploding = new Proxy({} as StoreV1, {
+        get() { throw new Error('unreadable') },
+      })
+      const t = classTable([
+        { code: 'EPAS-AAAAAA', state: state(), from: {} },
+        { code: 'EPAS-BADBAD', state: exploding, from: { inStudy: 'yes', filesFromStudent: 1 } },
+        { code: 'EPAS-CCCCCC', state: state(), from: {} },
+      ])
+      expect(t.rows).toHaveLength(4)
+      expect(t.unreadable).toEqual(['EPAS-BADBAD'])
+      expect(t.rows[2]?.[0]).toBe('EPAS-BADBAD')
+      expect(t.rows[2]?.[csvHeader().indexOf('in_study')]).toBe('yes')
+      expect(t.rows[3]?.[0]).toBe(state().participant.code)
+    })
+
+    // Silence here would turn the whole class into blank rows the night a
+    // csvRow bug shipped, with nothing on screen and a green suite.
+    it('names every student it could not read', () => {
+      const exploding = new Proxy({} as StoreV1, { get() { throw new Error('no') } })
+      const t = classTable([
+        { code: 'EPAS-ONE', state: exploding, from: {} },
+        { code: 'EPAS-TWO', state: exploding, from: {} },
+      ])
+      expect(t.unreadable).toEqual(['EPAS-ONE', 'EPAS-TWO'])
+    })
+  })
+
+  // `checked` is a set of indices. A payload carrying the same index twice,
+  // which the store no longer writes but a hand-edited or foreign file can
+  // still hold, must not inflate the count.
+  it('counts a repeated step index once', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 0, 0, 1, 1] } } }))
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(2)
+  })
+
+  // A tick is the student's own record, so the count must not exceed the
+  // sheet: a stale index from an edited sheet would otherwise report six of
+  // five and nobody would notice until the analysis.
+  it('never reports more steps done than the sheet has', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 1, 2, 3, 4, 5, 6, 7, 99] } } }))
+    const done = row[head.indexOf('task_t1_steps_done')] as number
+    const total = row[head.indexOf('task_t1_steps_total')] as number
+    expect(done).toBeLessThanOrEqual(total)
+  })
+
+  it('counts engagement from the store', () => {
+    const head = csvHeader()
+    const row = csvRow(state({
+      modules: { m1: { completedOutcomes: ['lo1', 'lo2'] }, m2: { completedOutcomes: ['lo1'] } },
+      attempts: [
+        { itemId: 'a', moduleId: 'm1', competency: 'C', correct: true, at: '2026-01-01T00:00:00.000Z', context: 'formative' },
+        { itemId: 'b', moduleId: 'm1', competency: 'C', correct: false, at: '2026-01-01T00:00:00.000Z', context: 'formative' },
+        { itemId: 'c', moduleId: 'm1', competency: 'C', correct: true, at: '2026-01-01T00:00:00.000Z', context: 'pretest' },
+      ],
+      sims: [
+        { simId: 'multimeter', moduleId: 'm1', score: 1, at: '2026-01-01T00:00:00.000Z', evidence: {} },
+        { simId: 'multimeter', moduleId: 'm1', score: 1, at: '2026-01-02T00:00:00.000Z', evidence: {} },
+        { simId: 'psu', moduleId: 'm2', score: 1, at: '2026-01-03T00:00:00.000Z', evidence: {} },
+      ],
+    }))
+    expect(row[head.indexOf('lessons_completed')]).toBe(3)
+    expect(row[head.indexOf('formative_attempted')]).toBe(2)
+    expect(row[head.indexOf('formative_correct')]).toBe(1)
+    expect(row[head.indexOf('sims_run')]).toBe(3)
+    expect(row[head.indexOf('sims_distinct')]).toBe(2)
+  })
+
+  it('explains every new column in the codebook', () => {
+    const named = new Set(codebookRows().slice(1).map(r => r[0]))
+    for (const h of csvHeader()) expect(named.has(h), `${h} is not in the codebook`).toBe(true)
+  })
+})
+
+describe('rubricRows', () => {
+  const rows = rubricRows([{ code: 'EPAS-AAAA11' }])
+
+  it('starts with a header', () => {
+    expect(rows[0]).toEqual(['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score'])
+  })
+
+  it('gives one row per student per task per criterion', () => {
+    expect(rows.length - 1).toBe(33)
+  })
+
+  it('leaves the score blank for the teacher to fill in', () => {
+    expect(rows[1]?.[5]).toBe('')
+  })
+
+  it('repeats the whole sheet for a second student', () => {
+    expect(rubricRows([{ code: 'A' }, { code: 'B' }]).length - 1).toBe(66)
+  })
+
+  it('returns only a header for no students', () => {
+    expect(rubricRows([])).toHaveLength(1)
   })
 })

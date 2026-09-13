@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { getModule } from '../content'
 import { loadState, hasTaken } from '../lib/store'
+import { TASKS } from '../content/tasks'
 
 export default function ModuleOverview() {
   const { moduleId = '' } = useParams()
@@ -55,6 +56,25 @@ export default function ModuleOverview() {
         }}>
           Post-test{hasTaken(m.id, 'posttest') ? ' (taken)' : ''}
         </Link>
+        {TASKS.filter(t => t.modules.includes(m.id)).map(t => (
+          <Link key={t.id} to={`/tasks/${t.id}`} className="tile" style={{
+            minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
+            borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
+            fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
+          }}>
+            {/*
+              The title leads, not the kind. Module 4 carries two individual
+              sheets, and two tiles both reading "Individual task" give a
+              student no way to tell which is which. The kind still follows,
+              because it is the difference between turning up alone and
+              turning up with a group.
+            */}
+            {t.title}
+            <span style={{ fontWeight: 500, color: 'var(--ink-3)', marginLeft: 8, whiteSpace: 'nowrap' }}>
+              {t.kind === 'group' ? 'Group task' : 'Individual task'}
+            </span>
+          </Link>
+        ))}
       </div>
 
       <h2 style={{ fontSize: 13, fontWeight: 660, margin: '0 0 8px' }}>Outcomes</h2>

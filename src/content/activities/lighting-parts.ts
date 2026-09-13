@@ -4,12 +4,14 @@ export const lightingParts: MatchActivityData = {
   kind: 'match',
   id: 'lighting-parts',
   instruction: 'A rechargeable LED lamp contains these parts. Match each description to the part it names.',
+  // Deliberately not in the order the questions ask for them. See
+  // tests/activities.test.ts and the note in control-board.ts.
   choices: [
+    { id: 'driver', label: 'LED driver' },
+    { id: 'switch', label: 'Control switch' },
+    { id: 'led', label: 'LED array' },
     { id: 'cell', label: 'Rechargeable cell' },
     { id: 'charger', label: 'Charging circuit' },
-    { id: 'driver', label: 'LED driver' },
-    { id: 'led', label: 'LED array' },
-    { id: 'switch', label: 'Control switch' },
   ],
   items: [
     { id: 'q1', prompt: 'Stores the energy that runs the lamp when it is unplugged.', answer: 'cell' },
