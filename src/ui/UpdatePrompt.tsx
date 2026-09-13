@@ -15,6 +15,16 @@ import { mayPrompt } from '../lib/updates'
  * rendered. The update is not discarded, only withheld: `needRefresh` stays
  * true, so the bar appears the moment the student is somewhere it costs
  * nothing.
+ *
+ * Rendered in normal document flow, not `position: fixed`. A fixed bar at
+ * the bottom of a short viewport sits on top of whatever else is down there:
+ * on `/progress` that is "Save my results for my teacher", on `/teacher` the
+ * rubric and class-table downloads, and on a task sheet the notes textarea a
+ * student is typing into. Those are the controls this whole app exists to
+ * be used through, so a notice about software versions must never cover one.
+ * In flow, the bar can only ever push content down, never over it, at any
+ * viewport size or content length, which a fixed bar with a measured spacer
+ * would have to keep re-proving as the app grows.
  */
 export function UpdatePrompt() {
   const { pathname } = useLocation()
@@ -35,27 +45,28 @@ export function UpdatePrompt() {
 
   return (
     <div role="status" style={{
-      position: 'fixed', left: 12, right: 12, bottom: 12, zIndex: 50,
-      display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
-      background: 'var(--surface)', border: '1px solid var(--line)',
-      borderLeft: '3px solid var(--accent)', borderRadius: '0 12px 12px 0',
-      padding: '12px 14px', boxShadow: '0 6px 24px rgba(0,0,0,0.14)',
-      maxWidth: 520, margin: '0 auto',
+      background: 'var(--surface)', borderBottom: '1px solid var(--line)',
+      borderLeft: '3px solid var(--accent)',
     }}>
-      <p style={{ margin: 0, flex: 1, minWidth: 200, fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink)' }}>
-        A newer version of the app is ready. Your work is saved on this device
-        either way, so you can update whenever it suits you.
-      </p>
-      <button
-        onClick={() => { void updateServiceWorker(true) }}
-        className="tile"
-        style={{
-          minHeight: 44, padding: '10px 16px', borderRadius: 10, border: 0,
-          background: 'var(--accent)', color: 'var(--on-accent)',
-          font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-        }}>
-        Update now
-      </button>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+        padding: '12px 16px', maxWidth: 1100, margin: '0 auto',
+      }}>
+        <p style={{ margin: 0, flex: 1, minWidth: 200, fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink)' }}>
+          A newer version of the app is ready. Your work is saved on this device
+          either way, so you can update whenever it suits you.
+        </p>
+        <button
+          onClick={() => { void updateServiceWorker(true) }}
+          className="tile"
+          style={{
+            minHeight: 44, padding: '10px 16px', borderRadius: 10, border: 0,
+            background: 'var(--accent)', color: 'var(--on-accent)',
+            font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}>
+          Update now
+        </button>
+      </div>
     </div>
   )
 }
