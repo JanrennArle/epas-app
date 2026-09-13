@@ -1,12 +1,12 @@
 # Project status
 
-Last updated 2026-09-13, after plan 8 merged.
+Last updated 2026-09-13, after plan 9 merged.
 
 ## Where things stand
 
-`master` is green: `npx tsc -b --force` clean, 302 tests across 17 files, `npm run build` clean. No open branches. No active plan workspace.
+`master` is green: `npx tsc -b --force` clean, 325 tests across 20 files, `npm run build` clean. No open branches. No active plan workspace.
 
-Every part of the app a student or teacher touches is built. One step of the spec's build order (section 14 of `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md`) remains, and it is packaging.
+Every part of the app a student or teacher touches is built, including packaging: section 14 of `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` is done in full.
 
 | Built | Detail |
 |---|---|
@@ -22,25 +22,23 @@ Every part of the app a student or teacher touches is built. One step of the spe
 
 ## What is left
 
-**Plan 9: packaging and deployment.** The last one.
+Nothing in the spec's build order. Every step of section 14 is done.
 
-- `vite-plugin-pwa` with Workbox precaching the whole app; the service worker prompts to update rather than reloading, so it never interrupts a test in progress.
-- Offline verification on a real phone.
-- Deploy to a static host. The same build also runs from a `dist/` folder on a lab PC if the domain is blocked.
+What remains is the teacher's, and no agent can do it:
 
-## What plan 9 must honour
-
-Recorded in full in `CARRY-FORWARD.md` and repeated here because each is a promise the app has already made.
-
-1. **The consent filter must not be undone.** `src/lib/merge.ts` decides consent per student and fails closed, and `markingList` beside it is the one output it deliberately does not filter. The rule broke three times while being built, every time in glue code around it rather than in the rule.
-2. **`simId` alone does not identify an exercise, and success is encoded four different ways across the simulations.** An export that averages `score` across simIds will be wrong.
-3. **A missing row is not proof of no engagement.** `match` and `hotspot` write nothing until every item is answered.
-4. **The store's schema version stays 1 and `store.ts` stays the only owner of `localStorage`.** A service worker that serves a stale bundle to a device holding newer data is the one way this app can lose a student's work; the salvage path in `loadState` is what stands between that and a destroyed result set.
-5. **Nothing in the offline shell may bypass the consent gate in `src/ui/Shell.tsx`.** A precached start URL that lands past it would record attempts before consent, which a deep link already did once.
+1. **Read the eight performance task sheets** in `src/content/tasks/`. Students
+   carry these out on live mains appliances.
+2. **Clear `teacherReviewed`** on each module in `src/content/m1.ts` .. `m9.ts`
+   once you have read it. Until then every module shows an unreviewed warning,
+   which is correct and should stay until you have actually read it.
+3. **Deploy**, following `docs/DEPLOY.md`, and then work through
+   `docs/OFFLINE-CHECK.md` on a real phone.
+4. **Set a teacher PIN** on the device you will merge the class on. The
+   `/teacher` screen asks for one the first time.
 
 ## Resuming
 
-Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Say "plan 9" to have the last plan written and executed; the eight prior plans in this directory are the house pattern for what one looks like.
+Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Plan 9 was the last one on the spec's build order; there is no next plan queued. What remains is listed above under "What is left", and every item there is the teacher's to do, not an agent's. The nine plans in this directory are the house pattern for what one looks like, if a new one is ever needed.
 
 The one item in the project that no agent can resolve: every module ships `teacherReviewed: false`, and the app shows an unreviewed warning until the teacher clears it. M1 `lo3` contains a capacitor-discharge procedure describing a lethal hazard. That flag is the teacher's to flip.
 
