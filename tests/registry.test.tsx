@@ -3,6 +3,7 @@ import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
 import { getSim, SIMS } from '../src/interactives/registry'
 import { BlockRenderer } from '../src/ui/blocks/BlockRenderer'
 import type { Block } from '../src/lib/types'
+import { ABOUT_KEYS } from '../src/routes/Labs'
 
 describe('sim registry', () => {
   it('resolves a registered sim', () => {
@@ -52,5 +53,15 @@ describe('naming a fault requires evidence', () => {
     render(<SystemTroubleshooter moduleId="m3" config={{ scenario: 'fan' }} />)
     ackAllSafety()
     expect(screen.getByText(/Run at least one test first/)).toBeInTheDocument()
+  })
+})
+
+describe('the labs gallery', () => {
+  // A simulation added to the registry and not to the gallery would appear as
+  // a bare simId on a card, which is how it would ship.
+  it('describes every registered simulation', () => {
+    for (const simId of Object.keys(SIMS)) {
+      expect(ABOUT_KEYS, simId).toContain(simId)
+    }
   })
 })

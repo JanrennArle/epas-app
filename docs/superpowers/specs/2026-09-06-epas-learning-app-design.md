@@ -124,12 +124,16 @@ SVG throughout. No canvas, no WebGL, no external assets. Crisp at any zoom, them
 - `/m/:moduleId` module overview, outcomes, pre-test entry
 - `/m/:moduleId/lo/:outcomeId` lesson reader with inline interactives
 - `/labs`, `/labs/:simId` simulation gallery and full-screen simulation
-- `/tools` calculators and a Component Explorer tile grid
 - `/tasks/:taskId` performance task sheets
 - `/progress` mastery view and results export
 - `/evaluate` ISO/IEC 25010 survey
 - `/teacher` PIN-gated class merge tool
-- `/settings`
+
+`/tools` and `/settings` were listed here through seven plans and never built. Nothing in
+the app needs a calculator screen, and the two things a settings screen would have held
+already exist: the participant switch on the module map and the consent choice itself. They
+are removed rather than carried, because a route list that promises screens indefinitely is
+worse than a shorter one that is true.
 
 ## 8. Assessment and research layer
 

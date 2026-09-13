@@ -9,6 +9,7 @@ import Evaluate from './routes/Evaluate'
 import Progress from './routes/Progress'
 import Teacher from './routes/Teacher'
 import TaskSheet from './routes/TaskSheet'
+import { LabFullScreen, LabsGallery } from './routes/Labs'
 
 function NotBuiltYet() {
   return (
@@ -33,6 +34,8 @@ const router = createHashRouter([
   { path: '/progress', element: <Shell><Progress /></Shell> },
   { path: '/teacher', element: <Shell><Teacher /></Shell> },
   { path: '/tasks/:taskId', element: <Shell><TaskSheet /></Shell> },
+  { path: '/labs', element: <Shell><LabsGallery /></Shell> },
+  { path: '/labs/:simId', element: <Shell><LabFullScreen /></Shell> },
   { path: '*', element: <Shell><NotBuiltYet /></Shell> },
 ])
 
