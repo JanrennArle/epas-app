@@ -1,9 +1,10 @@
 import { useMemo, useRef, useState } from 'react'
-import { codebookRows, csvHeader, csvRow, parseBundle, rubricRows } from '../lib/export'
+import { codebookRows, csvHeader, csvRow, failedRow, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
 import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
-import type { LoadedFile } from '../lib/merge'
+import type { LoadedFile, StudentGroup } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
+import type { Cell } from '../lib/export'
 import type { CSSProperties } from 'react'
 
 interface Rejected {
@@ -13,6 +14,25 @@ interface Rejected {
 
 const note: CSSProperties = {
   fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px',
+}
+
+/**
+ * One student's row, or a row saying that student's file could not be read.
+ *
+ * csvRow is written to be total and the suite holds it to that, so this
+ * catches only what nobody anticipated. It exists because the alternative is
+ * one corrupt file out of thirty throwing inside the download handler and the
+ * teacher getting no class table at all, with nothing on screen saying why.
+ */
+function classRow(g: StudentGroup): Cell[] {
+  try {
+    return csvRow(g.newest.state, {
+      exportedAt: g.newest.exportedAt,
+      filesFromStudent: g.files.length,
+    })
+  } catch {
+    return failedRow(g.code)
+  }
 }
 
 export default function Teacher() {
@@ -176,7 +196,7 @@ export default function Teacher() {
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <button
-          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(g => csvRow(g.newest.state, { exportedAt: g.newest.exportedAt, filesFromStudent: g.files.length }))])}
+          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(classRow)])}
           disabled={included.length === 0}
           className="tile"
           style={{

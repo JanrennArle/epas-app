@@ -44,7 +44,8 @@ function Sheet({ task }: { task: PerformanceTask }) {
   // at leaves no record at all. The export reports 0 of n either way, which is
   // the deliberate choice made when those columns were added; what this buys
   // is that `state.tasks` holds only sheets the student actually worked on,
-  // which is what the stored `at` timestamp is read against.
+  // so the JSON a teacher collects says which sheets were opened in earnest.
+  // Nothing reads the stored `at` yet.
   const touched = useRef(false)
 
   const total = task.rubric.reduce((n, r) => n + r.points, 0)

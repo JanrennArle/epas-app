@@ -3,7 +3,7 @@ import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
 import { getSim, SIMS } from '../src/interactives/registry'
 import { BlockRenderer } from '../src/ui/blocks/BlockRenderer'
 import type { Block } from '../src/lib/types'
-import { LABS, LAB_SIM_IDS, SHELLS } from '../src/content/labs'
+import { LABS, LAB_SIM_IDS, SHELLS, STANDALONE } from '../src/content/labs'
 import { ACTIVITIES } from '../src/content/activities'
 import { SCENARIOS } from '../src/content/scenarios'
 
@@ -67,6 +67,10 @@ describe('the labs gallery', () => {
     }
   })
 
+  // Tautological while LABS is derived from the two exercise registries, and
+  // kept because that is not a property of the app, it is a property of one
+  // file. The gallery was a hand-written list of simIds a commit ago, and a
+  // future card added by hand lands on these.
   it('points every card at a registered simulation', () => {
     for (const lab of LABS) {
       expect(Object.keys(SIMS), lab.id).toContain(lab.simId)
@@ -80,7 +84,10 @@ describe('the labs gallery', () => {
   // dead card straight back, so every registered sim must be classified here
   // before this suite will pass.
   it('classifies every registered simulation as a shell or not', () => {
-    const standalone = ['multimeter', 'psu']
+    // Read from the catalogue rather than restated here. A list of
+    // standalone sims written out in the test could be quietly widened to
+    // make this pass, which is the failure mode it exists to prevent.
+    const standalone = STANDALONE.map(l => l.simId)
     for (const simId of Object.keys(SIMS)) {
       expect(simId in SHELLS || standalone.includes(simId), simId).toBe(true)
     }
@@ -131,5 +138,39 @@ describe('the labs gallery', () => {
 
   it('gives every card a unique id', () => {
     expect(new Set(LABS.map(l => l.id)).size).toBe(LABS.length)
+  })
+
+  // Two scenarios on the same appliance would produce two cards reading the
+  // same thing, which is the defect the module overview tiles had.
+  it('gives every card a distinct title', () => {
+    expect(new Set(LABS.map(l => l.title)).size).toBe(LABS.length)
+  })
+
+  /**
+   * A card must not answer its own exercise.
+   *
+   * The first version of the sequence blurbs read "Put microphone, mixer,
+   * amplifier and speaker into the order the sound travels", which is the
+   * answer in order, and by omission identifies the part that is not in the
+   * path. A student reading the gallery scores the exercise without opening
+   * it. Answer ids are single words, which is what makes this checkable: one
+   * of them in the copy is a subject, two is a sequence.
+   */
+  it('never names an ordered answer on the card that opens it', () => {
+    for (const lab of LABS) {
+      if (SHELLS[lab.simId] !== 'activity') continue
+      const activity = ACTIVITIES[lab.config?.activity as string]
+      if (activity?.kind !== 'sequence') continue
+      // Split into words rather than matched with a regex. The first version
+      // of this built the pattern in a template literal, where the escape for
+      // a word boundary is one backslash too few and silently becomes the
+      // backspace character, so it matched nothing and passed against the
+      // leaking copy it was written to catch.
+      const words = new Set(`${lab.title} ${lab.blurb}`.toLowerCase().split(/[^a-z0-9]+/))
+      const named = activity.items
+        .map(i => i.answer.toLowerCase())
+        .filter(answer => words.has(answer))
+      expect(named.length, `${lab.id} names ${named.join(', ')} on its card`).toBeLessThan(2)
+    }
   })
 })

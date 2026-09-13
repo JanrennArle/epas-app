@@ -31,7 +31,7 @@ export const SHELLS: Record<string, 'activity' | 'scenario'> = {
 }
 
 /** Simulations that carry their own exercise and need no config at all. */
-const STANDALONE: Lab[] = [
+export const STANDALONE: Lab[] = [
   {
     id: 'multimeter',
     simId: 'multimeter',
@@ -47,7 +47,18 @@ const STANDALONE: Lab[] = [
 ]
 
 /**
- * What to call each activity on its card. An activity carries an instruction
+ * What to call each activity on its card.
+ *
+ * A card is a surface outside the exercise, so its copy is bound by the same
+ * rule the test bank is: nothing about it may let a student answer without
+ * doing the work. The first version of these blurbs broke that. "Put
+ * microphone, mixer, amplifier and speaker into the order the sound travels"
+ * is the answer to the sequence exercise, in order, and by omission it names
+ * the distractor as well. A student reading the gallery could score every
+ * signal path exercise without opening one. That is the fifth member of the
+ * exploit family CLAUDE.md describes, and the first found outside the item
+ * banks; `tests/registry.test.tsx` guards it now.
+ * An activity carries an instruction
  * for the student who is already inside it, which is the wrong length and the
  * wrong voice for a card, so the card copy is authored here. The guard test
  * requires an entry for every activity; a new one without copy still gets a
@@ -114,6 +125,13 @@ export const LABS: Lab[] = [
   })),
 ]
 
+/**
+ * `/labs/troubleshoot` resolved before the scenario cards existed and opened
+ * the fan scenario, because that is the shell's default. It is now
+ * `/labs/fault-fan`, and the old URL shows the not-found message. Nothing in
+ * the app ever linked it and the app has not been deployed, so no student can
+ * hold that link; it is recorded here rather than aliased.
+ */
 export function getLab(id: string): Lab | undefined {
   return LABS.find(l => l.id === id)
 }

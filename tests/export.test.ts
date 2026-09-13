@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Attempt, StoreV1 } from '../src/lib/store'
 import {
-  codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow,
+  codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow, failedRow,
   parseBundle, rubricRows, toBundle, toCsv,
 } from '../src/lib/export'
 
@@ -411,6 +411,45 @@ describe('task and engagement columns', () => {
     expect(row[head.indexOf('lessons_completed')]).toBe(0)
     expect(row[head.indexOf('sims_run')]).toBe(0)
     expect(row[head.indexOf('participant_code')]).toBe(state().participant.code)
+  })
+
+  // The arrays parseBundle proves the existence of and nothing about the
+  // contents of. A null inside either one used to throw on the first read.
+  it('builds a row from a file with a null inside its attempts or sims', () => {
+    const broken = {
+      ...state(),
+      attempts: [null, undefined],
+      sims: [null],
+    } as unknown as StoreV1
+    const head = csvHeader()
+    const row = csvRow(broken)
+    expect(row.length).toBe(head.length)
+    expect(row[head.indexOf('formative_attempted')]).toBe(0)
+    expect(row[head.indexOf('sims_run')]).toBe(0)
+  })
+
+  // An outcome list that arrived as a string would otherwise be counted by
+  // its character length: 'lo1' exported as three lessons completed.
+  it('does not count the characters of a string as completed lessons', () => {
+    const broken = {
+      ...state(),
+      modules: { m1: { completedOutcomes: 'lo1' } },
+    } as unknown as StoreV1
+    const head = csvHeader()
+    expect(csvRow(broken)[head.indexOf('lessons_completed')]).toBe(0)
+  })
+
+  describe('the row for a file that could not be read at all', () => {
+    it('is the width of the table and names the student', () => {
+      const row = failedRow('EPAS-ZZZZZZ')
+      expect(row.length).toBe(csvHeader().length)
+      expect(row[0]).toBe('EPAS-ZZZZZZ')
+      expect(row[1]).toBe('COULD NOT BE READ')
+    })
+
+    it('carries no figures that could be read as zeros the student earned', () => {
+      expect(failedRow('EPAS-ZZZZZZ').slice(2).every(c => c === '')).toBe(true)
+    })
   })
 
   // `checked` is a set of indices. A payload carrying the same index twice,

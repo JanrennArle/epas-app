@@ -25,7 +25,7 @@ function Go({ to }: { to: string }) {
 }
 
 function openSheet(startAt: string, goTo: string[] = []) {
-  render(
+  return render(
     <MemoryRouter initialEntries={[`/tasks/${startAt}`]}>
       <Routes>
         <Route path="/tasks/:taskId" element={
@@ -72,15 +72,48 @@ describe('the task sheet route', () => {
     expect(screen.getByRole('textbox')).toHaveValue('')
   })
 
+  // The clock has to run past the debounce on the far side of the move. The
+  // first version of this test did not, and passed with the key removed: the
+  // second sheet was carrying the first one's tick on screen and the write
+  // that would have recorded it under t2 had simply not fired yet.
   it("does not write the first task's ticks under the second task", () => {
     if (!t1 || !t2) throw new Error('needs two tasks')
+    vi.useFakeTimers()
     openSheet(t1.id, [t2.id])
     fireEvent.click(screen.getAllByRole('checkbox')[0] as HTMLElement)
 
     go(t2.id)
+    act(() => { vi.advanceTimersByTime(5000) })
 
     expect(loadState().tasks?.[t1.id]?.checked).toEqual([0])
     expect(loadState().tasks?.[t2.id]).toBeUndefined()
+  })
+
+  // The unmount flush, which had no test at all: deleting the whole effect,
+  // or only its `touched` guard, left the suite green. It exists because
+  // typed text is debounced, and the back button, a closed tab and the phone
+  // backgrounding the app all leave without a focus change first.
+  it('keeps a note typed in the moment before the student leaves', () => {
+    if (!t1) throw new Error('needs a task')
+    vi.useFakeTimers()
+    const { unmount } = openSheet(t1.id)
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'winding read 214 ohms' } })
+    // Gone well inside the debounce, so only the flush can have saved this.
+    act(() => { vi.advanceTimersByTime(100) })
+    unmount()
+
+    expect(loadState().tasks?.[t1.id]?.notes).toBe('winding read 214 ohms')
+  })
+
+  it('writes nothing on the way out of a sheet that was only read', () => {
+    if (!t1) throw new Error('needs a task')
+    vi.useFakeTimers()
+    const { unmount } = openSheet(t1.id)
+    act(() => { vi.advanceTimersByTime(100) })
+    unmount()
+
+    expect(loadState().tasks).toBeUndefined()
   })
 
   // A sheet the student only read is not work they did, and a record written

@@ -168,8 +168,14 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
   // bridge from the attempts themselves so a competency reworded between
   // terms still lands in its own column instead of emptying it, which would
   // be indistinguishable from the student never having sat it.
+  // Every read below runs over files a teacher collected from thirty phones.
+  // parseBundle proves the participant code and that `attempts` is an array,
+  // and nothing about what is inside it, so a truncated or hand-edited file
+  // has to cost that student's figures rather than throwing and taking the
+  // whole class table with it.
+  const attempts = state.attempts.filter(a => a !== null && typeof a === 'object')
   const pairOfCompetency = new Map<string, string>()
-  for (const a of state.attempts) {
+  for (const a of attempts) {
     const item = BANK.find(i => i.id === a.itemId)
     if (item) pairOfCompetency.set(a.competency, item.pair)
   }
@@ -179,8 +185,8 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
   // text back to the pair id the columns are keyed by.
   const byPair = new Map<string, { pre: boolean | null; post: boolean | null; gained: boolean; ordered: boolean }>()
   for (const m of allModules()) {
-    const pre = newestRun(state.attempts, m.id, 'pretest')
-    const post = newestRun(state.attempts, m.id, 'posttest')
+    const pre = newestRun(attempts, m.id, 'pretest')
+    const post = newestRun(attempts, m.id, 'posttest')
     for (const g of competencyGains(pre, post)) {
       const pair = pairOfCompetency.get(g.competency)
         ?? BANK.find(i => i.moduleId === m.id && i.competency === g.competency)?.pair
@@ -212,22 +218,18 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
     // clamp is for a sheet edited between terms, which can leave a stored
     // index that no longer exists; the dedupe is for the same index arriving
     // twice. Reporting six steps done out of five would not be noticed until
-    // the analysis. `checked` is checked for being an array at all because
-    // this runs over files a teacher collected from thirty phones, and one
-    // corrupt file must not take the whole class CSV down with it.
+    // the analysis.
     const ticks = Array.isArray(p?.checked) ? p.checked : []
     const done = new Set(ticks.filter(i => Number.isInteger(i) && i >= 0 && i < t.steps.length)).size
     row.push(done, t.steps.length, p?.notes ?? '')
   }
 
-  // parseBundle proves the participant code and the attempts array before a
-  // file is accepted, and nothing else. These three run over files a teacher
-  // collected from thirty phones, so a truncated or hand-edited one must cost
-  // that student's engagement figures and not the whole class table.
   const modules = state.modules && typeof state.modules === 'object' ? Object.values(state.modules) : []
-  const lessons = modules.reduce((n, m) => n + (m?.completedOutcomes?.length ?? 0), 0)
-  const sims = Array.isArray(state.sims) ? state.sims : []
-  const formative = state.attempts.filter(a => a.context === 'formative')
+  // `.length` rather than Array.isArray would count a string: an outcome list
+  // that arrived as 'lo1' would export three lessons completed.
+  const lessons = modules.reduce((n, m) => n + (Array.isArray(m?.completedOutcomes) ? m.completedOutcomes.length : 0), 0)
+  const sims = Array.isArray(state.sims) ? state.sims.filter(s => s !== null && typeof s === 'object') : []
+  const formative = attempts.filter(a => a.context === 'formative')
   row.push(
     lessons,
     formative.length,
@@ -238,6 +240,24 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
 
   row.push(survey.respondent ?? '', survey.comments ?? '')
 
+  return row
+}
+
+/**
+ * A row for a student whose file could not be read into one.
+ *
+ * `csvRow` is written to be total, and the suite holds it to that over
+ * malformed tasks, modules, sims and attempts. This exists because "total"
+ * is a claim about inputs nobody has thought of yet, and the failure it
+ * guards against is the teacher pressing the button on the night before the
+ * deadline and getting no file at all. A row that names the student and
+ * carries nothing else is a visible gap in the data; a missing class table
+ * is a lost evening.
+ */
+export function failedRow(code: string): Cell[] {
+  const row: Cell[] = new Array<Cell>(csvHeader().length).fill('')
+  row[0] = code
+  row[1] = 'COULD NOT BE READ'
   return row
 }
 
