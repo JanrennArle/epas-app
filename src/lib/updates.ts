@@ -10,11 +10,16 @@
  * offers it once the student is somewhere it costs nothing, so a student who
  * sits three tests in a row still gets the new version afterwards.
  *
- * The list is short on purpose. Every other screen either writes as it goes
- * (the task sheets, the evaluation survey) or holds nothing worth losing.
- * `/m/:moduleId/test/:phase` is the exception: `Assessment.tsx` keeps the
- * whole sitting in React state until submit, and a student who has seen the
- * pre-test items cannot sit it again honestly.
+ * The list is short on purpose. `Quiz.tsx`, rendered inside
+ * `/m/:moduleId/lo/:outcomeId`, also holds an unsubmitted answer in React
+ * state and is left unsuppressed anyway: a lost formative attempt costs the
+ * student nothing they cannot immediately redo, and formative items are
+ * excluded from the learning gain, so it is not research data.
+ * `/m/:moduleId/test/:phase` is the one route where losing the state is both
+ * a redo the student cannot honestly repeat and a hole in the research
+ * record: `Assessment.tsx` keeps the whole sitting in React state until
+ * submit, and a student who has seen the pre-test items cannot sit it again
+ * honestly.
  */
 const SILENT = [
   /^\/m\/[^/]+\/test\/[^/]+\/?$/,
