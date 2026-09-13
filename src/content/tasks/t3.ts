@@ -15,7 +15,7 @@ export const t3: PerformanceTask = {
   ],
   steps: [
     'Confirm the fault for yourself and write down exactly what the appliance does and does not do.',
-    'Unplug the appliance and open it. Look before you touch: a burnt smell, a discoloured lead, a loose terminal.',
+    'Unplug the appliance and let it cool if you ran it to confirm the fault, because an element and a soleplate stay hot long after the setting is off. Then open it and look before you touch: a burnt smell, a discoloured lead, a loose terminal.',
     'If the appliance has a capacitor, the first thing you touch inside is the bleeder resistor across its terminals. Discharge it and confirm it reads close to zero volts before anything else, because a run capacitor holds its charge with the appliance unplugged and sits directly across the winding and the terminals you are about to work on.',
     'With the appliance still unplugged, check continuity through the supply cord from the plug pins to the internal terminals, flexing the cord at the plug and at the entry while you watch the meter, because a break there shows only while it moves.',
     'Still unplugged, and only if the appliance has an earth pin, check continuity from that pin to any exposed metal the user can touch. A double insulated appliance has no earth to check.',

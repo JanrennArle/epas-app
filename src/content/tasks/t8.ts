@@ -21,6 +21,7 @@ export const t8: PerformanceTask = {
     'Still isolated and open, test the wiring from each sensor back to the controller input.',
     'Take each actuator off the machine and give it its rated signal from a bench supply, watching it act. The machine stays isolated throughout; the only thing energised is the actuator on the bench.',
     'Correct the wiring or fit the parts the readings condemned, and nothing else. If a relay contact was welded, find what made it weld before you fit the new relay, or the new one will weld too.',
+    'Still isolated and locked off, refit every actuator you took off the machine, to its own position and its own terminals, and check each one is mechanically secure before anything is energised.',
     'Isolate, lock off and close the enclosure, then restore the control supply only, leaving the motor branch isolated and locked off, and watch the controller inputs change state as the mechanism is moved by hand. Moving it by hand is safe only because that branch is locked off, which is the whole reason this step comes before the next one.',
     'Restore the full supply with the guard in place and everyone clear of the mechanism, then run the machine through every position and confirm it stops where it should.',
   ],
