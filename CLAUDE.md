@@ -33,7 +33,7 @@ npx vitest run -t "returns an empty string for an unknown test point"
 
 ## Architecture
 
-**Content is data, not components.** The nine modules in `src/content/m1.ts` .. `m9.ts` are typed `Module` objects (`src/lib/types.ts`). Lessons are arrays of `Block` unions rendered by `src/ui/blocks/BlockRenderer.tsx`; formative quizzes are `QuizItem` unions rendered by `src/ui/Quiz.tsx`. Adding a lesson, a quiz or a whole module means editing data and nothing else. Three shared sub-registries work the same way: `src/content/activities/` (match, hotspot, sequence data), `src/content/scenarios/` (fault-diagnosis scenarios) and `src/content/bank/` (pre-test and post-test items).
+**Content is data, not components.** The nine modules in `src/content/m1.ts` .. `m9.ts` are typed `Module` objects (`src/lib/types.ts`). Lessons are arrays of `Block` unions rendered by `src/ui/blocks/BlockRenderer.tsx`; formative quizzes are `QuizItem` unions rendered by `src/ui/Quiz.tsx`. Adding a lesson, a quiz or a whole module means editing data and nothing else. Five shared sub-registries work the same way: `src/content/activities/` (match, hotspot, sequence data), `src/content/scenarios/` (fault-diagnosis scenarios), `src/content/bank/` (pre-test and post-test items), `src/content/tasks/` (the eight Budget of Work performance task sheets) and `src/content/labs.ts` (the Labs gallery, which is **derived** from the activity and scenario registries rather than listed, so authoring an exercise puts it on the gallery and a shell can never open an exercise of the wrong kind).
 
 **Logic lives in pure engines under `src/lib/`,** each total, dependency-free and unit-tested:
 
@@ -45,7 +45,7 @@ npx vitest run -t "returns an empty string for an unknown test point"
 | `activity.ts` | One scorer serving all three activity formats |
 | `quiz.ts` | Formative quiz grading |
 | `assess.ts` | Test-form grading and per-competency learning gain |
-| `export.ts` | CSV quoting, the JSON bundle, and the 112 column row and codebook |
+| `export.ts` | CSV quoting, the JSON bundle, the 141 column row, the class table and the codebook |
 | `merge.ts` | Which students' work belongs in a merged class table |
 | `store.ts` | The only localStorage owner (key `epas.v1`) |
 
@@ -102,7 +102,7 @@ The curriculum authority is the **DepEd TechPro Grade 12 elective Budget of Work
 
 ## Guard tests
 
-Four suites walk the whole content set and turn silent authoring mistakes into build failures. Extend these rather than adding per-module assertions.
+Nine suites walk the whole content set and turn silent authoring mistakes into build failures. Extend these rather than adding per-module assertions.
 
 - `tests/activities.test.ts` resolves every activity, scenario and `simId` reference, and checks hotspot regions and sequence orders.
 - `tests/quiz-keys.test.ts` holds the formative items: key spread, and that a key points at the rationale explaining it.
@@ -110,7 +110,12 @@ Four suites walk the whole content set and turn silent authoring mistakes into b
 - `tests/assess.test.ts` pins what a gain means. Three plausible misreadings of `gained` once passed the whole suite; they are now killed by name.
 - `tests/survey.test.ts` holds the twenty evaluation items: four per category, unique ids, none colliding with the two reserved keys.
 - `tests/export.test.ts` holds the CSV. Quoting, the formula guard, the defensive bundle parser, and that the header, the row and the codebook agree.
-- `tests/merge.test.ts` holds the consent rule. **Read its comments before changing anything about how files reach `groupByStudent`.**
+- `tests/merge.test.ts` holds the consent rule. **Read its comments before changing anything about how files reach `groupByStudent`.** It also holds `markingList`, the one output consent deliberately does not filter, and says why.
+- `tests/tasks.test.ts` holds the eight performance task sheets: the brief quoted verbatim from the Budget of Work, the rubric counts, and the alternation between individual and group work.
+- `tests/registry.test.tsx` holds the Labs gallery: every simulation reachable, every activity and scenario carrying a card, every shell classified, and **no card naming its own answers**.
+- `tests/task-sheet.test.tsx` is the only UI suite here and it is an exception with a reason. The defect it guards, a route seeding state from its param in a `useState` initialiser while the router keeps the component mounted, shipped twice and the suite noticed neither time.
+
+**Mutation-check every guard before you believe it.** Change the code so the defect is present, run the test, watch it fail, put the code back. Four guards written on this project passed against the exact defect they were written for: two because of an escaping mistake, one because it never advanced the clock past a debounce, one because it checked the format the defect was found in rather than all three.
 
 `src/lib/diagnose.ts` is frozen. `requiredTests` returns the *position* of the last implicating test point, which is what makes the taught diagnostic sweep outscore a lucky first guess. Changing `PENALTY`, `FLOOR` or that function rescores every scenario in the app.
 
