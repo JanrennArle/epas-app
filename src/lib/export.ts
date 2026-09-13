@@ -210,23 +210,30 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
     const p = state.tasks?.[t.id]
     // Counted as a set of indices into the sheet, which is what it is. The
     // clamp is for a sheet edited between terms, which can leave a stored
-    // index that no longer exists; the dedupe is for a payload hand-edited or
-    // carried in from elsewhere. Either way, reporting six steps done out of
-    // five would not be noticed until the analysis.
-    const done = p
-      ? new Set(p.checked.filter(i => Number.isInteger(i) && i >= 0 && i < t.steps.length)).size
-      : 0
+    // index that no longer exists; the dedupe is for the same index arriving
+    // twice. Reporting six steps done out of five would not be noticed until
+    // the analysis. `checked` is checked for being an array at all because
+    // this runs over files a teacher collected from thirty phones, and one
+    // corrupt file must not take the whole class CSV down with it.
+    const ticks = Array.isArray(p?.checked) ? p.checked : []
+    const done = new Set(ticks.filter(i => Number.isInteger(i) && i >= 0 && i < t.steps.length)).size
     row.push(done, t.steps.length, p?.notes ?? '')
   }
 
-  const lessons = Object.values(state.modules).reduce((n, m) => n + m.completedOutcomes.length, 0)
+  // parseBundle proves the participant code and the attempts array before a
+  // file is accepted, and nothing else. These three run over files a teacher
+  // collected from thirty phones, so a truncated or hand-edited one must cost
+  // that student's engagement figures and not the whole class table.
+  const modules = state.modules && typeof state.modules === 'object' ? Object.values(state.modules) : []
+  const lessons = modules.reduce((n, m) => n + (m?.completedOutcomes?.length ?? 0), 0)
+  const sims = Array.isArray(state.sims) ? state.sims : []
   const formative = state.attempts.filter(a => a.context === 'formative')
   row.push(
     lessons,
     formative.length,
     formative.filter(a => a.correct).length,
-    state.sims.length,
-    new Set(state.sims.map(s => s.simId)).size,
+    sims.length,
+    new Set(sims.map(s => s.simId)).size,
   )
 
   row.push(survey.respondent ?? '', survey.comments ?? '')

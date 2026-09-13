@@ -3,9 +3,9 @@ import { SystemTroubleshooter } from '../src/interactives/SystemTroubleshooter'
 import { getSim, SIMS } from '../src/interactives/registry'
 import { BlockRenderer } from '../src/ui/blocks/BlockRenderer'
 import type { Block } from '../src/lib/types'
-import { LABS, LAB_SIM_IDS } from '../src/routes/Labs'
+import { LABS, LAB_SIM_IDS, SHELLS } from '../src/content/labs'
 import { ACTIVITIES } from '../src/content/activities'
-import type { Activity } from '../src/lib/activity'
+import { SCENARIOS } from '../src/content/scenarios'
 
 describe('sim registry', () => {
   it('resolves a registered sim', () => {
@@ -73,22 +73,59 @@ describe('the labs gallery', () => {
     }
   })
 
-  // Three of the six simulations are shells that render "not available yet"
-  // with no activity named, so a card that omits the config is a dead end
-  // that nothing else in the app would notice. Both halves matter: the
-  // activity has to exist, and it has to be the kind this shell can run.
-  it('gives every activity shell an activity of its own kind', () => {
-    const shells: Record<string, Activity['kind']> = {
-      hotspot: 'hotspot', match: 'match', sequence: 'sequence',
+  // Four of the six simulations are shells that render "not available yet"
+  // when no exercise is named, so a card without the right config is a dead
+  // end nothing else in the app would notice. The table of shells is the part
+  // that rots: a fifth shell added later and left out of it would bring the
+  // dead card straight back, so every registered sim must be classified here
+  // before this suite will pass.
+  it('classifies every registered simulation as a shell or not', () => {
+    const standalone = ['multimeter', 'psu']
+    for (const simId of Object.keys(SIMS)) {
+      expect(simId in SHELLS || standalone.includes(simId), simId).toBe(true)
     }
+    for (const simId of Object.keys(SHELLS)) {
+      expect(Object.keys(SIMS), simId).toContain(simId)
+    }
+  })
+
+  it('names an exercise on every card that opens a shell', () => {
     for (const lab of LABS) {
-      const wants = shells[lab.simId]
-      if (!wants) continue
-      const key = lab.config?.activity
-      expect(typeof key, lab.id).toBe('string')
-      const activity = ACTIVITIES[key as string]
-      expect(activity, `${lab.id} names activity ${String(key)}`).toBeDefined()
-      expect(activity?.kind, lab.id).toBe(wants)
+      const needs = SHELLS[lab.simId]
+      if (!needs) continue
+      const key = lab.config?.[needs]
+      expect(typeof key, `${lab.id} names a ${needs}`).toBe('string')
+      const exists = needs === 'activity'
+        ? ACTIVITIES[key as string] !== undefined
+        : SCENARIOS[key as string] !== undefined
+      expect(exists, `${lab.id} names ${needs} ${String(key)}`).toBe(true)
+    }
+  })
+
+  it('opens an activity through the shell that can run its kind', () => {
+    for (const lab of LABS) {
+      if (SHELLS[lab.simId] !== 'activity') continue
+      const activity = ACTIVITIES[lab.config?.activity as string]
+      expect(activity?.kind, lab.id).toBe(lab.simId)
+    }
+  })
+
+  // The unit of meaning here is the exercise, not the simulation, so the
+  // completeness guard has to count exercises. An activity or a scenario
+  // authored and left out of the gallery is reachable only from the one
+  // lesson that embeds it.
+  it('carries a card for every activity and every scenario', () => {
+    const ids = new Set(LABS.map(l => l.id))
+    for (const id of Object.keys(ACTIVITIES)) expect(ids, id).toContain(id)
+    for (const id of Object.keys(SCENARIOS)) expect(ids, id).toContain(`fault-${id}`)
+  })
+
+  // A card falling back to its id for a title is how a bare simId shipped on
+  // a card the first time.
+  it('gives every card a title that is not its own id', () => {
+    for (const lab of LABS) {
+      expect(lab.title, lab.id).not.toBe(lab.id)
+      expect(lab.blurb.length, lab.id).toBeGreaterThan(0)
     }
   })
 

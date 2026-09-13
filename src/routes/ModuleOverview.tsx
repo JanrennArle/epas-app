@@ -63,13 +63,15 @@ export default function ModuleOverview() {
             fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
           }}>
             {/*
-              The title leads, not the kind. Two of these modules carry two
-              sheets of the same kind, and two tiles both reading
-              "Individual task" give a student no way to tell which is which.
+              The title leads, not the kind. Module 4 carries two individual
+              sheets, and two tiles both reading "Individual task" give a
+              student no way to tell which is which. The kind still follows,
+              because it is the difference between turning up alone and
+              turning up with a group.
             */}
             {t.title}
-            <span style={{ fontWeight: 500, color: 'var(--ink-3)', marginLeft: 8 }}>
-              {t.kind === 'group' ? 'Group' : 'Individual'}
+            <span style={{ fontWeight: 500, color: 'var(--ink-3)', marginLeft: 8, whiteSpace: 'nowrap' }}>
+              {t.kind === 'group' ? 'Group task' : 'Individual task'}
             </span>
           </Link>
         ))}

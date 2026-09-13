@@ -16,9 +16,14 @@ const label: CSSProperties = {
  * reusing the old one's state: the router keeps a component alive when only
  * the params change, and without the key t1's ticks and notes would appear on
  * t2 and then be written under t2. The same defect shipped on the assessment
- * route and is fixed there the same way. Every hook lives below this early
- * return, never above it, or a valid-to-unknown id renders fewer hooks than
- * the last render and React tears the router down.
+ * route and is fixed there the same way.
+ *
+ * The split also keeps every hook out of the component that can return early.
+ * Hooks called past a conditional return break the rules of hooks; the
+ * valid-to-unknown transition was expected to throw "Rendered fewer hooks
+ * than expected" and does not, neither in the browser nor in jsdom on React
+ * 19, so the reason to keep them out is the rule rather than a crash anyone
+ * has seen. `tests/task-sheet.test.tsx` holds the transition either way.
  */
 export default function TaskSheet() {
   const { taskId = '' } = useParams()
@@ -36,8 +41,10 @@ function Sheet({ task }: { task: PerformanceTask }) {
 
   // Opening a sheet and reading it is not progress. Nothing is written until
   // the student ticks a step or types a note, so a sheet that was only looked
-  // at leaves no record at all, and the export's `steps_done` of 0 separates
-  // "started it and ticked nothing" from "never opened it".
+  // at leaves no record at all. The export reports 0 of n either way, which is
+  // the deliberate choice made when those columns were added; what this buys
+  // is that `state.tasks` holds only sheets the student actually worked on,
+  // which is what the stored `at` timestamp is read against.
   const touched = useRef(false)
 
   const total = task.rubric.reduce((n, r) => n + r.points, 0)

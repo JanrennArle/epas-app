@@ -393,6 +393,26 @@ describe('task and engagement columns', () => {
     expect(row[head.indexOf('task_t1_steps_done')]).toBe(3)
   })
 
+  // A teacher merges files collected from thirty phones. parseBundle proves
+  // the code and the attempts array and nothing else, so a truncated or
+  // hand-edited file must cost that student's figures rather than throwing
+  // and taking the whole class table with it.
+  it('builds a row from a file whose task, module and sim records are malformed', () => {
+    const broken = {
+      ...state(),
+      tasks: { t1: { checked: 'nope' } },
+      modules: null,
+      sims: undefined,
+    } as unknown as StoreV1
+    const head = csvHeader()
+    const row = csvRow(broken)
+    expect(row.length).toBe(head.length)
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(0)
+    expect(row[head.indexOf('lessons_completed')]).toBe(0)
+    expect(row[head.indexOf('sims_run')]).toBe(0)
+    expect(row[head.indexOf('participant_code')]).toBe(state().participant.code)
+  })
+
   // `checked` is a set of indices. A payload carrying the same index twice,
   // which the store no longer writes but a hand-edited or foreign file can
   // still hold, must not inflate the count.
