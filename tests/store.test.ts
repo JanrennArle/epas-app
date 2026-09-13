@@ -268,6 +268,13 @@ describe('performance task progress', () => {
     expect(taskProgress('t2').checked).toEqual([1, 2])
   })
 
+  // `checked` is a set of step indices, not a log of taps. One index stored
+  // twice would report ten steps done out of nine in the class CSV.
+  it('stores a step index once however many times it arrives', () => {
+    setTaskProgress('t1', { checked: [0, 0, 0, 2, 2] })
+    expect(taskProgress('t1').checked).toEqual([0, 2])
+  })
+
   it('stamps when the sheet was last touched', () => {
     setTaskProgress('t1', { checked: [0] })
     expect(taskProgress('t1').at).toBeDefined()

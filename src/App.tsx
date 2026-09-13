@@ -35,7 +35,7 @@ const router = createHashRouter([
   { path: '/teacher', element: <Shell><Teacher /></Shell> },
   { path: '/tasks/:taskId', element: <Shell><TaskSheet /></Shell> },
   { path: '/labs', element: <Shell><LabsGallery /></Shell> },
-  { path: '/labs/:simId', element: <Shell><LabFullScreen /></Shell> },
+  { path: '/labs/:labId', element: <Shell><LabFullScreen /></Shell> },
   { path: '*', element: <Shell><NotBuiltYet /></Shell> },
 ])
 

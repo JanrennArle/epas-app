@@ -393,6 +393,15 @@ describe('task and engagement columns', () => {
     expect(row[head.indexOf('task_t1_steps_done')]).toBe(3)
   })
 
+  // `checked` is a set of indices. A payload carrying the same index twice,
+  // which the store no longer writes but a hand-edited or foreign file can
+  // still hold, must not inflate the count.
+  it('counts a repeated step index once', () => {
+    const head = csvHeader()
+    const row = csvRow(state({ tasks: { t1: { checked: [0, 0, 0, 1, 1] } } }))
+    expect(row[head.indexOf('task_t1_steps_done')]).toBe(2)
+  })
+
   // A tick is the student's own record, so the count must not exceed the
   // sheet: a stale index from an edited sheet would otherwise report six of
   // five and nobody would notice until the analysis.

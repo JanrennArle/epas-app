@@ -208,10 +208,14 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
 
   for (const t of TASKS) {
     const p = state.tasks?.[t.id]
-    // Clamped to the sheet. A tick is stored as an index, so a sheet edited
-    // between terms could leave an index that no longer exists, and reporting
-    // six of five would not be noticed until the analysis.
-    const done = p ? p.checked.filter(i => i >= 0 && i < t.steps.length).length : 0
+    // Counted as a set of indices into the sheet, which is what it is. The
+    // clamp is for a sheet edited between terms, which can leave a stored
+    // index that no longer exists; the dedupe is for a payload hand-edited or
+    // carried in from elsewhere. Either way, reporting six steps done out of
+    // five would not be noticed until the analysis.
+    const done = p
+      ? new Set(p.checked.filter(i => Number.isInteger(i) && i >= 0 && i < t.steps.length)).size
+      : 0
     row.push(done, t.steps.length, p?.notes ?? '')
   }
 

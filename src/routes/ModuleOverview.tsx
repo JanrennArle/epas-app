@@ -62,7 +62,15 @@ export default function ModuleOverview() {
             borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
             fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
           }}>
-            {t.kind === 'group' ? 'Group task' : 'Individual task'}
+            {/*
+              The title leads, not the kind. Two of these modules carry two
+              sheets of the same kind, and two tiles both reading
+              "Individual task" give a student no way to tell which is which.
+            */}
+            {t.title}
+            <span style={{ fontWeight: 500, color: 'var(--ink-3)', marginLeft: 8 }}>
+              {t.kind === 'group' ? 'Group' : 'Individual'}
+            </span>
           </Link>
         ))}
       </div>

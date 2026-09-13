@@ -284,15 +284,18 @@ export function taskProgress(taskId: string): TaskProgress {
  *
  * Because it replaces, **the caller must pass the whole record**. Sending
  * `checked` without carrying the existing `notes` through erases the note, and
- * the student would have no way of knowing. `checked` is stored in ascending
- * order, so the sequence a student ticked in is not recoverable; nothing needs
- * it, and the export counts ticks rather than reading their order.
+ * the student would have no way of knowing. `checked` is stored deduplicated
+ * and in ascending order, so the sequence a student ticked in is not
+ * recoverable; nothing needs it, and the export counts ticks rather than
+ * reading their order. Deduplication is what makes that count trustworthy:
+ * `checked` is a set of step indices, and the same index stored twice would
+ * report ten steps done out of nine.
  */
 export function setTaskProgress(taskId: string, progress: TaskProgress): void {
   update(s => {
     const notes = progress.notes?.trim()
     const kept: TaskProgress = {
-      checked: [...progress.checked].sort((a, b) => a - b),
+      checked: [...new Set(progress.checked)].sort((a, b) => a - b),
       at: new Date().toISOString(),
     }
     if (notes) kept.notes = notes

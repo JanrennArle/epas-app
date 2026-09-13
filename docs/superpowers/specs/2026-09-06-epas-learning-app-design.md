@@ -120,14 +120,21 @@ SVG throughout. No canvas, no WebGL, no external assets. Crisp at any zoom, them
 
 ## 7. Routing
 
+- `/consent` the study consent screen, which gates every route below it
 - `/` module map, the home surface
-- `/m/:moduleId` module overview, outcomes, pre-test entry
+- `/m/:moduleId` module overview, outcomes, pre-test and post-test entry
 - `/m/:moduleId/lo/:outcomeId` lesson reader with inline interactives
-- `/labs`, `/labs/:simId` simulation gallery and full-screen simulation
+- `/m/:moduleId/test/:phase` the pre-test and post-test forms
+- `/labs`, `/labs/:labId` lab gallery and one lab full screen
 - `/tasks/:taskId` performance task sheets
 - `/progress` mastery view and results export
 - `/evaluate` ISO/IEC 25010 survey
 - `/teacher` PIN-gated class merge tool
+
+A lab id is not a simId. Three simulations are shells that run whichever
+activity their `config` names, so they appear in the gallery once per activity
+and the URL carries the lab's own id. `/consent` and `/teacher` are the two
+routes the consent gate lets through.
 
 `/tools` and `/settings` were listed here through seven plans and never built. Nothing in
 the app needs a calculator screen, and the two things a settings screen would have held

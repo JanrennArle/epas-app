@@ -3,20 +3,42 @@ import { Link, useParams } from 'react-router'
 import { getTask } from '../content/tasks'
 import { setTaskProgress, taskProgress } from '../lib/store'
 import type { CSSProperties } from 'react'
+import type { PerformanceTask } from '../lib/types'
 
 const label: CSSProperties = {
   fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
   color: 'var(--ink-3)', margin: '0 0 8px',
 }
 
+/**
+ * Resolving the task is all this does. The sheet below is keyed on the task
+ * id, so moving from one sheet to the next mounts a fresh one rather than
+ * reusing the old one's state: the router keeps a component alive when only
+ * the params change, and without the key t1's ticks and notes would appear on
+ * t2 and then be written under t2. The same defect shipped on the assessment
+ * route and is fixed there the same way. Every hook lives below this early
+ * return, never above it, or a valid-to-unknown id renders fewer hooks than
+ * the last render and React tears the router down.
+ */
 export default function TaskSheet() {
   const { taskId = '' } = useParams()
   const task = getTask(taskId)
-  const [progress, setProgress] = useState(() => taskProgress(taskId))
 
   if (!task) {
     return <p style={{ fontSize: 15, color: 'var(--ink-3)' }}>That task sheet does not exist.</p>
   }
+
+  return <Sheet key={task.id} task={task} />
+}
+
+function Sheet({ task }: { task: PerformanceTask }) {
+  const [progress, setProgress] = useState(() => taskProgress(task.id))
+
+  // Opening a sheet and reading it is not progress. Nothing is written until
+  // the student ticks a step or types a note, so a sheet that was only looked
+  // at leaves no record at all, and the export's `steps_done` of 0 separates
+  // "started it and ticked nothing" from "never opened it".
+  const touched = useRef(false)
 
   const total = task.rubric.reduce((n, r) => n + r.points, 0)
 
@@ -25,11 +47,13 @@ export default function TaskSheet() {
       ? progress.checked.filter(n => n !== i)
       : [...progress.checked, i]
     const next = { ...progress, checked }
+    touched.current = true
     setProgress(next)
-    setTaskProgress(taskId, next)
+    setTaskProgress(task.id, next)
   }
 
   function note(text: string) {
+    touched.current = true
     setProgress(p => ({ ...p, notes: text }))
   }
 
@@ -41,13 +65,16 @@ export default function TaskSheet() {
   // backgrounding the app all do. This is the same conclusion the evaluation
   // survey reached, for the same reason.
   useEffect(() => {
-    const t = setTimeout(() => setTaskProgress(taskId, progress), 600)
+    if (!touched.current) return
+    const t = setTimeout(() => setTaskProgress(task.id, progress), 600)
     return () => clearTimeout(t)
-  }, [progress, taskId])
+  }, [progress, task.id])
 
   const latest = useRef(progress)
   latest.current = progress
-  useEffect(() => () => { setTaskProgress(taskId, latest.current) }, [taskId])
+  useEffect(() => () => {
+    if (touched.current) setTaskProgress(task.id, latest.current)
+  }, [task.id])
 
   return (
     <div style={{ maxWidth: '62ch' }}>
