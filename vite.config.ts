@@ -37,9 +37,12 @@ export default defineConfig({
         // this only ever answers for the document itself. It is here for a
         // hand typed URL and for a host that serves a directory index.
         navigateFallback: 'index.html',
-        // The main chunk is over half a megabyte. The Workbox default of 2
-        // MiB would pass today and silently drop the bundle the first time a
-        // module pushes it over.
+        // The main chunk is over half a megabyte. `vite-plugin-pwa` defaults
+        // `throwMaximumFileSizeToCacheInBytes` to true, so the Workbox
+        // default of 2 MiB would fail the build loudly, not silently drop the
+        // bundle, the first time a module pushes it over. Raising the
+        // ceiling buys headroom before that loud failure, not protection
+        // from a silent one.
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),
