@@ -7,15 +7,20 @@ folder of files.
 
 ## Before you start
 
-You need two things installed once, on whichever machine you build from
-(this is not needed on a lab PC that only opens the finished `dist/` folder,
-see part 3 below):
+You need two things installed once, on whichever machine you build from. In
+the lab PC scenario in part 3 below, that means the one machine that serves
+the app; the other machines in the room just open a browser and need
+nothing from this section.
 
 - **Node.js**, which includes `npm`. Download the LTS installer from
-  https://nodejs.org and run it, accepting the defaults.
+  https://nodejs.org and run it. On the "Tools for Native Modules" screen,
+  leave the checkbox unticked; this project does not need it. Accept the
+  defaults on every other screen.
 - **Git**, which also installs **Git Bash**, the terminal these
   instructions assume. Download it from https://git-scm.com/downloads and
-  run it, accepting the defaults.
+  run it. The installer walks through around a dozen screens; accepting the
+  default on every one of them is fine for this project, there is nothing
+  on any of those screens you need to change.
 
 To open a terminal in the project folder on Windows: find the `epas-app`
 folder in File Explorer, right-click inside it, and choose **Git Bash
@@ -40,6 +45,10 @@ npm ci
 npm test
 npm run verify:offline
 ```
+
+`npm ci` needs an internet connection; it downloads the project's
+dependencies. It is the only command in this document that does. Run these
+three on a machine that has internet, before you go anywhere that might not.
 
 The last one builds and then checks that every file the build emitted is in
 the service worker's precache list. Do not deploy if it fails; the app would
@@ -113,43 +122,52 @@ automation here, which also means nothing to go wrong.
 
 ## 3. A lab PC with no internet, or a blocked domain
 
-The same `dist/` folder works with no host at all.
+The same `dist/` folder can run there, but it has to be **served**, not
+opened directly.
 
-**Copy the folder. This is the one to use on a lab PC.** It needs nothing
-installed on that machine: no Node, no internet connection, nothing from
-"Before you start" above.
+**Do not double-click `dist/index.html`.** It looks like it should work,
+because it is a folder of files with no server anywhere else in this
+document, but it does not. Browsers refuse to run an app's code when the
+page is opened straight from disk like that, for security reasons, and what
+you get is a blank white page with no message telling you why. Serve the
+folder instead, using the steps below.
 
-1. On a machine that already has this project set up (with internet),
-   run `npm run verify:offline`. This leaves a fresh `dist/` folder.
-2. Copy `dist` onto a USB stick.
-3. On each lab PC, copy `dist` from the stick onto the machine, then open
-   `dist/index.html` directly (double-click it, or drag it into a browser
-   window).
+**Serve `dist/` from a machine that already has this project set up.**
 
-Everything works except the service worker, which browsers do not register
-on a page opened this way (a `file://` address). That costs the offline
-cache and nothing else: the files are already sitting on the machine, so
-there is nothing left to cache.
+1. On that machine, with internet, run the three commands under "Before you
+   start" above if you have not already (`npm ci`, `npm test`,
+   `npm run verify:offline`). This leaves a fresh, checked `dist/` folder.
+2. From the project folder on that same machine, run:
+   ```bash
+   npx vite preview --port 4173 --host
+   ```
+3. Every other machine on that same network can now open
+   `http://<that machine's IP>:4173/` in any browser. Find the IP with
+   `ipconfig` in the same terminal, on the line that says "IPv4 Address".
 
-**Serving it over the network is not simpler, and usually will not work.**
-`npx vite preview --host` needs Node installed on the machine running it,
-and it needs that machine's own `node_modules` folder already present,
-which only gets there by running `npm ci` while that machine still had
-internet. If this is a lab with no internet, that condition already fails.
-Reach for this only if one specific machine in the room genuinely does have
-Node and this project's `node_modules` on it already; then, from the
-project folder on that machine:
+What has to physically be on the machine that runs step 2 is not just the
+`dist/` folder, it is the **whole project folder**, `node_modules` included,
+because `vite preview` is part of the same Node toolchain the build uses,
+not a separate lightweight server. `node_modules` is large, commonly several
+hundred megabytes, and it is specific to the machine it was installed on, so
+the reliable way to get a working copy onto the serving machine is to run
+`npm ci` on that exact machine while it still has internet, not to copy the
+folder over from somewhere else.
 
-```bash
-npx vite preview --port 4173 --host
-```
+This means the method above only works if at least one machine in the room
+can, at some point, have internet long enough to run `npm ci`. If every
+single machine in the lab is permanently offline with nothing installed,
+there is no way to serve this app there that this document can vouch for.
+Ask whoever manages that lab what static file servers, if any, are already
+set up on it.
 
-and every other machine on that network can open
-`http://<that machine's IP>:4173/`. Even then it buys you nothing over
-copying the folder: the service worker still will not cache offline for
-those other machines (it only registers on `localhost` or over `https`), so
-they get the same file, over the network instead of from a USB stick, with
-extra setup and nothing extra gained. Default to copying the folder.
+Even once serving works, the service worker still will not cache the app
+offline for the machines opening it over `http://<ip>:4173/`; it only
+registers on `localhost` itself or over `https`. That costs the offline
+cache on those other machines and nothing else: the app still runs, and
+everything except the "works with the network gone entirely" property still
+holds, because the serving machine keeps supplying every file over the
+network for as long as the class runs.
 
 Student data lives in that browser's `localStorage` under the key `epas.v1`,
 so it is per machine and per browser. A student who works on two machines has
