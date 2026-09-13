@@ -12,6 +12,7 @@ export const t6: PerformanceTask = {
     'Never leave the system disabled at the end of a session. If the work is not finished, restore the system and say what is outstanding.',
     'Isolate the zone at the panel before you disconnect a device, and say out loud which zone you have isolated so the group knows.',
     'Sounders are loud enough to damage hearing at close range. Warn the group before any device is made to sound.',
+    'The panel enclosure carries mains and a standby battery that can push a large current through a dropped tool. Open it only with your teacher present, and keep tools out of it while it is open.',
   ],
   steps: [
     'Put the panel into its test state, record which zones you are working on, and tell the people responsible for the building.',
@@ -21,12 +22,13 @@ export const t6: PerformanceTask = {
     'Work outward from the first junction to halve the run, rather than walking the whole loop device by device.',
     'Correct what you found, remaking terminations properly rather than twisting conductors together.',
     'Reconnect the zone and confirm the panel shows it healthy with no fault light.',
-    'Restore the panel out of test, prove one device on the zone, and tell the building the system is back in service.',
+    'Prove one device on the zone while the panel is still in test, so the proof does not sound an alarm the building was not warned about.',
+    'Only then take the panel out of test, and tell the building the system is back in service.',
   ],
   rubric: [
     { criterion: 'Preparation', descriptor: 'The panel is put into test and the building is told before any work begins.', points: 5 },
     { criterion: 'Systematic fault finding', descriptor: 'The panel indication and the halving method are used, rather than walking the loop device by device.', points: 6 },
     { criterion: 'Corrective work', descriptor: 'Terminations are remade properly and the end of line arrangement is left correct.', points: 5 },
-    { criterion: 'Restoration', descriptor: 'The system is returned to service, proved on a device, and the building is told.', points: 6 },
+    { criterion: 'Restoration', descriptor: 'A device is proved while the panel is still in test, the system is then returned to service, and the building is told.', points: 6 },
   ],
 }
