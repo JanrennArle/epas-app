@@ -104,7 +104,43 @@ describe('the web app manifest', () => {
     const href = hrefOf(tag)
     expect(href, 'favicon link should have an href').toBeDefined()
     expect(href?.startsWith('/'), href).toBe(false)
-    expect(href?.replace(/^\.\//, '')).toBe('icon-192.png')
+    const relativeSrc = href!.replace(/^\.\//, '')
+    expect(relativeSrc).toBe('icon-192.png')
+    // Stand on its own rather than relying on a different test to prove the
+    // file it names actually exists.
+    expect(() => readFileSync(`public/${relativeSrc}`), relativeSrc).not.toThrow()
+  })
+
+  // The class, not the two rel values above: any href or src added to
+  // index.html later, under any rel or tag, must stay relative or it works
+  // from a host root and 404s from a GitHub Pages project subdirectory. A
+  // scan that only knows the rel values it was told about would have let
+  // a third link tag with an absolute href through, which is exactly what
+  // it did in review before this test existed.
+  //
+  // src="/src/main.tsx" on the module script is the one deliberate
+  // exception: Vite treats a leading slash in a source-file src as
+  // "project root" to its own resolver, not "domain root" to the browser,
+  // and rewrites it into a relative dist/ path at build time (confirmed in
+  // task-3-report.md, fix round 1's dist/index.html capture). Excluded by
+  // its exact value, not by pattern, so a different absolute href does not
+  // slip through the same door.
+  it('keeps every other href and src in index.html relative', () => {
+    const html = readIndexHtml()
+    const VITE_ENTRY_EXCEPTION = '/src/main.tsx'
+    const values = [
+      ...[...html.matchAll(/href="([^"]+)"/g)].map(m => m[1]!),
+      ...[...html.matchAll(/src="([^"]+)"/g)].map(m => m[1]!),
+    ]
+    // Prove the scan found the attributes it is supposed to check, so a
+    // regex that matches nothing fails loudly instead of passing on an
+    // empty list. index.html carries at least three today: the
+    // apple-touch-icon href, the favicon href, and the module script src.
+    expect(values.length, 'the href/src scan found nothing').toBeGreaterThanOrEqual(3)
+    for (const value of values) {
+      if (value === VITE_ENTRY_EXCEPTION) continue
+      expect(value.startsWith('/'), value).toBe(false)
+    }
   })
 
   // The class of defect, not the instance: a file sitting in public/ that
