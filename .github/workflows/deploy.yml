@@ -22,7 +22,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Matches @types/node in package.json and the version this project
+          # is actually developed and tested against, not just a range Vite
+          # happens to accept.
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npx tsc -b --force

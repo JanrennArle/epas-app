@@ -5,7 +5,35 @@ Three ways, in the order most people want them. All three serve the same
 routes on the hash. There is no server, no database and no API: it is a
 folder of files.
 
-Before any of them, open a terminal (Git Bash) in the project folder and run:
+## Before you start
+
+You need two things installed once, on whichever machine you build from
+(this is not needed on a lab PC that only opens the finished `dist/` folder,
+see part 3 below):
+
+- **Node.js**, which includes `npm`. Download the LTS installer from
+  https://nodejs.org and run it, accepting the defaults.
+- **Git**, which also installs **Git Bash**, the terminal these
+  instructions assume. Download it from https://git-scm.com/downloads and
+  run it, accepting the defaults.
+
+To open a terminal in the project folder on Windows: find the `epas-app`
+folder in File Explorer, right-click inside it, and choose **Git Bash
+Here**.
+
+Confirm it worked by running:
+
+```bash
+node --version
+```
+
+If that prints a version number (for example `v24.9.0`), you are ready for
+the commands below. Any reasonably recent version works; there is nothing
+in this project that needs an exact match to the number in
+`.github/workflows/deploy.yml`.
+
+Before any of the three deployment methods, in that terminal, from the
+project folder, run:
 
 ```bash
 npm ci
@@ -44,20 +72,24 @@ The repository has no remote yet, so start there.
    The first time you push, GitHub or Git may open a browser window and ask
    you to sign in and authorise Git. Follow that prompt; it only needs to
    happen once per machine.
+
+   This push triggers the deploy workflow immediately, before GitHub has been
+   told Pages exists (that is the next step). Because of that, if you open
+   the repository's **Actions** tab now, you will very likely see this first
+   run end in a red X. That is expected, not something you broke, and there
+   is nothing to do about it yet: it simply had nowhere to publish to.
+   Continue to step 3, which is what that run was missing; step 4 has you
+   run it again once that is fixed.
 3. On GitHub, open the repository, click the **Settings** tab (top of the
    page), then click **Pages** in the left sidebar. Under **Build and
    deployment**, find the **Source** dropdown and choose **GitHub Actions**.
    Do not choose "Deploy from a branch"; the workflow in
    `.github/workflows/deploy.yml` does the building.
-4. The push in step 2 already triggered the workflow once, before Pages was
-   configured, so that first run may show a red X under the repository's
-   **Actions** tab. That is expected, not a problem: it could not publish
-   anywhere until step 3 told GitHub where. Now that Pages is set, open
-   **Actions**, click the **Deploy** workflow in the left list, click **Run
-   workflow**, and run it again. (Pushing anything new to `master` also
-   triggers it, so any future change deploys on its own.) The workflow runs
-   the tests and the offline check before it publishes, so a broken build
-   never reaches a student.
+4. Now that Pages is set, open **Actions**, click the **Deploy** workflow in
+   the left list, click **Run workflow**, and run it again. (Pushing
+   anything new to `master` also triggers it, so any future change deploys
+   on its own.) The workflow runs the tests and the offline check before it
+   publishes, so a broken build never reaches a student.
 5. Once the run finishes with a green check, the URL appears both on that
    Actions run and under Settings, Pages. Open it on a phone and work
    through `docs/OFFLINE-CHECK.md`.
@@ -83,20 +115,41 @@ automation here, which also means nothing to go wrong.
 
 The same `dist/` folder works with no host at all.
 
-**Best: serve it locally.** From the project folder on the lab PC:
+**Copy the folder. This is the one to use on a lab PC.** It needs nothing
+installed on that machine: no Node, no internet connection, nothing from
+"Before you start" above.
+
+1. On a machine that already has this project set up (with internet),
+   run `npm run verify:offline`. This leaves a fresh `dist/` folder.
+2. Copy `dist` onto a USB stick.
+3. On each lab PC, copy `dist` from the stick onto the machine, then open
+   `dist/index.html` directly (double-click it, or drag it into a browser
+   window).
+
+Everything works except the service worker, which browsers do not register
+on a page opened this way (a `file://` address). That costs the offline
+cache and nothing else: the files are already sitting on the machine, so
+there is nothing left to cache.
+
+**Serving it over the network is not simpler, and usually will not work.**
+`npx vite preview --host` needs Node installed on the machine running it,
+and it needs that machine's own `node_modules` folder already present,
+which only gets there by running `npm ci` while that machine still had
+internet. If this is a lab with no internet, that condition already fails.
+Reach for this only if one specific machine in the room genuinely does have
+Node and this project's `node_modules` on it already; then, from the
+project folder on that machine:
 
 ```bash
 npx vite preview --port 4173 --host
 ```
 
-Then every machine on that network opens `http://<the-pc's-ip>:4173/`. The
-service worker registers over plain http on `localhost` only, so machines
-reaching it by IP will not cache offline, but the app itself works fully.
-
-**Also works: copy the folder.** Put `dist/` on a USB stick, copy it to each
-machine, and open `dist/index.html` directly. Everything works except the
-service worker, which browsers do not register on `file://`. That costs the
-offline cache and nothing else: the files are already on the machine.
+and every other machine on that network can open
+`http://<that machine's IP>:4173/`. Even then it buys you nothing over
+copying the folder: the service worker still will not cache offline for
+those other machines (it only registers on `localhost` or over `https`), so
+they get the same file, over the network instead of from a USB stick, with
+extra setup and nothing extra gained. Default to copying the folder.
 
 Student data lives in that browser's `localStorage` under the key `epas.v1`,
 so it is per machine and per browser. A student who works on two machines has
