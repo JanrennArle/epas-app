@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { getModule } from '../content'
 import { loadState, hasTaken } from '../lib/store'
+import { TASKS } from '../content/tasks'
 
 export default function ModuleOverview() {
   const { moduleId = '' } = useParams()
@@ -55,6 +56,15 @@ export default function ModuleOverview() {
         }}>
           Post-test{hasTaken(m.id, 'posttest') ? ' (taken)' : ''}
         </Link>
+        {TASKS.filter(t => t.modules.includes(m.id)).map(t => (
+          <Link key={t.id} to={`/tasks/${t.id}`} className="tile" style={{
+            minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
+            borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
+            fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
+          }}>
+            {t.kind === 'group' ? 'Group task' : 'Individual task'}
+          </Link>
+        ))}
       </div>
 
       <h2 style={{ fontSize: 13, fontWeight: 660, margin: '0 0 8px' }}>Outcomes</h2>
