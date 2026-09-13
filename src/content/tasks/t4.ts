@@ -29,7 +29,7 @@ export const t4: PerformanceTask = {
   ],
   rubric: [
     { criterion: 'Systematic diagnosis', descriptor: 'Charger, cell, charging circuit, wiring, diodes and switch are each measured in turn rather than swapped at random.', points: 5 },
-    { criterion: 'Battery handling', descriptor: 'The cell is assessed under load rather than at rest, a failed cell is isolated rather than charged or refitted, and the unit is closed before it is charged.', points: 6 },
+    { criterion: 'Battery handling', descriptor: 'The cell is assessed under load rather than at rest, a failed cell is isolated rather than charged or refitted, and the unit is closed before it is left on charge.', points: 6 },
     { criterion: 'Repair and testing', descriptor: 'The replacement matches the original rating, and the unit is tested on charge and on battery.', points: 5 },
     { criterion: 'Working as a group', descriptor: 'Findings are shared as they are made and every member can explain what was wrong with the unit.', points: 4 },
   ],

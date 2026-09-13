@@ -20,8 +20,8 @@ export const t1: PerformanceTask = {
     'With the supply still unplugged, look for solder bridges and measure continuity from the regulator output to the output terminals.',
     'Clip your meter to the output terminals on DC volts, and only then plug the transformer in.',
     'Read the output voltage and confirm its polarity matches the markings on the terminals.',
-    'Unplug the supply, connect the load the task specifies, then plug in again and read the output, because a regulator that holds its voltage with nothing drawing from it can still sag once it is loaded.',
-    'Unplug the supply, discharge the filter capacitor through a bleeder resistor, and confirm with the meter across the capacitor terminals, not at the output, that it reads close to zero volts.',
+    'Unplug the supply, discharge the filter capacitor and confirm it reads close to zero volts, then connect the load the task specifies and plug in again to read the output, because a regulator that holds its voltage with nothing drawing from it can still sag once it is loaded.',
+    'Unplug the supply again, discharge the filter capacitor through a bleeder resistor, and confirm with the meter across the capacitor terminals, not at the output, that it reads close to zero volts.',
     'Correct anything the readings showed, then repeat the powered test from step five.',
   ],
   rubric: [

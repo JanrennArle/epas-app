@@ -378,8 +378,8 @@ export const t1: PerformanceTask = {
     'With the supply still unplugged, look for solder bridges and measure continuity from the regulator output to the output terminals.',
     'Clip your meter to the output terminals on DC volts, and only then plug the transformer in.',
     'Read the output voltage and confirm its polarity matches the markings on the terminals.',
-    'Unplug the supply, connect the load the task specifies, then plug in again and read the output, because a regulator that holds its voltage with nothing drawing from it can still sag once it is loaded.',
-    'Unplug the supply, discharge the filter capacitor through a bleeder resistor, and confirm with the meter across the capacitor terminals, not at the output, that it reads close to zero volts.',
+    'Unplug the supply, discharge the filter capacitor and confirm it reads close to zero volts, then connect the load the task specifies and plug in again to read the output, because a regulator that holds its voltage with nothing drawing from it can still sag once it is loaded.',
+    'Unplug the supply again, discharge the filter capacitor through a bleeder resistor, and confirm with the meter across the capacitor terminals, not at the output, that it reads close to zero volts.',
     'Correct anything the readings showed, then repeat the powered test from step five.',
   ],
   rubric: [
@@ -548,7 +548,7 @@ export const t4: PerformanceTask = {
   ],
   rubric: [
     { criterion: 'Systematic diagnosis', descriptor: 'Charger, cell, charging circuit, wiring, diodes and switch are each measured in turn rather than swapped at random.', points: 5 },
-    { criterion: 'Battery handling', descriptor: 'The cell is assessed under load rather than at rest, a failed cell is isolated rather than charged or refitted, and the unit is closed before it is charged.', points: 6 },
+    { criterion: 'Battery handling', descriptor: 'The cell is assessed under load rather than at rest, a failed cell is isolated rather than charged or refitted, and the unit is closed before it is left on charge.', points: 6 },
     { criterion: 'Repair and testing', descriptor: 'The replacement matches the original rating, and the unit is tested on charge and on battery.', points: 5 },
     { criterion: 'Working as a group', descriptor: 'Findings are shared as they are made and every member can explain what was wrong with the unit.', points: 4 },
   ],
@@ -665,7 +665,7 @@ export const t6: PerformanceTask = {
     'Correct what you found, remaking terminations properly rather than twisting conductors together.',
     'Reconnect the zone and confirm the panel shows it healthy with no fault light.',
     'Prove one device on the zone while the panel is still in test, so the proof does not sound an alarm the building was not warned about.',
-    'Reset the panel, restore the device you proved, and only then take the panel out of test and tell the building the system is back in service.',
+    'Restore the device you proved, then reset the panel, and only then take it out of test and tell the building the system is back in service.',
   ],
   rubric: [
     { criterion: 'Preparation', descriptor: 'The panel is put into test and the building is told before any work begins.', points: 5 },
