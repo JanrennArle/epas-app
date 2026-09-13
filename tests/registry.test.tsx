@@ -109,6 +109,10 @@ describe('the labs gallery', () => {
     }
   })
 
+  // Tautological too, for the same reason: the derivation takes the shell
+  // from the activity's own kind, so it cannot currently disagree. It was not
+  // tautological two commits ago, when the pairing was written out by hand
+  // and one of them was wrong.
   it('opens an activity through the shell that can run its kind', () => {
     for (const lab of LABS) {
       if (SHELLS[lab.simId] !== 'activity') continue
@@ -120,7 +124,10 @@ describe('the labs gallery', () => {
   // The unit of meaning here is the exercise, not the simulation, so the
   // completeness guard has to count exercises. An activity or a scenario
   // authored and left out of the gallery is reachable only from the one
-  // lesson that embeds it.
+  // lesson that embeds it, which is how seven of the eight fault scenarios
+  // sat unreachable for a commit. Also tautological while LABS is derived,
+  // and the one of these three worth keeping for it: it is the property that
+  // made deriving the catalogue the right fix rather than a longer list.
   it('carries a card for every activity and every scenario', () => {
     const ids = new Set(LABS.map(l => l.id))
     for (const id of Object.keys(ACTIVITIES)) expect(ids, id).toContain(id)
@@ -151,16 +158,21 @@ describe('the labs gallery', () => {
    *
    * The first version of the sequence blurbs read "Put microphone, mixer,
    * amplifier and speaker into the order the sound travels", which is the
-   * answer in order, and by omission identifies the part that is not in the
-   * path. A student reading the gallery scores the exercise without opening
-   * it. Answer ids are single words, which is what makes this checkable: one
-   * of them in the copy is a subject, two is a sequence.
+   * answer in order and by omission identifies the part that is not in the
+   * path. The match and hotspot blurbs had it too, in the same commit, each
+   * listing its answers in item order; for a matching exercise that is the
+   * complete key. A student reading the gallery scores without opening
+   * anything.
+   *
+   * Checked for every format rather than the one it was found in, which is
+   * the mistake the first version of this guard made. Answer ids are single
+   * words, which is what makes this checkable, so the suite pins that too.
    */
-  it('never names an ordered answer on the card that opens it', () => {
+  it('never names its own answers on the card that opens it', () => {
     for (const lab of LABS) {
-      if (SHELLS[lab.simId] !== 'activity') continue
+      if (!SHELLS[lab.simId]) continue
       const activity = ACTIVITIES[lab.config?.activity as string]
-      if (activity?.kind !== 'sequence') continue
+      if (!activity) continue
       // Split into words rather than matched with a regex. The first version
       // of this built the pattern in a template literal, where the escape for
       // a word boundary is one backslash too few and silently becomes the
@@ -171,6 +183,18 @@ describe('the labs gallery', () => {
         .map(i => i.answer.toLowerCase())
         .filter(answer => words.has(answer))
       expect(named.length, `${lab.id} names ${named.join(', ')} on its card`).toBeLessThan(2)
+    }
+  })
+
+  // The guard above finds an answer id in the card copy by splitting that
+  // copy into single words. An id of two words, or one carrying a hyphen,
+  // would be invisible to it and the guard would pass while the leak sat on
+  // the screen.
+  it('keeps every answer id to the single word the card guard can see', () => {
+    for (const activity of Object.values(ACTIVITIES)) {
+      for (const item of activity.items) {
+        expect(item.answer, `${activity.id} ${item.id}`).toMatch(/^[a-z0-9]+$/)
+      }
     }
   })
 })

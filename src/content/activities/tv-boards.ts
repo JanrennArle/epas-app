@@ -16,9 +16,11 @@ export const tvBoards: HotspotActivityData = {
     { kind: 'line', x1: 100, y1: 134, x2: 100, y2: 180, width: 2 },
     { kind: 'text', x: 200, y: 236, text: 'Rear view, back cover removed', anchor: 'middle' },
   ],
+  // Not in the order the questions ask for them, forwards or backwards. See
+  // the note in control-board.ts.
   regions: [
-    { id: 'panel', label: 'Panel', xPct: 50, yPct: 27.5 },
     { id: 'backlight', label: 'Backlight', xPct: 50, yPct: 53 },
+    { id: 'panel', label: 'Panel', xPct: 50, yPct: 27.5 },
     { id: 'psu', label: 'Power supply board', xPct: 20, yPct: 81 },
     { id: 'main', label: 'Main board', xPct: 62, yPct: 81 },
   ],

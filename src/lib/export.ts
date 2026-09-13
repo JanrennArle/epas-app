@@ -168,10 +168,12 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
   // bridge from the attempts themselves so a competency reworded between
   // terms still lands in its own column instead of emptying it, which would
   // be indistinguishable from the student never having sat it.
-  // Every read below runs over files a teacher collected from thirty phones.
-  // parseBundle proves the participant code and that `attempts` is an array,
-  // and nothing about what is inside it, so a truncated or hand-edited file
-  // has to cost that student's figures rather than throwing and taking the
+  // Called twice: on the student's own state from the progress screen, where
+  // the store wrote every value, and on files a teacher collected from thirty
+  // phones, where nothing did. parseBundle proves the participant code and
+  // that `attempts` is an array, and nothing about what is inside it, so the
+  // reads below are written for the second caller: a truncated or hand-edited
+  // file costs that student's figures rather than throwing and taking the
   // whole class table with it.
   const attempts = state.attempts.filter(a => a !== null && typeof a === 'object')
   const pairOfCompetency = new Map<string, string>()
@@ -244,21 +246,72 @@ export function csvRow(state: StoreV1, from: RowProvenance = {}): Cell[] {
 }
 
 /**
- * A row for a student whose file could not be read into one.
+ * A row for a student whose file could not be turned into one.
  *
- * `csvRow` is written to be total, and the suite holds it to that over
- * malformed tasks, modules, sims and attempts. This exists because "total"
- * is a claim about inputs nobody has thought of yet, and the failure it
- * guards against is the teacher pressing the button on the night before the
- * deadline and getting no file at all. A row that names the student and
- * carries nothing else is a visible gap in the data; a missing class table
- * is a lost evening.
+ * `csvRow` is written to survive every shape the app writes and every one a
+ * truncated or hand-edited file has produced, and the suite holds it to that
+ * over malformed tasks, modules, sims and attempts. It is not proof against
+ * an input nobody has thought of: a timestamp that throws when compared
+ * still reaches the assessment engine, for one. `classTable` is where that
+ * stops being the teacher's problem, because the failure this all guards
+ * against is pressing the button the night before the deadline and getting
+ * no file at all.
+ *
+ * It carries every column the merge already knew without reading the file:
+ * the code, whether the student is in the study, when they exported and how
+ * many files they handed in. Everything the file would have supplied is
+ * blank rather than zero, because a zero is a score a student can earn and a
+ * blank is not, and because a row that answered 'no' to `in_study` would be
+ * dropped by the first filter any analyst writes. `codebookRows` describes
+ * the shape so it is recognisable six months later.
  */
-export function failedRow(code: string): Cell[] {
+export function failedRow(code: string, from: FailedRowInfo = {}): Cell[] {
   const row: Cell[] = new Array<Cell>(csvHeader().length).fill('')
   row[0] = code
-  row[1] = 'COULD NOT BE READ'
+  row[3] = from.inStudy ?? 'unknown'
+  row[4] = from.exportedAt ?? ''
+  row[5] = from.filesFromStudent ?? ''
   return row
+}
+
+export interface FailedRowInfo extends RowProvenance {
+  /** What the merge decided before the file was read. */
+  inStudy?: string
+}
+
+export interface ClassStudent {
+  code: string
+  state: StoreV1
+  from: FailedRowInfo
+}
+
+export interface ClassTable {
+  /** The header, then one row per student, in the order given. */
+  rows: Cell[][]
+  /** Codes that fell back to a blank row, for the teacher to be told about. */
+  unreadable: string[]
+}
+
+/**
+ * The whole class table, header included.
+ *
+ * This lives here rather than in the screen that downloads it because it
+ * decides, per student, what reaches the teacher's table, and that is the
+ * shape of decision this project keeps getting wrong in glue code. The
+ * consent rule broke three times that way before it moved into `merge.ts`.
+ */
+export function classTable(students: ClassStudent[]): ClassTable {
+  const rows: Cell[][] = [csvHeader()]
+  const unreadable: string[] = []
+  for (const s of students) {
+    try {
+      rows.push(csvRow(s.state, s.from))
+    } catch {
+      unreadable.push(s.code)
+      rows.push(failedRow(s.code, s.from))
+    }
+  }
+  return { rows, unreadable }
 }
 
 /**
@@ -269,6 +322,7 @@ export function codebookRows(): Cell[][] {
   const rows: Cell[][] = [['column', 'kind', 'module', 'meaning']]
   rows.push(['participant_code', 'identity', '', 'The code issued to this device on first launch'])
   rows.push(['name', 'identity', '', 'Optional, blank where the student stayed anonymous'])
+  rows.push(['(a row with only participant_code, in_study, exported_at and files_from_student filled)', 'reading note', '', 'That student handed in a file the app could not turn into a row. Every other column is blank rather than zero, because a zero is a mark a student can earn and a blank is not. The teacher was told at the time'])
   rows.push(['consented_at', 'identity', '', 'When the consent screen was answered'])
   rows.push(['in_study', 'identity', '', 'yes, no, or unknown for a record written before the choice existed'])
   rows.push(['exported_at', 'identity', '', 'When the export this row was built from was saved'])

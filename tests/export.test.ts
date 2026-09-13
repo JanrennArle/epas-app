@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Attempt, StoreV1 } from '../src/lib/store'
 import {
-  codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow, failedRow,
+  classTable, codebookRows, competencyColumns, csvCell, csvHeader, csvLine, csvRow, failedRow,
   parseBundle, rubricRows, toBundle, toCsv,
 } from '../src/lib/export'
 
@@ -397,7 +397,7 @@ describe('task and engagement columns', () => {
   // the code and the attempts array and nothing else, so a truncated or
   // hand-edited file must cost that student's figures rather than throwing
   // and taking the whole class table with it.
-  it('builds a row from a file whose task, module and sim records are malformed', () => {
+  it('builds a row from a file whose task, module and sim records are the wrong type', () => {
     const broken = {
       ...state(),
       tasks: { t1: { checked: 'nope' } },
@@ -440,15 +440,77 @@ describe('task and engagement columns', () => {
   })
 
   describe('the row for a file that could not be read at all', () => {
+    const head = csvHeader()
+
     it('is the width of the table and names the student', () => {
       const row = failedRow('EPAS-ZZZZZZ')
-      expect(row.length).toBe(csvHeader().length)
-      expect(row[0]).toBe('EPAS-ZZZZZZ')
-      expect(row[1]).toBe('COULD NOT BE READ')
+      expect(row.length).toBe(head.length)
+      expect(row[head.indexOf('participant_code')]).toBe('EPAS-ZZZZZZ')
     })
 
+    // A zero is a mark a student can earn. A blank is not, and that is the
+    // whole difference between a gap in the data and a fabricated result.
     it('carries no figures that could be read as zeros the student earned', () => {
-      expect(failedRow('EPAS-ZZZZZZ').slice(2).every(c => c === '')).toBe(true)
+      const row = failedRow('EPAS-ZZZZZZ')
+      for (const column of ['lessons_completed', 'sims_run', 'task_t1_steps_done', 'gain__m1-c1']) {
+        expect(row[head.indexOf(column)], column).toBe('')
+      }
+    })
+
+    // A row saying `no` or blank here is dropped by the first filter any
+    // analyst writes, and the student would vanish rather than show as a gap.
+    it('keeps what the merge already knew without reading the file', () => {
+      const row = failedRow('EPAS-ZZZZZZ', {
+        inStudy: 'yes', exportedAt: '2026-09-13T01:00:00.000Z', filesFromStudent: 2,
+      })
+      expect(row[head.indexOf('in_study')]).toBe('yes')
+      expect(row[head.indexOf('exported_at')]).toBe('2026-09-13T01:00:00.000Z')
+      expect(row[head.indexOf('files_from_student')]).toBe(2)
+    })
+
+    it('says unknown rather than no when the merge did not say', () => {
+      expect(failedRow('EPAS-ZZZZZZ')[head.indexOf('in_study')]).toBe('unknown')
+    })
+  })
+
+  describe('the class table', () => {
+    it('starts with the header and carries one row per student', () => {
+      const t = classTable([
+        { code: 'EPAS-AAAAAA', state: state(), from: {} },
+        { code: 'EPAS-BBBBBB', state: state(), from: {} },
+      ])
+      expect(t.rows).toHaveLength(3)
+      expect(t.rows[0]).toEqual(csvHeader())
+      expect(t.unreadable).toEqual([])
+    })
+
+    // The failure this exists for: one student's file throwing inside the
+    // download handler and the teacher getting no class table at all.
+    it('keeps the other students when one file cannot be turned into a row', () => {
+      const exploding = new Proxy({} as StoreV1, {
+        get() { throw new Error('unreadable') },
+      })
+      const t = classTable([
+        { code: 'EPAS-AAAAAA', state: state(), from: {} },
+        { code: 'EPAS-BADBAD', state: exploding, from: { inStudy: 'yes', filesFromStudent: 1 } },
+        { code: 'EPAS-CCCCCC', state: state(), from: {} },
+      ])
+      expect(t.rows).toHaveLength(4)
+      expect(t.unreadable).toEqual(['EPAS-BADBAD'])
+      expect(t.rows[2]?.[0]).toBe('EPAS-BADBAD')
+      expect(t.rows[2]?.[csvHeader().indexOf('in_study')]).toBe('yes')
+      expect(t.rows[3]?.[0]).toBe(state().participant.code)
+    })
+
+    // Silence here would turn the whole class into blank rows the night a
+    // csvRow bug shipped, with nothing on screen and a green suite.
+    it('names every student it could not read', () => {
+      const exploding = new Proxy({} as StoreV1, { get() { throw new Error('no') } })
+      const t = classTable([
+        { code: 'EPAS-ONE', state: exploding, from: {} },
+        { code: 'EPAS-TWO', state: exploding, from: {} },
+      ])
+      expect(t.unreadable).toEqual(['EPAS-ONE', 'EPAS-TWO'])
     })
   })
 

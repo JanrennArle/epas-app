@@ -4,12 +4,15 @@ export const controlBoard: MatchActivityData = {
   kind: 'match',
   id: 'control-board',
   instruction: 'These parts sit on a typical appliance control board. Match each description to the part it names.',
+  // Deliberately not in the order the questions ask for them. Listed in item
+  // order, picking the Nth option for the Nth question scored five out of
+  // five without reading a word. See tests/activities.test.ts.
   choices: [
-    { id: 'relay', label: 'Relay' },
-    { id: 'regulator', label: 'Voltage regulator' },
-    { id: 'opto', label: 'Opto isolator' },
     { id: 'electrolytic', label: 'Electrolytic capacitor' },
     { id: 'micro', label: 'Microcontroller' },
+    { id: 'relay', label: 'Relay' },
+    { id: 'opto', label: 'Opto isolator' },
+    { id: 'regulator', label: 'Voltage regulator' },
   ],
   items: [
     { id: 'q1', prompt: 'Uses a small current to switch a much larger one, and clicks when it operates.', answer: 'relay' },

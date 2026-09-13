@@ -152,7 +152,9 @@ describe('the task sheet route', () => {
     go('no-such-task')
 
     expect(screen.getByText('That task sheet does not exist.')).toBeInTheDocument()
-    // The tick was still flushed on the way out.
+    // Written by the toggle itself, not by the unmount flush, which has its
+    // own test above. What this line adds is that the transition did not
+    // take the record with it.
     expect(loadState().tasks?.[t1.id]?.checked).toEqual([0])
   })
 })

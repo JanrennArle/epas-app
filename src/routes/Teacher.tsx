@@ -1,10 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
-import { codebookRows, csvHeader, csvRow, failedRow, parseBundle, rubricRows } from '../lib/export'
+import { classTable, codebookRows, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
 import { addLoaded, excludedStudents, groupByStudent, includedStudents, whyLeftOut } from '../lib/merge'
 import type { LoadedFile, StudentGroup } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
-import type { Cell } from '../lib/export'
 import type { CSSProperties } from 'react'
 
 interface Rejected {
@@ -16,22 +15,16 @@ const note: CSSProperties = {
   fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px',
 }
 
-/**
- * One student's row, or a row saying that student's file could not be read.
- *
- * csvRow is written to be total and the suite holds it to that, so this
- * catches only what nobody anticipated. It exists because the alternative is
- * one corrupt file out of thirty throwing inside the download handler and the
- * teacher getting no class table at all, with nothing on screen saying why.
- */
-function classRow(g: StudentGroup): Cell[] {
-  try {
-    return csvRow(g.newest.state, {
+/** What `classTable` needs from a merged student, and nothing more. */
+function forExport(g: StudentGroup) {
+  return {
+    code: g.code,
+    state: g.newest.state,
+    from: {
+      inStudy: 'yes',
       exportedAt: g.newest.exportedAt,
       filesFromStudent: g.files.length,
-    })
-  } catch {
-    return failedRow(g.code)
+    },
   }
 }
 
@@ -41,6 +34,11 @@ export default function Teacher() {
   const [pinError, setPinError] = useState('')
   const [loaded, setLoaded] = useState<LoadedFile[]>([])
   const [rejected, setRejected] = useState<Rejected[]>([])
+  // Students whose file was read and accepted but could not be turned into a
+  // row. Kept in state so the teacher is told on screen; a table that
+  // silently replaced a student with blanks would be found in the analysis,
+  // months later, by someone who could no longer ask them to hand in again.
+  const [unreadable, setUnreadable] = useState<string[]>([])
 
   function unlock() {
     const stored = teacherPin()
@@ -196,7 +194,11 @@ export default function Teacher() {
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <button
-          onClick={() => downloadCsv('epas-class.csv', [csvHeader(), ...included.map(classRow)])}
+          onClick={() => {
+            const table = classTable(included.map(forExport))
+            setUnreadable(table.unreadable)
+            downloadCsv('epas-class.csv', table.rows)
+          }}
           disabled={included.length === 0}
           className="tile"
           style={{
@@ -229,6 +231,28 @@ export default function Teacher() {
           Save the rubric scoring sheet
         </button>
       </div>
+
+      {unreadable.length > 0 && (
+        <div role="status" style={{
+          fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)', marginTop: 14,
+          background: 'var(--surface)', border: '1px solid var(--line)',
+          borderLeft: '3px solid var(--caution)', borderRadius: '0 10px 10px 0',
+          padding: '11px 13px',
+        }}>
+          <strong style={{
+            display: 'block', fontSize: 11, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: 'var(--caution)', marginBottom: 6,
+          }}>Saved, with gaps</strong>
+          <p style={{ margin: '0 0 6px' }}>
+            The table saved, but {unreadable.length === 1 ? 'one student' : `${unreadable.length} students`} could
+            not be read into a row. Those rows carry the code and nothing else, so the table is
+            still usable. Ask them to export and hand in again.
+          </p>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            {unreadable.map(code => <li key={code} style={{ marginBottom: 2 }}>{code}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

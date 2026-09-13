@@ -60,6 +60,33 @@ describe('every authored activity is internally consistent', () => {
     }
   })
 
+  /**
+   * The position tell, across all three formats.
+   *
+   * This guarded sequences only, and while it did, two match activities
+   * listed their choices in exactly the order their questions asked for them
+   * and one hotspot listed its regions the same way. Both render the pool in
+   * array order, so a student picking the Nth option for the Nth question
+   * scored five out of five and four out of four without reading anything.
+   * That is the same defect as keys bunched on option B in the test bank,
+   * wearing a different format.
+   *
+   * Backwards counts too: a pool that is the answer order reversed is one
+   * glance away from being read forwards.
+   */
+  it('never lines its answer pool up with its own questions', () => {
+    for (const [key, activity] of entries) {
+      const shown = activity.kind === 'hotspot'
+        ? activity.regions.map(r => r.id)
+        : activity.choices.map(c => c.id)
+      const answer = activity.items.map(i => i.answer)
+      const forwards = answer.filter((a, i) => shown[i] === a).length
+      const backwards = answer.filter((a, i) => shown[shown.length - 1 - i] === a).length
+      expect(forwards, `${key} read down the pool`).toBeLessThanOrEqual(1)
+      expect(backwards, `${key} read up the pool`).toBeLessThanOrEqual(1)
+    }
+  })
+
   it('never repeats a block within one sequence', () => {
     for (const [key, activity] of entries) {
       if (activity.kind !== 'sequence') continue

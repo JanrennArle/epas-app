@@ -57,7 +57,14 @@ export const STANDALONE: Lab[] = [
  * the distractor as well. A student reading the gallery could score every
  * signal path exercise without opening one. That is the fifth member of the
  * exploit family CLAUDE.md describes, and the first found outside the item
- * banks; `tests/registry.test.tsx` guards it now.
+ * banks; `tests/registry.test.tsx` guards it now, across every format rather
+ * than only the one it was found in. The match and hotspot blurbs had the
+ * same defect in the same commit, listing their answers in item order, which
+ * for a matching exercise is the whole key.
+ *
+ * The rule these are written to: name the SUBJECT, never the answers. "Which
+ * part of a lamp does each job" is a card. "Pair the cell, charger and driver
+ * with what they do" is an answer sheet.
  * An activity carries an instruction
  * for the student who is already inside it, which is the wrong length and the
  * wrong voice for a card, so the card copy is authored here. The guard test
@@ -67,19 +74,19 @@ export const STANDALONE: Lab[] = [
 const ACTIVITY_COPY: Record<string, { title: string; blurb: string }> = {
   'flat-iron-parts': {
     title: 'Parts of a flat iron',
-    blurb: 'Point to the element, thermostat, thermal fuse and cord on a cutaway.',
+    blurb: 'Find each part on a cutaway of an iron from what the part does.',
   },
   'tv-boards': {
     title: 'Boards inside a television',
-    blurb: 'Find the power supply, main board, backlight and panel from what each one does.',
+    blurb: 'Find each board on the back of a set from the job it does.',
   },
   'lighting-parts': {
     title: 'Parts of a rechargeable lamp',
-    blurb: 'Pair the cell, charger, driver, LEDs and switch with the job each one does.',
+    blurb: 'Work out which part of a rechargeable lamp does each job described.',
   },
   'control-board': {
     title: 'Parts on a control board',
-    blurb: 'Pair the relay, regulator, optocoupler, capacitor and microcontroller with what they do.',
+    blurb: 'Work out which part of an appliance control board does each job described.',
   },
   'audio-signal': {
     title: 'Audio signal path',
@@ -101,6 +108,13 @@ const ACTIVITY_COPY: Record<string, { title: string; blurb: string }> = {
  * Built from the activity and scenario registries rather than listed by hand,
  * so authoring an exercise puts it here and a shell can never point at an
  * exercise of the wrong kind: the kind is what chooses the shell.
+ */
+/*
+ * Retired URL, recorded rather than aliased: `/labs/troubleshoot` resolved
+ * before the scenario cards existed and opened the fan, because that is the
+ * shell's default. It is `/labs/fault-fan` now and the old one shows the
+ * not-found message. Nothing in the app ever linked it and the app has not
+ * been deployed, so no student is holding that link.
  */
 export const LABS: Lab[] = [
   ...STANDALONE,
@@ -125,13 +139,7 @@ export const LABS: Lab[] = [
   })),
 ]
 
-/**
- * `/labs/troubleshoot` resolved before the scenario cards existed and opened
- * the fan scenario, because that is the shell's default. It is now
- * `/labs/fault-fan`, and the old URL shows the not-found message. Nothing in
- * the app ever linked it and the app has not been deployed, so no student can
- * hold that link; it is recorded here rather than aliased.
- */
+/** The lab a `/labs/:labId` URL names, or nothing. */
 export function getLab(id: string): Lab | undefined {
   return LABS.find(l => l.id === id)
 }
