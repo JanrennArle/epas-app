@@ -76,3 +76,30 @@ export interface SurveyItem {
   category: SurveyCategory
   text: string
 }
+
+/** One line of a performance task rubric, scored by the teacher, not the app. */
+export interface RubricRow {
+  criterion: string
+  /** What full marks looks like, shown to the student from the start. */
+  descriptor: string
+  points: number
+}
+
+/**
+ * One Budget of Work performance task. `brief` is quoted from the Budget of
+ * Work rather than paraphrased, because the task is the curriculum's and a
+ * student should be able to match what they read here to what their teacher
+ * was given.
+ */
+export interface PerformanceTask {
+  id: string
+  kind: 'individual' | 'group'
+  title: string
+  /** Quoted from the Budget of Work. */
+  brief: string
+  /** Modules whose lessons prepare a student for this task. */
+  modules: string[]
+  safety: string[]
+  steps: string[]
+  rubric: RubricRow[]
+}

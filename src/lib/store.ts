@@ -30,6 +30,20 @@ export interface ModuleProgress {
   completedOutcomes: string[]
 }
 
+/**
+ * What a student recorded against one performance task. Ticks are the
+ * student's own record of what they did, not evidence that they did it: a
+ * student can tick a step they skipped. The teacher's rubric score is the
+ * assessment, and the export labels these as engagement for that reason.
+ */
+export interface TaskProgress {
+  /** Indices of the steps the student has ticked. */
+  checked: number[]
+  notes?: string
+  /** When the sheet was last touched. */
+  at?: string
+}
+
 export interface StoreV1 {
   schemaVersion: 1
   participant: { code: string; name?: string; consentedAt?: string; research?: boolean }
@@ -37,6 +51,7 @@ export interface StoreV1 {
   attempts: Attempt[]
   sims: SimRecord[]
   survey?: Record<string, number | string>
+  tasks?: Record<string, TaskProgress>
 }
 
 function newCode(): string {
@@ -256,4 +271,25 @@ export function setTeacherPin(pin: string): void {
   } catch {
     // Storage full or blocked. The tool still works for this session.
   }
+}
+
+export function taskProgress(taskId: string): TaskProgress {
+  return loadState().tasks?.[taskId] ?? { checked: [] }
+}
+
+/**
+ * Replaces one task's record. Replace rather than merge, or unticking a step
+ * would leave it ticked, which is the sort of thing a student would notice
+ * only after handing in.
+ */
+export function setTaskProgress(taskId: string, progress: TaskProgress): void {
+  update(s => {
+    const notes = progress.notes?.trim()
+    const kept: TaskProgress = {
+      checked: [...progress.checked].sort((a, b) => a - b),
+      at: new Date().toISOString(),
+    }
+    if (notes) kept.notes = notes
+    s.tasks = { ...(s.tasks ?? {}), [taskId]: kept }
+  })
 }
