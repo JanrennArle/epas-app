@@ -37,7 +37,7 @@ export const m5: Module = {
             'Terminate the connectors properly and weatherproof every outdoor joint.',
             'Power up, aim each camera against the plan, and record the final positions.',
           ] },
-          { kind: 'safety', md: 'Most CCTV injuries are falls, not shocks. Use a stable platform, keep your hips inside the ladder rails, and have someone with you when you work at height. Isolate the supply before you touch any camera wiring.' },
+          { kind: 'safety', md: 'Most CCTV injuries are falls, not shocks. Use a stable platform, keep your hips inside the ladder rails, and have someone with you when you work at height. Isolate the supply before you cut, strip, disconnect or re-terminate any camera wiring. A meter reading at the camera end is the exception, because the whole point of it is to find out whether the supply is arriving.' },
         ],
       }],
       quiz: [
@@ -94,7 +94,7 @@ export const m5: Module = {
           { kind: 'text', md: 'One camera dark while the others are fine tells you the fault is in that camera path, not in the recorder or the monitor. All cameras dark tells you the opposite. Getting that distinction right before you climb a ladder saves most of the job.' },
           { kind: 'interactive', simId: 'troubleshoot', config: { scenario: 'cctv' } },
           { kind: 'note', md: 'Outdoor connectors are where most CCTV faults live. Water gets into a joint that was never properly sealed, corrodes the centre pin, and produces a picture that works in dry weather and fails in the rain. Always open the connector and look.' },
-          { kind: 'safety', md: 'Isolate the camera supply before disconnecting anything, and never work at height alone. A fall from a two metre ladder does more harm than any voltage in this system.' },
+          { kind: 'safety', md: 'Isolate the camera supply before disconnecting anything, and never work at height alone. A fall from a two metre ladder does more harm than any voltage in this system. Measuring the supply where it arrives is done with the system running, because a dead reading on an isolated system tells you nothing.' },
         ],
       }],
       quiz: [

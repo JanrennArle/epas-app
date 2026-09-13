@@ -21,10 +21,11 @@ export const t4: PerformanceTask = {
     'With the charger still unplugged, measure the cell voltage, then run the lamp for a few minutes and measure again, because a failed cell reads a plausible voltage at rest and collapses as soon as anything draws from it.',
     'Plug the charger in on its own, away from the open unit, measure its output at the jack against the rating printed on it, then unplug it again.',
     'With your teacher present, connect the charger lead to the unit, plug the charger back into the mains just long enough to read the charging circuit output at the cell terminals, then unplug it from the mains again before you go any further. The unit is open for this one reading and for nothing else.',
-    'With the charger unplugged once more, check continuity through the switch and the wiring between the cell, the driver and the light emitting diodes.',
+    'With the charger unplugged once more, disconnect the cell before you go any further. Every measurement below is a resistance or a diode test, and both push their own small current through the circuit, which only reads what it should with the cell out of it. Disconnecting it also means a slipped probe cannot short a lithium cell across the board.',
+    'With the cell disconnected, check continuity through the switch and the wiring between the cell terminals, the driver and the light emitting diodes.',
     'Test the light emitting diodes with the meter on its diode range, one device at a time, because one open device darkens a whole series string and looks identical to a dead driver from outside.',
     'Replace what the readings condemned, using a cell of the same chemistry, voltage and capacity as the original, with its protection circuit intact.',
-    'Close the unit completely, then reconnect the charger and watch it through a full charge cycle, noting whether it warms more than it should.',
+    'Reconnect the cell, close the unit completely, then reconnect the charger and watch it through a full charge cycle, noting whether it warms more than it should.',
     'Unplug the charger again and run the lamp on battery alone to confirm the runtime the group expected.',
   ],
   rubric: [

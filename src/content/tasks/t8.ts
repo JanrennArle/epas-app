@@ -28,7 +28,7 @@ export const t8: PerformanceTask = {
     { criterion: 'Reading the system', descriptor: 'The wiring diagram is used to agree the intended behaviour before any fault is named.', points: 5 },
     { criterion: 'Systematic diagnosis', descriptor: 'Sensor, wiring, controller input and actuator are followed in order rather than swapped at random.', points: 6 },
     { criterion: 'Corrective work', descriptor: 'Only what the readings condemned is changed, it is fitted to the same rating, and a welded contact is traced to its cause rather than simply replaced.', points: 4 },
-    { criterion: 'Safe working', descriptor: 'The supply was locked off and proved dead, the mechanism was kept clear, and the control supply was restored alone before the motor branch.', points: 6 },
+    { criterion: 'Safe working', descriptor: 'The supply was locked off and proved dead, the mechanism was touched only at the step that asks for it and only with the motor branch locked off, and the control supply was restored alone before the motor branch.', points: 6 },
     { criterion: 'Working as a group', descriptor: 'The isolation is announced, findings are shared, and every member can explain the control sequence.', points: 4 },
   ],
 }

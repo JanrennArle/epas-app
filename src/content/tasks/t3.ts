@@ -15,15 +15,15 @@ export const t3: PerformanceTask = {
   ],
   steps: [
     'Confirm the fault for yourself and write down exactly what the appliance does and does not do.',
-    'Unplug the appliance and open it. Look, and do not touch anything inside yet: a burnt smell, a discoloured lead, a loose terminal.',
-    'If the appliance has a capacitor, discharge it through a bleeder resistor and confirm it reads close to zero volts. Do this before your hands or your probes go anywhere near the inside, because a run capacitor holds its charge with the appliance unplugged and sits directly across the winding and the terminals you are about to touch.',
+    'Unplug the appliance and open it. Look before you touch: a burnt smell, a discoloured lead, a loose terminal.',
+    'If the appliance has a capacitor, the first thing you touch inside is the bleeder resistor across its terminals. Discharge it and confirm it reads close to zero volts before anything else, because a run capacitor holds its charge with the appliance unplugged and sits directly across the winding and the terminals you are about to work on.',
     'With the appliance still unplugged, check continuity through the supply cord from the plug pins to the internal terminals, flexing the cord at the plug and at the entry while you watch the meter, because a break there shows only while it moves.',
     'Still unplugged, and only if the appliance has an earth pin, check continuity from that pin to any exposed metal the user can touch. A double insulated appliance has no earth to check.',
     'Still unplugged, test the switch, the thermal cutout, and the winding or element one at a time, and write each reading down.',
     'Measure the capacitor against the value marked on it, with one of its leads lifted so the winding is not reading in parallel with it.',
     'Replace what the readings condemned, and nothing that they did not.',
     'Reassemble the appliance completely, then plug it in and run it through every speed or heat setting.',
-    'If anything still needs attention, unplug the appliance, discharge the capacitor again and confirm it reads close to zero volts before you reopen it, because the run you just did recharged it. Then repeat the test once it is closed.',
+    'If anything still needs attention, unplug the appliance and let it cool, because a soleplate or an element stays hot long after the setting is switched off. Reopen it, discharge the capacitor again and prove it close to zero volts before you touch anything else inside, since the run you just did recharged it. Then close the appliance and repeat the test.',
   ],
   rubric: [
     { criterion: 'Diagnosis', descriptor: 'The faulty part is identified from measurements rather than from guessing, and the readings are written down.', points: 6 },
