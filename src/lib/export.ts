@@ -339,13 +339,13 @@ export function codebookRows(): Cell[][] {
   }
 
   for (const t of TASKS) {
-    rows.push([`task_${t.id}_steps_done`, 'task', t.modules.join(' '), `Steps the student ticked on ${t.title}. Their own record of what they did, not evidence that they did it`])
+    rows.push([`task_${t.id}_steps_done`, 'task', t.modules.join(' '), `Steps the student ticked on ${t.title}. Their own record of what they did, not evidence that they did it. A tick is stored as a position in the step list, so a sheet reworded between terms moves what a number means; 0 covers both a sheet opened and left and a sheet never opened, which are not distinguished`])
     rows.push([`task_${t.id}_steps_total`, 'task', t.modules.join(' '), `How many steps that sheet has`])
     rows.push([`task_${t.id}_notes`, 'task', t.modules.join(' '), `What the student wrote on ${t.title}`])
   }
-  rows.push(['lessons_completed', 'engagement', '', 'Learning outcomes marked complete across all nine modules'])
-  rows.push(['formative_attempted', 'engagement', '', 'Formative quiz items answered inside lessons. Excluded from the gain'])
-  rows.push(['formative_correct', 'engagement', '', 'How many of those were right'])
+  rows.push(['lessons_completed', 'engagement', '', 'Learning outcomes marked complete across all nine modules. One outcome is one lesson in this app, so this counts outcomes'])
+  rows.push(['formative_attempted', 'engagement', '', 'Formative quiz answers recorded inside lessons, including repeats: the quiz starts again on every visit to a lesson and shows the student why each option is right, so a determined student can raise this without learning anything. Excluded from the gain, and not a measure of how many distinct items were seen'])
+  rows.push(['formative_correct', 'engagement', '', 'How many of those answers were right, on the same counting, repeats included'])
   rows.push(['sims_run', 'engagement', '', 'Simulation runs recorded, including repeats and runs started from Labs'])
   rows.push(['sims_distinct', 'engagement', '', 'How many different simulations were run at least once'])
 
@@ -364,6 +364,17 @@ export function codebookRows(): Cell[][] {
  * Every task is listed for every student, whether or not they ticked anything,
  * so the teacher gets a complete sheet rather than one with gaps they have to
  * notice.
+ */
+/**
+ * The blank marking grid, one row per student per rubric criterion.
+ *
+ * Every student who handed in a file belongs on it, including the ones who
+ * declined the study. Declining keeps a student's results out of what the
+ * teacher reports; it does not stop them being a class member whose
+ * performance tasks must be marked, which is what the consent screen means by
+ * "it is your coursework either way". Nothing of the student's is in these
+ * rows: the code, the sheet, the criterion, the maximum, and an empty column
+ * for the teacher to write in.
  */
 export function rubricRows(students: { code: string }[]): Cell[][] {
   const rows: Cell[][] = [['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score']]

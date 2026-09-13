@@ -9,7 +9,7 @@ export const t5: PerformanceTask = {
   modules: ['m4', 'm5'],
   safety: [
     'The camera side is low voltage, but the power supply that feeds it is not. Treat the supply as mains until you have proved otherwise.',
-    'Several of the checks below need the system powered. Clip your probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them.',
+    'Several of the checks below need the system powered, and where you may move a probe live depends on which side of the power supply you are on. Inside the supply or at its mains input, clip both probes on with it switched off and switch off again before you move either of them. On the low voltage camera side, which is where the measurements below are taken, you may move a probe with the system running, with your free hand off the metalwork.',
     'Isolate the supply before you cut, strip or re-terminate any cable. A connector made up live is a short waiting to happen.',
     'A camera on a bracket at height is a falling object. Support it before you loosen anything.',
     'Never work at height on your own. Somebody stays at the foot of the ladder for as long as you are on it.',
@@ -28,6 +28,6 @@ export const t5: PerformanceTask = {
     { criterion: 'Narrowing the fault', descriptor: 'What the working cameras prove is used to narrow the search before anything is opened.', points: 6 },
     { criterion: 'Measurement', descriptor: 'Voltage is measured at the camera end and the signal path is checked by substitution, with readings written down.', points: 5 },
     { criterion: 'Repair quality', descriptor: 'Terminations are remade properly and the run is supported and dressed so it cannot chafe or pull on a connector.', points: 5 },
-    { criterion: 'Safe working', descriptor: 'Live measurements are made with probes fitted first, and the supply is isolated before any cable work.', points: 6 },
+    { criterion: 'Safe working', descriptor: 'Live measurements are kept to the low voltage side, the supply is isolated before any cable work, and nobody works at height alone.', points: 6 },
   ],
 }

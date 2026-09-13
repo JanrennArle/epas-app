@@ -88,6 +88,8 @@ export default function Teacher() {
   function clearAll() {
     setLoaded([])
     setRejected([])
+    // Or the gaps panel keeps naming students from the class that just left.
+    setUnreadable([])
     // Otherwise the browser keeps showing "3 files" beside an empty screen.
     if (fileInput.current) fileInput.current.value = ''
   }
@@ -95,6 +97,12 @@ export default function Teacher() {
   const groups = useMemo(() => groupByStudent(loaded), [loaded])
   const included = includedStudents(groups)
   const excluded = excludedStudents(groups)
+  // The marking grid covers everyone who handed in, both lists. A student who
+  // declined the study is still a student whose performance tasks you have to
+  // mark, and the grid holds nothing of theirs: a code, the criteria, and an
+  // empty column. The consent rule governs what is reported, which is the
+  // class table, and that still comes from `included` alone.
+  const marking = groups.map(g => ({ code: g.code })).sort((a, b) => a.code.localeCompare(b.code))
   const repeated = groups.filter(g => g.files.length > 1)
 
   if (!unlocked) {
@@ -218,19 +226,26 @@ export default function Teacher() {
           Save the codebook
         </button>
         <button
-          onClick={() => downloadCsv('epas-rubric-sheet.csv', rubricRows(included.map(g => ({ code: g.code }))))}
-          disabled={included.length === 0}
+          onClick={() => downloadCsv('epas-rubric-sheet.csv', rubricRows(marking))}
+          disabled={marking.length === 0}
           className="tile"
           style={{
             minHeight: 44, padding: '11px 18px', borderRadius: 10,
             border: '1px solid var(--line)', background: 'var(--surface)',
-            color: included.length ? 'var(--ink)' : 'var(--ink-3)',
+            color: marking.length ? 'var(--ink)' : 'var(--ink-3)',
             font: 'inherit', fontSize: 14, fontWeight: 600,
-            cursor: included.length ? 'pointer' : 'default',
+            cursor: marking.length ? 'pointer' : 'default',
           }}>
           Save the rubric scoring sheet
         </button>
       </div>
+
+      <p style={{ ...note, marginTop: 12, color: 'var(--ink-3)', fontSize: 12.5 }}>
+        The class table holds the {included.length === 1 ? 'one student' : `${included.length} students`} who
+        agreed to take part. The rubric scoring sheet is a blank marking grid and covers
+        all {marking.length}, because a student who declined the study is still a student
+        whose performance tasks you mark.
+      </p>
 
       {unreadable.length > 0 && (
         <div role="status" style={{

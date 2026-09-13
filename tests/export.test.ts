@@ -473,6 +473,22 @@ describe('task and engagement columns', () => {
     })
   })
 
+  // The marking grid goes to every student who handed in, the declining ones
+  // included, so what it may contain is a consent question. It may contain
+  // nothing of theirs, and this is what holds it to that.
+  describe('the rubric scoring sheet', () => {
+    it('carries nothing about a student except the code', () => {
+      const head = ['participant_code', 'task_id', 'task_title', 'criterion', 'max_points', 'score']
+      const rows = rubricRows([{ code: 'EPAS-AAAAAA' }])
+      expect(rows[0]).toEqual(head)
+      for (const row of rows.slice(1)) {
+        expect(row).toHaveLength(head.length)
+        expect(row[0]).toBe('EPAS-AAAAAA')
+        expect(row[5], 'the score column is the teacher to fill in').toBe('')
+      }
+    })
+  })
+
   describe('the class table', () => {
     it('starts with the header and carries one row per student', () => {
       const t = classTable([

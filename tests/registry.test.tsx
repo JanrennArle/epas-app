@@ -170,7 +170,7 @@ describe('the labs gallery', () => {
    */
   it('never names its own answers on the card that opens it', () => {
     for (const lab of LABS) {
-      if (!SHELLS[lab.simId]) continue
+      if (SHELLS[lab.simId] !== 'activity') continue
       const activity = ACTIVITIES[lab.config?.activity as string]
       if (!activity) continue
       // Split into words rather than matched with a regex. The first version
@@ -183,6 +183,44 @@ describe('the labs gallery', () => {
         .map(i => i.answer.toLowerCase())
         .filter(answer => words.has(answer))
       expect(named.length, `${lab.id} names ${named.join(', ')} on its card`).toBeLessThan(2)
+    }
+  })
+
+  /**
+   * The same rule for the ten scenario cards, whose answer is a fault rather
+   * than an ordering.
+   *
+   * The card carries the symptom, which is what a customer says and what a
+   * technician is given, so it is the right copy for the card. What it must
+   * not carry is the name of the fault: "the thermal fuse has opened" on the
+   * card turns a diagnostic exercise into a reading exercise, and the scoring
+   * engine's whole point is that the taught sweep outscores a lucky first
+   * guess. Checked against the label of the fault that is actually present,
+   * word by word, ignoring words the other faults on the same scenario also
+   * use, since those cannot single one out.
+   */
+  it('never names the fault on the card that opens a scenario', () => {
+    for (const lab of LABS) {
+      if (SHELLS[lab.simId] !== 'scenario') continue
+      const scenario = SCENARIOS[lab.config?.scenario as string]
+      expect(scenario, lab.id).toBeDefined()
+      if (!scenario) continue
+      const actual = scenario.faults.find(f => f.id === scenario.actualFault)
+      expect(actual, `${lab.id} names a fault that exists`).toBeDefined()
+      if (!actual) continue
+
+      const words = (text: string) => text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)
+      // Words the other faults use cannot single this one out, and neither
+      // can the appliance's own name, which is on the card by design: every
+      // fault on the list is a fault in that same appliance.
+      const shared = new Set([
+        ...scenario.faults.filter(f => f.id !== actual.id).flatMap(f => words(f.label)),
+        ...words(scenario.appliance),
+      ])
+      const telling = words(actual.label).filter(w => !shared.has(w) && w.length > 3)
+      const copy = new Set(words(`${lab.title} ${lab.blurb}`))
+      const leaked = telling.filter(w => copy.has(w))
+      expect(leaked, `${lab.id} names ${leaked.join(', ')} on its card`).toHaveLength(0)
     }
   })
 

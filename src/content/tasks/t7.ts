@@ -9,7 +9,7 @@ export const t7: PerformanceTask = {
   modules: ['m8', 'm9'],
   safety: [
     'The filter capacitors in an amplifier supply hold their charge after the mains is removed. Discharge them through a bleeder resistor and confirm with a meter that they read close to zero volts before touching the board.',
-    'Several of the checks below need the unit powered. Clip your probes on before you switch on, keep one hand away from the chassis, and switch off again before you move them.',
+    'Several of the checks below need the unit powered, and where you may move a probe live depends on which side of the transformer you are on. On the mains side, the inlet, the fuse and the primary, clip both probes on with the unit off and switch off again before you move either of them. On the low voltage side after the transformer, where the rail and signal comparisons happen, you may move one probe with the unit running, with the other clipped to the board ground and your free hand off the chassis.',
     'Turn the volume fully down before you switch on again. A fault can put full output into a speaker without warning, and that damages both the speaker and your hearing.',
     'Handle the board by its edges. Static from your hands damages semiconductors in ways that do not show up until later.',
   ],
@@ -27,6 +27,6 @@ export const t7: PerformanceTask = {
     { criterion: 'Narrowing the fault', descriptor: 'The affected channel and stage are identified before the case is opened, and the signal path is followed in order.', points: 6 },
     { criterion: 'Measurement', descriptor: 'Rails and signals are measured at the right points with the right meter setting, and readings are written down.', points: 5 },
     { criterion: 'Repair quality', descriptor: 'The replacement matches the original rating, the joints are sound, and the board is handled by its edges.', points: 5 },
-    { criterion: 'Safe working', descriptor: 'The capacitors were proved discharged before contact, probes were fitted before power, and the volume was down at switch on.', points: 6 },
+    { criterion: 'Safe working', descriptor: 'The capacitors were proved discharged before contact, the mains side was probed only with the unit off, and the volume was down at switch on.', points: 6 },
   ],
 }

@@ -16,7 +16,8 @@ export const t8: PerformanceTask = {
   steps: [
     'Agree from the wiring diagram what the system should do at each position, before anyone decides what is broken.',
     'Isolate the supply, lock it off, and prove the load side dead at the point you are about to touch.',
-    'Still isolated, test each sensor by changing what it senses and watching the reading move, remembering that a proximity sensor needs its own supply and a limit switch does not.',
+    'Still isolated, test the passive sensors by changing what they sense and watching the reading move: a limit switch operated by hand while you watch continuity, a thermistor warmed while you watch resistance.',
+    'A proximity sensor is the exception, because it produces no output at all without power. Restore the control supply only, leaving the motor branch isolated and the enclosure closed where the sensor can be reached from outside it, then present the target and watch its output change. Isolate and lock off again before you go back inside.',
     'Still isolated, test the wiring from each sensor back to the controller input.',
     'Take each actuator off the machine and give it its rated signal from a bench supply, watching it act. The machine stays isolated throughout; the only thing energised is the actuator on the bench.',
     'Correct the wiring or fit the parts the readings condemned, and nothing else. If a relay contact was welded, find what made it weld before you fit the new relay, or the new one will weld too.',

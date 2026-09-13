@@ -20,7 +20,7 @@ export const t4: PerformanceTask = {
     'Unplug the charger and open the unit, then inspect the cell for swelling, heat or leakage before you test anything.',
     'With the charger still unplugged, measure the cell voltage, then run the lamp for a few minutes and measure again, because a failed cell reads a plausible voltage at rest and collapses as soon as anything draws from it.',
     'Plug the charger in on its own, away from the open unit, measure its output at the jack against the rating printed on it, then unplug it again.',
-    'With your teacher present, connect the charger to the unit just long enough to read the charging circuit output at the cell terminals, then unplug it again before you go any further.',
+    'With your teacher present, connect the charger lead to the unit, plug the charger back into the mains just long enough to read the charging circuit output at the cell terminals, then unplug it from the mains again before you go any further. The unit is open for this one reading and for nothing else.',
     'With the charger unplugged once more, check continuity through the switch and the wiring between the cell, the driver and the light emitting diodes.',
     'Test the light emitting diodes with the meter on its diode range, one device at a time, because one open device darkens a whole series string and looks identical to a dead driver from outside.',
     'Replace what the readings condemned, using a cell of the same chemistry, voltage and capacity as the original, with its protection circuit intact.',
