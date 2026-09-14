@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation } from 'react-router'
 import type { ReactNode } from 'react'
 import { hasConsented } from '../lib/store'
+import { UpdatePrompt } from './UpdatePrompt'
 
 const NAV = [
   { to: '/', label: 'Modules' },
@@ -23,6 +24,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div style={{ minHeight: '100dvh' }}>
+      <UpdatePrompt />
       <header style={{
         background: 'var(--surface)', borderBottom: '1px solid var(--line)',
         padding: '12px 16px', display: 'flex', alignItems: 'center',
