@@ -71,7 +71,12 @@ if (arrayStart !== -1) {
 
 const arrayIsEmpty = manifestSource.replace(/\s/g, '') === '[]'
 
-const precached = new Set([...sw.matchAll(URL_ENTRY)].map(m => m[1]))
+// Scoped to the manifest array we just found the bounds of, not the whole
+// file: a `url:"..."` in Workbox's own runtime code outside that array must
+// not count as something precached, or a genuinely missing file could hide
+// behind an unrelated match. (No such match exists in the current build:
+// checked by comparing this scoped scan against a whole-file one.)
+const precached = new Set([...manifestSource.matchAll(URL_ENTRY)].map(m => m[1]))
 
 // Not assets: the worker itself, and the files Workbox writes beside it.
 const IGNORED = /^(sw\.js|workbox-[^/]+\.js|registerSW\.js|sw\.js\.map|workbox-[^/]+\.js\.map)$/

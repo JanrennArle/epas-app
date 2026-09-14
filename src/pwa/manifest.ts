@@ -18,7 +18,8 @@ export const MANIFEST = {
   scope: './',
   display: 'standalone',
   orientation: 'portrait',
-  // docs/DESIGN.md: the light surface and the one accent.
+  // docs/DESIGN.md: `--paper`, the light ground colour, and `--accent` below.
+  // Not `--surface` (#FFFFFF), which is a different, whiter token.
   background_color: '#FAFAF9',
   theme_color: '#0E6E63',
   lang: 'en',

@@ -104,6 +104,33 @@ describe('the app icons', () => {
     expect({ r: corner.r, g: corner.g, b: corner.b }, 'maskable corner colour').toEqual(TEAL)
   })
 
+  // The corner check above passes for a solid teal square with no glyph at
+  // all, the same blank-tile failure the plain icon's glyph test exists to
+  // catch, one file over. The maskable variant's safe-zone inset (0.34) still
+  // centres its middle arm on the icon's own centre, same as the plain icon.
+  it('the maskable icon draws a white glyph on teal, not a blank tile', () => {
+    const px = pngPixels('public/icon-maskable-512.png')
+
+    const centre = px.at(256, 256)
+    expect(centre, 'centre should be the white glyph, not empty').toEqual({ r: 255, g: 255, b: 255, a: 255 })
+
+    const field = px.at(256, 100)
+    expect(field, 'field should be the teal fill').toEqual({ ...TEAL, a: 255 })
+  })
+
+  // apple-touch-icon.png is what an iPhone puts on a home screen, and it is
+  // never decoded elsewhere in this suite, only header-and-size checked
+  // above. Same blank-tile failure, same fix: decode the pixels.
+  it('the apple touch icon draws a white glyph on teal, not a blank tile', () => {
+    const px = pngPixels('public/apple-touch-icon.png')
+
+    const centre = px.at(90, 90)
+    expect(centre, 'centre should be the white glyph, not empty').toEqual({ r: 255, g: 255, b: 255, a: 255 })
+
+    const field = px.at(90, 20)
+    expect(field, 'field should be the teal fill').toEqual({ ...TEAL, a: 255 })
+  })
+
   // The plain icon draws its own rounded corners, so its corner pixel is the
   // opposite: transparent. This is what distinguishes it from the maskable
   // variant above, and confirms the two are not accidentally the same

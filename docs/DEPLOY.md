@@ -107,15 +107,28 @@ Every later push to `master` redeploys. Students who already installed the
 app are offered the new version and take it when they choose, which is what
 `registerType: 'prompt'` is for.
 
-## 2. Netlify, by dragging a folder
+## 2. Netlify, by dragging a folder: a quick demo, not for the paper
 
-Faster to set up, no GitHub account needed, and the URL is still citable.
+Faster to set up than part 1, and no GitHub account needed to get a URL in
+the first place.
 
 1. `npm run verify:offline` (this leaves a fresh `dist/`).
 2. Open https://app.netlify.com/drop and drag the `dist` folder onto the page.
-3. Netlify gives you a URL immediately. Under **Site configuration**, then
-   **Change site name**, you can make it something you would not mind putting
-   in a paper.
+3. Netlify gives you a URL immediately.
+
+**What is not known, and was not checked:** whether that URL keeps working
+without further action. This document was written without testing against
+Netlify's service, because doing so needs a network connection this project's
+work is not done with. An anonymous drag-and-drop deploy like this is commonly
+a temporary, claimable site rather than a permanent one, and the **Site
+configuration**, **Change site name** path some Netlify guides point to needs
+a logged-in account, which contradicts "no account needed" for anything past
+the first URL. Do not cite this URL in the research paper on the strength of
+this document. If you want to use Netlify for the paper anyway, create an
+account, claim the site through Netlify's own current instructions, and
+confirm the URL still resolves some time later before you cite it. Otherwise,
+use part 1's GitHub Pages URL, which is already the one this document
+verified end to end.
 
 To publish a new version, build again and drag `dist` again. There is no
 automation here, which also means nothing to go wrong.
@@ -134,6 +147,25 @@ folder instead, using the steps below.
 
 **Serve `dist/` from a machine that already has this project set up.**
 
+**Getting the project folder onto that machine in the first place.** Nothing
+above this point assumes the `epas-app` folder is already on the machine you
+will serve from; on your own laptop it is, but a lab PC is a different
+machine, and none of the commands below help until the folder is there. Pick
+one:
+
+- Clone it there with Git, the same as on any machine, once it has internet:
+  `git clone https://github.com/<your-username>/epas-app.git` (this needs
+  part 1 to have been done first, so the repository exists on GitHub).
+- Or copy the whole project folder over by USB drive or network share from a
+  machine that already has it, **excluding** `node_modules` (it is large and
+  tied to the machine it was installed on; you will create a fresh one with
+  `npm ci` in the next step, which needs that machine to have internet at
+  that point, even if it never has internet again afterwards).
+
+Either way, what you need on the serving machine before step 1 below is the
+project folder with a `.git` folder or a `package.json` in it, but not
+necessarily a working `node_modules` yet.
+
 1. On that machine, with internet, run the three commands under "Before you
    start" above if you have not already (`npm ci`, `npm test`,
    `npm run verify:offline`). This leaves a fresh, checked `dist/` folder.
@@ -141,9 +173,30 @@ folder instead, using the steps below.
    ```bash
    npx vite preview --port 4173 --host
    ```
+   **The first time this runs, Windows will show a firewall dialog**:
+   "Windows Defender Firewall has blocked some features of node.js". Click
+   **Allow access**. If the machine is managed by a school or district IT
+   department, this may need an administrator password, and the account you
+   are logged in as may not have one.
+
+   **If you cannot click Allow, or the dialog never appears because you lack
+   the rights to see it, the command still looks like it worked.** `vite
+   preview` prints a Network URL and keeps running with no error on this
+   machine at all. The symptom shows up only on the *other* machines in the
+   room: every one of them fails to open the address, usually with a
+   generic "can't reach this page" or a timeout, and nothing on the serving
+   machine hints at why. If that happens, this is the firewall dialog, not a
+   networking problem you need to debug from scratch; find someone with
+   admin rights on that machine, or serve from a different, unmanaged one.
 3. Every other machine on that same network can now open
    `http://<that machine's IP>:4173/` in any browser. Find the IP with
    `ipconfig` in the same terminal, on the line that says "IPv4 Address".
+
+**The terminal running step 2 must stay open for the whole class.** Closing
+the Git Bash window, or logging that machine out, stops the server
+immediately and every other machine loses the app mid-lesson with no
+warning. When the class is done, click that terminal and press `Ctrl+C` to
+stop it deliberately.
 
 What has to physically be on the machine that runs step 2 is not just the
 `dist/` folder, it is the **whole project folder**, `node_modules` included,

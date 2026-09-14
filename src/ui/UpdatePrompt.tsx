@@ -56,6 +56,11 @@ export function UpdatePrompt() {
           A newer version of the app is ready. Your work is saved on this device
           either way, so you can update whenever it suits you.
         </p>
+        {/* The `true` argument is what the plugin's type signature accepts,
+            but vite-plugin-pwa's registerType: 'prompt' client ignores it: the
+            reload always happens, driven by the `controlling` listener the
+            plugin sets up internally, not by this argument. There is no way
+            to update without reloading through this API. */}
         <button
           onClick={() => { void updateServiceWorker(true) }}
           className="tile"

@@ -36,6 +36,20 @@ An Android phone with Chrome, and the deployed URL.
    - [ ] Close the app entirely and reopen it. Everything above is still there.
 6. Leave flight mode. Confirm the app still works and nothing was lost.
 
+## Afterwards: clear this device before a student uses it
+
+Step 5 above submitted a real pre-test and stored a real participant code
+under this checker's own consent. If this phone or the browser profile on it
+is ever handed to a student, that student's real attempts land in
+`localStorage` alongside the checker's test run, under whatever participant
+code and consent the checker's own attempt used.
+
+Before this device reaches a student: open the browser's site settings for
+the app's URL and clear its site data (or uninstall the installed app, which
+removes the same storage). This resets consent, the participant code and
+every stored attempt, so the student starts from a genuinely empty state.
+Do this after every check, not just the first one.
+
 ## If something fails offline
 
 The failure is almost always an asset missing from the precache list. Run
