@@ -4,7 +4,7 @@ Last updated 2026-09-13, after plan 9 merged.
 
 ## Where things stand
 
-`master` is green: `npx tsc -b --force` clean, 325 tests across 20 files, `npm run build` clean. No open branches. No active plan workspace.
+`master` is green: `npx tsc -b --force` clean, 332 tests across 21 files, `npm run build` clean. No open branches. No active plan workspace.
 
 Every part of the app a student or teacher touches is built, including packaging: the code and configuration section 14 of `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` asks for is done in full. What is not done is the teacher's own remaining action items, listed below: deploying it, verifying it offline on a real phone, and the two things only a person can decide.
 
