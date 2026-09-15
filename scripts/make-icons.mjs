@@ -9,7 +9,7 @@
 // The mark is the one in the app header: a rounded teal square with a white
 // E. Re-run with `npm run icons` after changing the accent in docs/DESIGN.md.
 import { deflateSync } from 'node:zlib'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -137,4 +137,77 @@ for (const [name, size, fullBleed] of files) {
   const bytes = draw(size, fullBleed)
   writeFileSync(join(OUT, name), bytes)
   console.log(`${name}  ${size}x${size}  ${bytes.length} bytes`)
+}
+
+/**
+ * The Android app's launcher icons, for the APK students install offline.
+ *
+ * Kept apart from `draw` so the website's icons, which tests/icons.test.ts
+ * decodes pixel by pixel, stay byte for byte what they were.
+ *
+ * Android wants three kinds, at five densities each:
+ * - `ic_launcher`, the plain icon older phones (Android 7.x) show as it is.
+ *   The same rounded teal square the website uses.
+ * - `ic_launcher_round`, for launchers that ask for a circle.
+ * - `ic_launcher_foreground`, the white E alone on a transparent 108dp
+ *   canvas. Android 8 and later composite it over the teal background colour
+ *   and cut the result to whatever shape that phone's launcher uses, so the
+ *   glyph has to sit inside the 66dp circle every shape keeps. A square E
+ *   fits inside that circle with an inset of about 0.28; 0.32 leaves room.
+ */
+function drawAndroid(size, shape) {
+  if (shape === 'square') return draw(size, false)
+
+  const rgba = Buffer.alloc(size * size * 4)
+  const put = (x, y, [r, g, b], a = 255) => {
+    const i = (y * size + x) * 4
+    rgba[i] = r; rgba[i + 1] = g; rgba[i + 2] = b; rgba[i + 3] = a
+  }
+
+  if (shape === 'round') {
+    const c = (size - 1) / 2
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        if ((x - c) ** 2 + (y - c) ** 2 <= (size / 2) ** 2) put(x, y, TEAL)
+      }
+    }
+  }
+
+  const inset = shape === 'foreground' ? 0.32 : 0.31
+  const x0 = Math.round(size * inset)
+  const x1 = Math.round(size * (1 - inset))
+  const y0 = Math.round(size * (inset + 0.015))
+  const y1 = Math.round(size * (1 - inset - 0.015))
+  const t = Math.max(2, Math.round(size * 0.075))
+  const mid = Math.round((y0 + y1) / 2 - t / 2)
+  const bar = (bx0, by0, bx1, by1) => {
+    for (let y = by0; y < by1; y++) {
+      for (let x = bx0; x < bx1; x++) put(x, y, WHITE)
+    }
+  }
+  bar(x0, y0, x0 + t, y1)
+  bar(x0, y0, x1, y0 + t)
+  bar(x0, mid, Math.round(x0 + (x1 - x0) * 0.78), mid + t)
+  bar(x0, y1 - t, x1, y1)
+
+  return png(size, size, rgba)
+}
+
+const RES = join(dirname(fileURLToPath(import.meta.url)), '..', 'android', 'app', 'src', 'main', 'res')
+const DENSITIES = [['mdpi', 48], ['hdpi', 72], ['xhdpi', 96], ['xxhdpi', 144], ['xxxhdpi', 192]]
+try {
+  statSync(RES)
+  for (const [density, px] of DENSITIES) {
+    const dir = join(RES, `mipmap-${density}`)
+    writeFileSync(join(dir, 'ic_launcher.png'), drawAndroid(px, 'square'))
+    writeFileSync(join(dir, 'ic_launcher_round.png'), drawAndroid(px, 'round'))
+    // The adaptive foreground canvas is 108dp against the legacy icon's 48dp.
+    writeFileSync(join(dir, 'ic_launcher_foreground.png'), drawAndroid(Math.round(px * 108 / 48), 'foreground'))
+  }
+  // The colour Android 8 and later draws behind the foreground.
+  writeFileSync(join(RES, 'values', 'ic_launcher_background.xml'),
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#0E6E63</color>\n</resources>\n`)
+  console.log('android launcher icons written for 5 densities')
+} catch {
+  console.log('no android/ project here, skipping launcher icons')
 }

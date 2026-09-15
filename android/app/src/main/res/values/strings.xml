@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EPAS Grade 12</string>
+    <string name="title_activity_main">EPAS Grade 12</string>
+    <string name="package_name">io.github.janrennarle.epas</string>
+    <string name="custom_url_scheme">io.github.janrennarle.epas</string>
+</resources>
