@@ -10,7 +10,8 @@
     "verify:offline": "npm run build && node scripts/verify-offline.mjs",
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:file": "tsc -b && vite build --mode file && node scripts/make-single-file.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.5",

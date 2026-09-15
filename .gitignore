@@ -8,3 +8,8 @@ dist/
 
 # browser tool scratch
 .playwright-mcp/
+
+# offline builds for students with no internet
+dist-file/
+dist-apk/
+release/
