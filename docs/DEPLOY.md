@@ -59,7 +59,23 @@ work on your machine and not on a phone with no signal.
 This is the one to use for the paper. It gives a stable address of the form
 `https://<your-username>.github.io/epas-app/`.
 
-The repository has no remote yet, so start there.
+**Already done for this project, on 2026-09-16.** The app is live at
+**https://janrennarle.github.io/epas-app/**, published from
+https://github.com/JanrennArle/epas-app. The first deploy passed the tests and
+the offline check, and the live site was checked in a real browser afterwards:
+it opens on the consent screen, its service worker registers for
+`/epas-app/` and takes control, and all 20 files are precached. You only need
+the steps below if you ever set this up again from scratch, for example under
+a different account.
+
+To publish a change, commit it and `git push`. Every push to `master` runs the
+tests and the offline check and redeploys only if both pass.
+
+The steps below were written before that deploy. Step 3's red X note and the
+troubleshooting entry after step 5 are now confirmed from that run rather than
+predicted.
+
+Starting from a repository with no remote:
 
 1. In a browser, go to https://github.com/new (sign in first if needed).
    - Repository name: `epas-app`, so the URL above matches.
@@ -102,6 +118,20 @@ The repository has no remote yet, so start there.
 5. Once the run finishes with a green check, the URL appears both on that
    Actions run and under Settings, Pages. Open it on a phone and work
    through `docs/OFFLINE-CHECK.md`.
+
+**If the `build` job passes but `deploy` fails** with the message
+`Branch "master" is not allowed to deploy to github-pages due to environment
+protection rules`: this happened on the real deploy of this project. When Pages
+is switched on, GitHub creates a `github-pages` environment that only allows
+one branch to publish, and if Pages was switched on before `master` existed on
+GitHub it picks `main` instead, a branch this project does not have. Nothing
+in your code is wrong. To fix it: on GitHub, open **Settings**, then
+**Environments** in the left sidebar, then **github-pages**. Under
+**Deployment branches and tags**, delete the `main` rule, click **Add
+deployment branch or tag rule**, type `master`, and save. Then go back to the
+failed run in **Actions** and click **Re-run failed jobs**. Following steps 2
+and 3 in the order written above avoids this, because `master` already exists
+by the time Pages is switched on.
 
 Every later push to `master` redeploys. Students who already installed the
 app are offered the new version and take it when they choose, which is what

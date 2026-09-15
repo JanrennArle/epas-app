@@ -35,8 +35,15 @@ What remains is the teacher's, and no agent can do it:
    you flip it to `true` the app correctly shows an unreviewed warning; that
    warning should stay exactly as long as you have not actually read the
    module.
-3. **Deploy**, following `docs/DEPLOY.md`, and then work through
-   `docs/OFFLINE-CHECK.md` on a real phone.
+3. ~~Deploy~~ **Done 2026-09-16.** Live at
+   **https://janrennarle.github.io/epas-app/**, from the public repository
+   https://github.com/JanrennArle/epas-app. The first deploy passed the tests
+   and the offline check. The live site was checked in a browser: consent gate
+   first, service worker in control, 20 files precached. **What is still
+   yours:** work through `docs/OFFLINE-CHECK.md` on a real phone, which no
+   script can do. Because the repository is public, the answer keys in
+   `src/content/bank/` can be read by anyone who finds it. This was a
+   deliberate choice made before publishing.
 4. **Set a teacher PIN** on the device you will merge the class on. The
    `/teacher` screen asks for one the first time.
 
