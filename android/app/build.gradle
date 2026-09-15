@@ -1,0 +1,92 @@
+apply plugin: 'com.android.application'
+
+// The release signing key lives OUTSIDE this repository, which is public.
+// Anyone holding it can build an "update" that students' phones accept as
+// the real app. Its location is a properties file in the teacher's
+// Documents folder; see docs/INSTALL-OFFLINE.md for what to back up.
+//
+// Losing it is also serious in the other direction: Android only installs an
+// update signed with the same key, so without it the only way to give a class
+// a newer app is uninstalling the old one, which deletes every answer on that
+// phone. Set EPAS_SIGNING_PROPERTIES to point somewhere else if it moves.
+def signingFile = file(System.getenv('EPAS_SIGNING_PROPERTIES')
+        ?: "${System.getProperty('user.home')}/Documents/EPAS-app-signing/keystore.properties")
+def signing = new Properties()
+if (signingFile.exists()) {
+    signingFile.withInputStream { signing.load(it) }
+}
+
+android {
+    signingConfigs {
+        release {
+            if (signingFile.exists()) {
+                storeFile file(signing['storeFile'])
+                storePassword signing['storePassword']
+                keyAlias signing['keyAlias']
+                keyPassword signing['keyPassword']
+            }
+        }
+    }
+    namespace = "io.github.janrennarle.epas"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "io.github.janrennarle.epas"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+// Fail a release build loudly without the key, rather than let Gradle produce
+// an unsigned APK that phones refuse to install, or tempt someone to sign it
+// with a throwaway key that can never ship an update to the same students.
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name.toLowerCase().contains('release') } && !signingFile.exists()) {
+        throw new GradleException("No release signing key found at ${signingFile}. " +
+                "Restore the backup of the EPAS-app-signing folder, or set EPAS_SIGNING_PROPERTIES. " +
+                "Do NOT create a new key for an app students already have installed.")
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
