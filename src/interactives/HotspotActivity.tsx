@@ -3,6 +3,7 @@ import { scoreActivity } from '../lib/activity'
 import type { Shape } from '../lib/activity'
 import { ACTIVITIES } from '../content/activities'
 import { recordSim } from '../lib/store'
+import { PlateButton } from '../ui/board/Plate'
 import type { InteractiveProps } from './types'
 
 function Drawing({ shapes }: { shapes: Shape[] }) {
@@ -67,13 +68,10 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
   const result = done ? scoreActivity(activity.items, responses) : null
 
   return (
-    <section aria-label={`Labelling activity, ${activity.id}`} style={{
-      border: '1px solid var(--line)', borderRadius: 14, background: 'var(--surface)',
-      padding: 14, margin: '0 0 20px', maxWidth: '60ch',
-    }}>
-      <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', margin: '0 0 12px' }}>
+    <section aria-label={`Labelling activity, ${activity.id}`} className="sign" style={{ margin: '0 0 20px', maxWidth: '60ch' }}>
+      <h3 className="label" style={{ fontSize: '1.2rem', color: 'var(--ink)', margin: '0 0 12px' }}>
         {activity.instruction}
-      </p>
+      </h3>
 
       {!done && item && (
         <>
@@ -100,7 +98,7 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
             const show = answered || done
             const border = show && isAnswer ? 'var(--pass)'
               : show && chosen ? 'var(--caution)'
-                : 'var(--ink-3)'
+                : 'var(--line)'
             return (
               <button key={region.id} onClick={() => pick(region.id)}
                 aria-label={region.label}
@@ -132,10 +130,9 @@ export function HotspotActivity({ moduleId, config, onEvent }: InteractiveProps)
                   : `Not quite. That is the ${activity.regions.find(r => r.id === responses[item.id])?.label ?? 'wrong part'}. `}
                 The answer is the {activity.regions.find(r => r.id === item.answer)?.label ?? item.answer}, ringed in green.
               </p>
-              <button onClick={() => setStep(s => s + 1)} className="tile" style={{
-                background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-                padding: '11px 18px', fontSize: 14, fontWeight: 620, cursor: 'pointer', minHeight: 44,
-              }}>{step + 1 === activity.items.length ? 'Finish' : 'Next question'}</button>
+              <PlateButton variant="primary" onClick={() => setStep(s => s + 1)}>
+                {step + 1 === activity.items.length ? 'Finish' : 'Next question'}
+              </PlateButton>
             </>
           )}
         </>

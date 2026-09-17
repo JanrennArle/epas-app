@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { measure } from '../lib/measure'
 import type { MeterMode, TestComponent } from '../lib/measure'
 import { recordSim } from '../lib/store'
+import { PlateButton } from '../ui/board/Plate'
 import type { InteractiveProps } from './types'
 
 const BENCH: TestComponent[] = [
@@ -52,12 +53,11 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
   }
 
   return (
-    <section aria-label="Multimeter Trainer" style={{
-      border: '1px solid var(--line)', borderRadius: 14, overflow: 'hidden',
-      margin: '0 0 20px', maxWidth: '60ch',
+    <section aria-label="Multimeter Trainer" className="sign" style={{
+      padding: 0, overflow: 'hidden', margin: '0 0 20px', maxWidth: '60ch',
     }}>
       <header style={{ padding: '11px 14px', background: 'var(--surface)', borderBottom: '1px solid var(--line)' }}>
-        <h3 style={{ fontSize: 13.5, fontWeight: 660, margin: 0 }}>Multimeter Trainer</h3>
+        <h3 className="label" style={{ fontSize: '1.2rem', color: 'var(--ink)', margin: 0 }}>Multimeter Trainer</h3>
         <p style={{ fontSize: 11.5, color: 'var(--ink-3)', margin: '2px 0 0' }}>
           Probe each part, then decide whether it is good or faulty. {judged} of {BENCH.length} judged.
         </p>
@@ -86,7 +86,7 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
               style={{
                 flex: 1, minHeight: 44, borderRadius: 8, border: 0, cursor: 'pointer',
                 fontSize: 11.5, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
-                background: mode === m.id ? '#F2A93B' : '#1D2630',
+                background: mode === m.id ? '#F2C230' : '#1D2630',
                 color: mode === m.id ? '#141A21' : '#8E9CAC',
                 fontWeight: mode === m.id ? 700 : 400,
               }}>{m.label}</button>
@@ -102,14 +102,17 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
           {BENCH.map(c => {
             const verdict = verdicts[c.id]
             const wasRight = verdict !== undefined && verdict === isHealthy(c)
+            const borderColor = verdict !== undefined
+              ? (wasRight ? 'var(--pass)' : 'var(--caution)')
+              : (probed?.id === c.id ? 'var(--paint)' : 'var(--line)')
             return (
-              <button key={c.id} onClick={() => setProbed(c)}
+              <button key={c.id} onClick={() => setProbed(c)} className="press"
                 aria-pressed={probed?.id === c.id}
                 style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10,
-                  minHeight: 44, padding: '10px 12px', borderRadius: 10, cursor: 'pointer',
+                  minHeight: 44, padding: '10px 12px', borderRadius: 3, cursor: 'pointer',
                   background: 'var(--paper)', font: 'inherit', textAlign: 'left',
-                  border: `1px solid ${probed?.id === c.id ? 'var(--accent)' : 'var(--line)'}`,
+                  border: `2px solid ${borderColor}`,
                   color: 'var(--ink)', fontSize: 13,
                 }}>
                 <span style={{ fontFamily: 'var(--font-mono)' }}>{c.label}</span>
@@ -125,14 +128,12 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
 
         {probed && verdicts[probed.id] === undefined && (
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button onClick={() => judge(true)} className="tile" style={{
-              flex: 1, minHeight: 44, borderRadius: 10, border: '1px solid var(--line)',
-              background: 'var(--paper)', color: 'var(--ink)', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-            }}>{probed.id} is good</button>
-            <button onClick={() => judge(false)} className="tile" style={{
-              flex: 1, minHeight: 44, borderRadius: 10, border: '1px solid var(--line)',
-              background: 'var(--paper)', color: 'var(--ink)', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-            }}>{probed.id} is faulty</button>
+            <PlateButton onClick={() => judge(true)} style={{ flex: 1 }}>
+              {probed.id} is good
+            </PlateButton>
+            <PlateButton onClick={() => judge(false)} style={{ flex: 1 }}>
+              {probed.id} is faulty
+            </PlateButton>
           </div>
         )}
 
