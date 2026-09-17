@@ -22,7 +22,9 @@ export default function LessonReader() {
         <ArrowLeft weight="bold" aria-hidden />
         {m.title}
       </Link>
-      <Tape as="h1">{outcome.title}</Tape>
+      <div style={{ margin: '0 0 18px' }}>
+        <Tape as="h1">{outcome.title}</Tape>
+      </div>
 
       {outcome.lessons.map(l => (
         <section key={l.id} style={{ marginBottom: 'calc(var(--pitch) * 1.2)' }}>

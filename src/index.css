@@ -258,6 +258,10 @@ ul { list-style: disc; }
 .rack .w { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .rack .here a { border-style: solid; border-color: var(--paint); background: color-mix(in srgb, var(--plate) 16%, transparent); }
 .rack .hung a { border-style: solid; }
+/* Labs cards: a small icon column so the title and blurb get most of the
+   card's width instead of wrapping to three lines. The home screen's module
+   rack keeps its own wider icon column. */
+.rack--labs a { grid-template-columns: calc(var(--pitch) * 1.1) 1fr; }
 
 /* ---------- the board of tools ---------- */
 .board {
@@ -266,9 +270,11 @@ ul { list-style: disc; }
 }
 .lamp {
   position: absolute; inset: calc(var(--pitch) * -3); z-index: -1; pointer-events: none;
-  background: radial-gradient(circle at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 55%);
+  /* closest-side keeps the radius pinned to whichever edge the light source
+     (--lx/--ly) sits nearest to, so the fade to transparent always finishes
+     before the element's own edge on both axes, at any position or box size. */
+  background: radial-gradient(circle closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 80%);
 }
-@media (max-width: 959px) { .lamp { inset: calc(var(--pitch) * -3) 0; } }
 .slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
 .slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 70%; height: 70%; }
 .slot .outline { transform: scale(1.16); overflow: visible; }

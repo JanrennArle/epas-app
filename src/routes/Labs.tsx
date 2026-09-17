@@ -27,7 +27,7 @@ function toolFor(simId: string): Icon {
 
 function LabRack({ labs }: { labs: typeof LABS }) {
   return (
-    <ul className="rack" style={{ marginTop: 'calc(var(--pitch) * 0.6)', marginBottom: 'calc(var(--pitch) * 1.2)' }}>
+    <ul className="rack rack--labs" style={{ marginTop: 'calc(var(--pitch) * 0.6)', marginBottom: 'calc(var(--pitch) * 1.2)' }}>
       {labs.map(lab => {
         const Tool = toolFor(lab.simId)
         return (
@@ -80,14 +80,14 @@ export function LabFullScreen() {
         <p style={{ fontSize: 15, color: 'var(--ink-3)', margin: '0 0 12px' }}>
           There is no lab by that name.
         </p>
-        <Link to="/labs" className="back"><ArrowLeft weight="bold" aria-hidden />Labs</Link>
+        <Link to="/labs" className="back"><ArrowLeft weight="bold" aria-hidden />Back to Labs</Link>
       </div>
     )
   }
 
   return (
     <div style={{ maxWidth: lab.simId === 'troubleshoot' ? 'none' : '62ch' }}>
-      <Link to="/labs" className="back"><ArrowLeft weight="bold" aria-hidden />Labs</Link>
+      <Link to="/labs" className="back"><ArrowLeft weight="bold" aria-hidden />Back to Labs</Link>
       <div style={{ margin: '10px 0 20px' }}>
         <Tape as="h1">{lab.title}</Tape>
       </div>

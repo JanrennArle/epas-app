@@ -86,10 +86,10 @@ export default function Progress() {
       )}
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '14px 0 0' }}>
-        <PlateButton variant="primary" onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])}>
+        <PlateButton onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])}>
           Save a spreadsheet copy
         </PlateButton>
-        <PlateButton onClick={() => downloadJson(`epas-${code}.json`, toBundle(state))}>
+        <PlateButton variant="primary" onClick={() => downloadJson(`epas-${code}.json`, toBundle(state))}>
           Save my results for my teacher
         </PlateButton>
       </div>
