@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { QuizItem } from '../lib/types'
 import { gradeItem, scoreQuiz } from '../lib/quiz'
 import { newRunId, recordAttempt } from '../lib/store'
+import { Tape } from './board/Tape'
+import { PlateButton } from './board/Plate'
 
 export function Quiz({ items, moduleId, onFinish }: {
   items: QuizItem[]
@@ -32,11 +34,8 @@ export function Quiz({ items, moduleId, onFinish }: {
   const ready = items.every(i => responses[i.id] !== undefined)
 
   return (
-    <section style={{
-      background: 'var(--surface)', border: '1px solid var(--line)',
-      borderRadius: 14, padding: 16, maxWidth: '60ch',
-    }}>
-      <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 14px' }}>Check your understanding</h2>
+    <section className="sign" style={{ maxWidth: '62ch' }}>
+      <Tape as="h2" size="section">Check your understanding</Tape>
 
       {items.map(item => {
         const answered = responses[item.id]
@@ -50,14 +49,15 @@ export function Quiz({ items, moduleId, onFinish }: {
             {item.kind === 'mcq' && item.options.map((opt, i) => (
               <label key={i} style={{
                 display: 'flex', gap: 9, alignItems: 'flex-start', minHeight: 44,
-                padding: '8px 10px', borderRadius: 10, cursor: 'pointer',
-                fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink-2)',
-                border: `1px solid ${submitted && i === item.answer ? 'var(--pass)' : 'transparent'}`,
+                padding: '8px 10px', borderRadius: 3, cursor: 'pointer',
+                fontSize: '1rem', lineHeight: 1.5, color: 'var(--ink)',
+                border: `2px solid ${submitted && i === item.answer ? 'var(--pass)' : 'transparent'}`,
+                background: answered === i ? 'color-mix(in srgb, var(--paint) 8%, transparent)' : undefined,
               }}>
                 <input type="radio" name={item.id} disabled={submitted}
                   checked={answered === i}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: i }))}
-                  style={{ marginTop: 3, accentColor: 'var(--accent)' }} />
+                  style={{ marginTop: 3, accentColor: 'var(--paint)' }} />
                 <span>{opt}</span>
               </label>
             ))}
@@ -65,14 +65,15 @@ export function Quiz({ items, moduleId, onFinish }: {
             {item.kind === 'truefalse' && [true, false].map(v => (
               <label key={String(v)} style={{
                 display: 'flex', gap: 9, alignItems: 'center', minHeight: 44,
-                padding: '8px 10px', borderRadius: 10, cursor: 'pointer', fontSize: 13.5,
-                color: 'var(--ink-2)',
-                border: `1px solid ${submitted && v === item.answer ? 'var(--pass)' : 'transparent'}`,
+                padding: '8px 10px', borderRadius: 3, cursor: 'pointer', fontSize: '1rem',
+                color: 'var(--ink)',
+                border: `2px solid ${submitted && v === item.answer ? 'var(--pass)' : 'transparent'}`,
+                background: answered === v ? 'color-mix(in srgb, var(--paint) 8%, transparent)' : undefined,
               }}>
                 <input type="radio" name={item.id} disabled={submitted}
                   checked={answered === v}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: v }))}
-                  style={{ accentColor: 'var(--accent)' }} />
+                  style={{ accentColor: 'var(--paint)' }} />
                 <span>{v ? 'True' : 'False'}</span>
               </label>
             ))}
@@ -98,22 +99,13 @@ export function Quiz({ items, moduleId, onFinish }: {
       })}
 
       {!submitted ? (
-        <button onClick={submit} className="tile"
-          disabled={!ready}
-          style={{
-            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-            padding: '11px 18px', fontSize: 14, fontWeight: 620, minHeight: 44,
-            cursor: ready ? 'pointer' : 'default', opacity: ready ? 1 : 0.5,
-          }}>Check answers</button>
+        <PlateButton variant="primary" onClick={submit} disabled={!ready}>Check answers</PlateButton>
       ) : (
         <div>
           <p style={{ fontSize: 14, fontWeight: 620, margin: '0 0 12px' }}>
             You scored {result!.correct} out of {result!.total}.
           </p>
-          <button onClick={onFinish} className="tile" style={{
-            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-            padding: '11px 18px', fontSize: 14, fontWeight: 620, cursor: 'pointer', minHeight: 44,
-          }}>Mark this outcome complete</button>
+          <PlateButton variant="primary" onClick={onFinish}>Mark this outcome complete</PlateButton>
         </div>
       )}
     </section>

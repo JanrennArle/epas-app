@@ -1,23 +1,19 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { Info, Warning } from '@phosphor-icons/react'
 import type { Block } from '../../lib/types'
 import type { SimEvent } from '../../interactives/types'
 import { getSim } from '../../interactives/registry'
 
 const text: CSSProperties = {
-  fontSize: 15, lineHeight: 1.62, color: 'var(--ink-2)',
-  maxWidth: '60ch', margin: '0 0 14px',
+  fontSize: '1.0625rem', lineHeight: 1.65, color: 'var(--ink)',
+  maxWidth: '62ch', margin: '0 0 14px',
 }
 
 function Callout({ tone, children }: { tone: 'safety' | 'note'; children: ReactNode }) {
-  const colour = tone === 'safety' ? 'var(--danger)' : 'var(--ink-3)'
   return (
-    <div role="note" style={{
-      background: 'var(--surface)',
-      border: '1px solid var(--line)', borderLeft: `3px solid ${colour}`,
-      borderRadius: '0 10px 10px 0', padding: '11px 13px', margin: '0 0 16px',
-      fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', maxWidth: '60ch',
-    }}>
-      <strong style={{ display: 'block', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: colour, marginBottom: 4 }}>
+    <div role="note" className={`callout callout--${tone}`}>
+      <strong>
+        {tone === 'safety' ? <Warning weight="fill" aria-hidden /> : <Info weight="bold" aria-hidden />}
         {tone === 'safety' ? 'Safety' : 'Note'}
       </strong>
       {children}
@@ -52,13 +48,12 @@ export function BlockRenderer({ blocks, moduleId, onSimEvent }: {
 
           case 'table':
             return (
-              <div key={i} style={{ overflowX: 'auto', margin: '0 0 18px' }}>
+              <div key={i} className="sign" style={{ padding: 0, overflowX: 'auto', margin: '0 0 18px' }}>
                 <table style={{ borderCollapse: 'collapse', fontSize: 13, width: '100%', minWidth: 420 }}>
                   <thead>
                     <tr>{b.headers.map(h => (
-                      <th key={h} style={{
+                      <th key={h} className="label" style={{
                         textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--line)',
-                        fontSize: 11, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--ink-3)',
                       }}>{h}</th>
                     ))}</tr>
                   </thead>
@@ -76,7 +71,7 @@ export function BlockRenderer({ blocks, moduleId, onSimEvent }: {
           case 'figure':
             return (
               <figure key={i} style={{ margin: '0 0 18px' }}>
-                <img src={b.src} alt={b.alt} style={{ maxWidth: '100%', borderRadius: 14 }} />
+                <img src={b.src} alt={b.alt} style={{ maxWidth: '100%', borderRadius: 6 }} />
                 {b.caption && <figcaption style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 6 }}>{b.caption}</figcaption>}
               </figure>
             )

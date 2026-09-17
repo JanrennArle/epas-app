@@ -1,7 +1,11 @@
 import { Link, useParams } from 'react-router'
+import { ArrowLeft, CheckCircle, Warning } from '@phosphor-icons/react'
 import { getModule } from '../content'
 import { loadState, hasTaken } from '../lib/store'
 import { TASKS } from '../content/tasks'
+import { Tape } from '../ui/board/Tape'
+import { PlateLink } from '../ui/board/Plate'
+import { toolFor } from '../ui/board/tools'
 
 export default function ModuleOverview() {
   const { moduleId = '' } = useParams()
@@ -9,59 +13,52 @@ export default function ModuleOverview() {
   const state = loadState()
 
   if (!m) {
-    return <p style={{ color: 'var(--ink-2)' }}>That module does not exist yet. <Link to="/">Back to modules</Link></p>
+    return (
+      <p style={{ color: 'var(--ink-2)' }}>
+        That module does not exist yet.{' '}
+        <Link to="/" className="back"><ArrowLeft weight="bold" aria-hidden />Back to modules</Link>
+      </p>
+    )
   }
 
   const done = state.modules[m.id]?.completedOutcomes ?? []
+  const Tool = toolFor(m.id)
 
   return (
     <>
-      <Link to="/" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>Modules</Link>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '8px 0 2px' }}>{m.title}</h1>
-      <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '0 0 14px' }}>{m.week}</p>
+      <Link to="/" className="back"><ArrowLeft weight="bold" aria-hidden />Modules</Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 20px' }}>
+        <Tool size={40} weight="regular" color="var(--paint)" aria-hidden />
+        <div>
+          <p className="label" style={{ margin: '0 0 2px' }}>{m.week}</p>
+          <Tape as="h1">{m.title}</Tape>
+        </div>
+      </div>
 
       {!m.teacherReviewed && (
-        <p role="status" style={{
-          fontSize: 12, color: 'var(--caution)', background: 'var(--surface)',
-          border: '1px solid var(--line)', borderLeft: '3px solid var(--caution)',
-          borderRadius: '0 10px 10px 0', padding: '10px 12px', margin: '0 0 16px',
-        }}>
-          <strong style={{
-            fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'var(--caution)', display: 'block', marginBottom: 4,
-          }}>Not yet reviewed</strong>
+        <div role="status" className="callout callout--caution">
+          <strong><Warning weight="bold" aria-hidden />Not yet reviewed</strong>
           This module has not yet been reviewed by your teacher. Confirm any procedure with them before performing it on real equipment.
-        </p>
+        </div>
       )}
 
-      <h2 style={{ fontSize: 13, fontWeight: 660, margin: '0 0 8px' }}>Learning competencies</h2>
-      <ul style={{ margin: '0 0 22px', paddingLeft: 18 }}>
+      <Tape as="h2" size="section">Learning competencies</Tape>
+      <ul className="sign" style={{ margin: '0 0 22px', listStylePosition: 'inside' }}>
         {m.competencies.map(c => (
-          <li key={c} style={{ fontSize: 13.5, lineHeight: 1.62, color: 'var(--ink-2)', marginBottom: 4 }}>{c}</li>
+          <li key={c} style={{ fontSize: '1rem', lineHeight: 1.62, color: 'var(--ink)', marginBottom: 4 }}>{c}</li>
         ))}
       </ul>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '0 0 20px' }}>
-        <Link to={`/m/${m.id}/test/pre`} className="tile" style={{
-          minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
-          borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
-          fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
-        }}>
+        <PlateLink to={`/m/${m.id}/test/pre`}>
           Pre-test{hasTaken(m.id, 'pretest') ? ' (taken)' : ''}
-        </Link>
-        <Link to={`/m/${m.id}/test/post`} className="tile" style={{
-          minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
-          borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
-          fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
-        }}>
+        </PlateLink>
+        <PlateLink to={`/m/${m.id}/test/post`}>
           Post-test{hasTaken(m.id, 'posttest') ? ' (taken)' : ''}
-        </Link>
+        </PlateLink>
         {TASKS.filter(t => t.modules.includes(m.id)).map(t => (
-          <Link key={t.id} to={`/tasks/${t.id}`} className="tile" style={{
-            minHeight: 44, display: 'inline-flex', alignItems: 'center', padding: '10px 14px',
-            borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
-            fontSize: 13.5, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
-          }}>
+          <PlateLink key={t.id} to={`/tasks/${t.id}`} className="plate--wrap">
             {/*
               The title leads, not the kind. Module 4 carries two individual
               sheets, and two tiles both reading "Individual task" give a
@@ -73,23 +70,24 @@ export default function ModuleOverview() {
             <span style={{ fontWeight: 500, color: 'var(--ink-3)', marginLeft: 8, whiteSpace: 'nowrap' }}>
               {t.kind === 'group' ? 'Group task' : 'Individual task'}
             </span>
-          </Link>
+          </PlateLink>
         ))}
       </div>
 
-      <h2 style={{ fontSize: 13, fontWeight: 660, margin: '0 0 8px' }}>Outcomes</h2>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
+      <Tape as="h2" size="section">Outcomes</Tape>
+      <ul className="rack" style={{ marginTop: 'calc(var(--pitch) * 0.6)' }}>
         {m.outcomes.map(o => (
-          <li key={o.id}>
-            <Link to={`/m/${m.id}/lo/${o.id}`} className="tile" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-              background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14,
-              padding: '13px 14px', textDecoration: 'none', color: 'var(--ink)', minHeight: 44,
-            }}>
-              <span style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.4 }}>{o.title}</span>
-              {done.includes(o.id) && (
-                <span style={{ fontSize: 11, color: 'var(--pass)', fontWeight: 640, flex: 'none' }}>Done</span>
-              )}
+          <li key={o.id} style={{ ['--span' as string]: 12 }}>
+            <Link to={`/m/${m.id}/lo/${o.id}`}>
+              <Tool weight="regular" aria-hidden />
+              <span>
+                <span className="t">{o.title}</span>
+                {done.includes(o.id) && (
+                  <span className="w">
+                    <CheckCircle weight="fill" style={{ width: '1em', height: '1em', verticalAlign: '-0.15em', color: 'var(--pass)' }} aria-hidden />{' '}Done
+                  </span>
+                )}
+              </span>
             </Link>
           </li>
         ))}

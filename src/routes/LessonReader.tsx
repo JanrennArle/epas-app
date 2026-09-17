@@ -1,8 +1,10 @@
 import { Link, useParams, useNavigate } from 'react-router'
+import { ArrowLeft } from '@phosphor-icons/react'
 import { getModule } from '../content'
 import { markOutcomeComplete } from '../lib/store'
 import { BlockRenderer } from '../ui/blocks/BlockRenderer'
 import { Quiz } from '../ui/Quiz'
+import { Tape } from '../ui/board/Tape'
 
 export default function LessonReader() {
   const { moduleId = '', outcomeId = '' } = useParams()
@@ -16,16 +18,15 @@ export default function LessonReader() {
 
   return (
     <>
-      <Link to={`/m/${m.id}`} style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>
+      <Link to={`/m/${m.id}`} className="back">
+        <ArrowLeft weight="bold" aria-hidden />
         {m.title}
       </Link>
-      <h1 style={{ fontSize: 20, fontWeight: 680, letterSpacing: '-0.02em', margin: '8px 0 16px', maxWidth: '30ch' }}>
-        {outcome.title}
-      </h1>
+      <Tape as="h1">{outcome.title}</Tape>
 
       {outcome.lessons.map(l => (
-        <section key={l.id} style={{ marginBottom: 26 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 10px' }}>{l.title}</h2>
+        <section key={l.id} style={{ marginBottom: 'calc(var(--pitch) * 1.2)' }}>
+          <h2 className="label" style={{ fontSize: '1.25rem', color: 'var(--ink)', margin: '0 0 10px' }}>{l.title}</h2>
           <BlockRenderer blocks={l.blocks} moduleId={m.id} />
         </section>
       ))}
