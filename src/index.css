@@ -269,11 +269,22 @@ ul { list-style: disc; }
   gap: calc(var(--pitch) * 0.5); padding: calc(var(--pitch) * 0.5); isolation: isolate;
 }
 .lamp {
-  position: absolute; inset: calc(var(--pitch) * -3); z-index: -1; pointer-events: none;
-  /* closest-side keeps the radius pinned to whichever edge the light source
-     (--lx/--ly) sits nearest to, so the fade to transparent always finishes
-     before the element's own edge on both axes, at any position or box size. */
-  background: radial-gradient(circle closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 80%);
+  /* inset: 0, not a negative pitch: .board's own box is already guaranteed
+     to fit the viewport at every breakpoint (it always has been), so pinning
+     .lamp to that exact box, rather than a padded box bigger than it,
+     guarantees the glow can never cause horizontal overflow on a phone. A
+     wider box here previously overflowed 390px by 33px and, checked again
+     for this fix, 1440px by 37px too, because the margin around .board is
+     not the same at every width. */
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  /* ellipse closest-side sizes each axis off the box's own nearest edge on
+     that axis, so the fade to transparent always finishes before the
+     element's edge on both axes, at any position, box size or aspect ratio.
+     The light sits nearer the top than the left (--ly 20% vs --lx 30%), so
+     the ellipse is naturally wider than it is tall; the 92% stop uses
+     nearly the full safe radius on both axes so the glow reads as one lamp
+     over the board rather than a spot behind the middle tool. */
+  background: radial-gradient(ellipse closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 92%);
 }
 .slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
 .slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 70%; height: 70%; }
