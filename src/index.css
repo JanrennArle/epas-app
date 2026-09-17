@@ -1,36 +1,42 @@
 @import "tailwindcss";
-@import "@fontsource-variable/geist";
+@import "@fontsource/barlow-condensed/latin-600.css";
+@import "@fontsource/barlow-condensed/latin-700.css";
+@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource/dotgothic16/latin-400.css";
 
 @theme {
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
-  --radius-card: 14px;
-  --radius-control: 10px;
+  --font-pixel: "DotGothic16", ui-monospace, monospace;
+  --radius-card: 6px;
+  --radius-control: 3px;
 }
 
+/* A painted pegboard in daylight: the workshop scene most students are in. */
 :root {
-  --paper: #FAFAF9;
-  --surface: #FFFFFF;
-  --ink: #1A1B1E;
-  --ink-2: #5F646C;
-  --ink-3: #6C737D;
-  --line: #E7E7E9;
-  --accent: #0E6E63;
-  --on-accent: #FFFFFF;
-  --danger: #B3382C;
-  --pass: #1E7A4A;
-  --caution: #A9650C;
-
-  --m1: #DDF0EC; --m1-ink: #1D6B60;
-  --m2: #FAEDD6; --m2-ink: #8A5B12;
-  --m3: #DEECFA; --m3-ink: #1F5A87;
-  --m4: #FBE7DD; --m4-ink: #8E4B2E;
-  --m5: #E4E6FA; --m5-ink: #414BA0;
-  --m6: #FADEE4; --m6-ink: #963C58;
-  --m7: #EFE2F7; --m7-ink: #6B3D8F;
-  --m8: #E9F3D8; --m8-ink: #4F6B1E;
-  --m9: #DAF0F5; --m9-ink: #1B6377;
+  --paper: #E3E8E4;
+  --surface: #EEF2EF;
+  --hole: #CBD2CD;
+  --ink: #18201C;
+  --ink-2: #3F4A44;
+  --ink-3: #56615B;
+  --line: #C3CBC6;
+  --paint: #26302B;
+  --accent: #26302B;
+  --on-accent: #F2F3EE;
+  --plate: #F2C230;
+  --plate-ink: #141816;
+  --tape: #0E1110;
+  --tape-ink: #F2F3EE;
+  --steel-hi: #56615B;
+  --danger: #B3372A;
+  --pass: #186A3F;
+  --caution: #8A500A;
+  --lamp: rgba(255, 244, 214, 0.55);
+  --shade: rgba(12, 16, 14, 0.10);
+  --pitch: 24px;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -38,44 +44,54 @@
   color-scheme: light dark;
 }
 
+/* The same board after hours: dark paint, yellow outlines, one work lamp. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #131417;
-    --surface: #1A1C20;
-    --ink: #EDEEF0;
-    --ink-2: #A2A8B2;
-    --ink-3: #868D98;
-    --line: #2A2D33;
-    --accent: #3FA394;
-    --on-accent: #131417;
-    --danger: #EF8577;
-    --pass: #5FC98E;
-    --caution: #E0A54A;
-
-    --m1: #17332E; --m1-ink: #79CFBF;
-    --m2: #33291A; --m2-ink: #E0B269;
-    --m3: #1A2A38; --m3-ink: #82BCE6;
-    --m4: #33231B; --m4-ink: #E2A183;
-    --m5: #22243D; --m5-ink: #A3AAF0;
-    --m6: #33222A; --m6-ink: #E79BB1;
-    --m7: #2B2136; --m7-ink: #C39BE4;
-    --m8: #262E1B; --m8-ink: #B7CE84;
-    --m9: #162E36; --m9-ink: #7FCBDD;
+    --paper: #24302A;
+    --surface: #2C3A33;
+    --hole: #1B231F;
+    --ink: #E6EBE7;
+    --ink-2: #B3BDB7;
+    --ink-3: #97A39C;
+    --line: #3A4A42;
+    --paint: #F2C230;
+    --accent: #F2C230;
+    --on-accent: #141816;
+    --steel-hi: #7E8B84;
+    --danger: #EF7A68;
+    --pass: #6FD49B;
+    --caution: #E8B25A;
+    --lamp: rgba(255, 226, 150, 0.20);
+    --shade: rgba(0, 0, 0, 0.42);
   }
 }
+@media (min-width: 768px) { :root { --pitch: 32px; } }
+@media (min-width: 1200px) { :root { --pitch: 36px; } }
 
+html { scrollbar-color: var(--paint) var(--paper); }
 body {
   margin: 0;
-  background: var(--paper);
+  min-height: 100dvh;
   color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  background-color: var(--paper);
+  /* Every hole on one pitch, and the pitch is the layout grid. */
+  background-image: radial-gradient(circle at center, var(--hole) 0 calc(var(--pitch) * 0.075), transparent calc(var(--pitch) * 0.095));
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+  caret-color: var(--paint);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
+::selection { background: var(--plate); color: var(--plate-ink); }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid var(--paint);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -85,18 +101,181 @@ body {
   }
 }
 
-.tile {
-  transition: transform 140ms var(--ease-out);
-}
-.tile:active {
-  transform: scale(0.98);
-}
-
 /* Restore list semantics that Tailwind preflight removes. Inline
    listStyle:'none' still wins where a list is used for layout. */
 ol { list-style: decimal; }
 ul { list-style: disc; }
 
-/* The instrument panel keeps its dark skin in both themes, so it carries
-   the dark accent for focus visibility. */
-.instrument { --accent: #3FA394; }
+.wrap { width: min(100% - var(--pitch) * 2, calc(var(--pitch) * 34)); margin-inline: auto; }
+
+/* Anything pressable that is not a plate. */
+.press, .tile { transition: transform 140ms var(--ease-out); }
+.press:active, .tile:active { transform: scale(0.98); }
+
+/* ---------- label tape ---------- */
+.tape {
+  padding: 0.16em 0.42em 0.1em;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #1B201E, var(--tape) 55%, #080A09);
+  color: var(--tape-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.28);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.tape-heading { margin: 0; font-weight: 700; }
+.tape-heading--hero { font-size: clamp(2.1rem, 7vw, 4.2rem); line-height: 1.45; }
+.tape-heading--page { font-size: clamp(1.45rem, 2.4vw + 0.9rem, 2.2rem); line-height: 1.5; max-width: 32ch; }
+.tape-heading--section { font-size: clamp(1.1rem, 0.8vw + 0.95rem, 1.35rem); line-height: 1.5; }
+
+/* ---------- plates ---------- */
+.plate {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55em;
+  min-height: 48px; padding: 0 calc(var(--pitch) * 0.65);
+  border: 0; border-radius: 3px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out), background-color 160ms ease;
+}
+.plate svg { width: 1.1em; height: 1.1em; flex: none; }
+.plate--primary::before, .plate--primary::after {
+  content: ""; position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(0,0,0,0.45));
+  transform: translateY(-50%);
+}
+.plate--primary::before { left: 8px; }
+.plate--primary::after { right: 8px; }
+.plate--primary {
+  background: linear-gradient(180deg, #F6CD4A, var(--plate)); color: var(--plate-ink);
+  box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 8px 18px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.plate--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--paint); }
+.plate:active { transform: translateY(1px) scale(0.98); }
+.plate[disabled], .plate[aria-disabled="true"] { opacity: 0.5; cursor: default; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .plate--primary:hover { box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 12px 24px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .plate--quiet:hover { background: color-mix(in srgb, var(--paint) 10%, transparent); }
+}
+/* Long labels (task titles) may wrap inside a plate rather than overflow a phone. */
+.plate--wrap { white-space: normal; text-align: left; padding-block: 10px; line-height: 1.15; }
+
+/* ---------- signs, labels, callouts ---------- */
+.sign {
+  background: var(--surface);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 20px var(--shade);
+  padding: calc(var(--pitch) * 0.6);
+}
+.label {
+  font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; line-height: 1.2;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+}
+.back {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-2); text-decoration: none;
+}
+.back svg { width: 1em; height: 1em; }
+@media (hover: hover) and (pointer: fine) { .back:hover { color: var(--ink); } }
+
+.nav-link {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: calc(var(--pitch) * 0.35);
+  font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--ink-2);
+  text-underline-offset: 6px; text-decoration-thickness: 2px;
+}
+.nav-link[aria-current="page"] { color: var(--ink); text-decoration-line: underline; text-decoration-color: var(--paint); }
+@media (hover: hover) and (pointer: fine) { .nav-link:hover { color: var(--ink); text-decoration-line: underline; } }
+
+.callout {
+  background: var(--surface);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 20px var(--shade);
+  padding: calc(var(--pitch) * 0.5) calc(var(--pitch) * 0.6);
+  margin: 0 0 18px; max-width: 60ch;
+  font-size: 1rem; line-height: 1.55; color: var(--ink);
+}
+.callout > strong:first-child {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.callout > strong:first-child svg { width: 1.2em; height: 1.2em; flex: none; }
+.callout--note > strong:first-child { color: var(--ink-2); }
+.callout--caution > strong:first-child { color: var(--caution); }
+/* Hazard stripes appear on safety content and nowhere else. */
+.callout--safety {
+  background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--danger) 10%, transparent) 0 10px, transparent 10px 20px),
+    var(--surface);
+}
+.callout--safety > strong:first-child { color: var(--danger); }
+
+/* ---------- the rack: a module list painted on the board ---------- */
+.rack { list-style: none; margin: 0; padding: 0; display: grid; gap: calc(var(--pitch) * 0.5); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .rack { grid-template-columns: repeat(12, 1fr); } .rack > li { grid-column: span var(--span, 4); } }
+.rack a {
+  position: relative; display: grid; grid-template-columns: calc(var(--pitch) * 1.8) 1fr; gap: calc(var(--pitch) * 0.5); align-items: center;
+  min-height: calc(var(--pitch) * 3); height: 100%;
+  padding: calc(var(--pitch) * 0.5);
+  color: var(--ink); text-decoration: none;
+  border: 2px dashed color-mix(in srgb, var(--paint) 55%, transparent);
+  border-radius: 6px;
+  transition: transform 140ms var(--ease-out), background-color 160ms ease;
+}
+.rack a:active { transform: scale(0.985); }
+@media (hover: hover) and (pointer: fine) { .rack a:hover { background: color-mix(in srgb, var(--paint) 7%, transparent); } }
+.rack svg { width: 100%; height: auto; color: var(--paint); }
+.rack .t { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.1rem, 0.6vw + 1rem, 1.3rem); line-height: 1.15; letter-spacing: 0.01em; }
+.rack .w { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rack .here a { border-style: solid; border-color: var(--paint); background: color-mix(in srgb, var(--plate) 16%, transparent); }
+.rack .hung a { border-style: solid; }
+
+/* ---------- the board of tools ---------- */
+.board {
+  position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--pitch) * 0.5); padding: calc(var(--pitch) * 0.5); isolation: isolate;
+}
+.lamp {
+  position: absolute; inset: calc(var(--pitch) * -3); z-index: -1; pointer-events: none;
+  background: radial-gradient(circle at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 55%);
+}
+@media (max-width: 959px) { .lamp { inset: calc(var(--pitch) * -3) 0; } }
+.slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
+.slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 70%; height: 70%; }
+.slot .outline { transform: scale(1.16); overflow: visible; }
+.slot .outline path { fill: none; stroke: var(--paint); stroke-width: 6; stroke-linejoin: round; }
+.slot .shadow { filter: blur(5px); opacity: 0.55; transform: translate(5px, 7px); }
+.slot .tool { transform: translateY(var(--ty, 0)); }
+.slot .num {
+  position: absolute; left: 4%; top: 2%;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(0.8rem, 1vw + 0.5rem, 1.05rem); line-height: 1;
+  letter-spacing: 0.06em; color: var(--paint);
+}
+.slot .hook { position: absolute; top: 3%; width: 16%; height: 7%; border: 3px solid var(--steel-hi); border-bottom: 0; border-radius: 8px 8px 0 0; opacity: 0.8; }
+/* A tool part way through its module: the steel fills from the bottom. */
+.slot .tool { clip-path: inset(calc((1 - var(--fill, 1)) * 100%) 0 0 0); }
+.slot.empty .tool, .slot.empty .shadow { display: none; }
+
+.board-opening .lamp { opacity: 0; }
+.board-opening.play .lamp { animation: lamp-on 520ms linear 120ms forwards; }
+.board-opening .slot .outline path { stroke-dasharray: 1200; stroke-dashoffset: 1200; }
+.board-opening.play .slot .outline path { animation: outline-in 700ms var(--ease-out) forwards; animation-delay: calc(300ms + var(--i) * 70ms); }
+.board-opening .slot .tool, .board-opening .slot .shadow { opacity: 0; }
+@keyframes lamp-on { 0% { opacity: 0; } 18% { opacity: 1; } 30% { opacity: 0.35; } 42% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes outline-in { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .board-opening .lamp { opacity: 1; animation: none !important; }
+  .board-opening .slot .outline path { stroke-dashoffset: 0; animation: none !important; }
+  .board-opening .slot .tool { opacity: 1; }
+  .board-opening .slot .shadow { opacity: 0.55; }
+}
+
+/* The instrument panels keep their dark skin in both themes; yellow reads on it. */
+.instrument { --accent: #F2C230; --paint: #F2C230; }

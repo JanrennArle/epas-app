@@ -25,36 +25,28 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div style={{ minHeight: '100dvh' }}>
       <UpdatePrompt />
-      <header style={{
-        background: 'var(--surface)', borderBottom: '1px solid var(--line)',
-        padding: '12px 16px', display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', gap: 16,
+      <header className="wrap" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+        minHeight: 'calc(var(--pitch) * 2.5)', flexWrap: 'wrap',
       }}>
-        <Link to="/" style={{
-          display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none',
-          color: 'var(--ink)', fontWeight: 700, fontSize: 14, minHeight: 44,
+        <Link to="/" aria-label="EPAS, modules" style={{
+          display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', minHeight: 44,
         }}>
-          <span aria-hidden style={{
-            width: 22, height: 22, borderRadius: 7, background: 'var(--accent)',
-            color: 'var(--on-accent)', display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 800,
-          }}>E</span>
-          EPAS
+          <span className="tape" style={{ fontSize: '1.05rem' }}>EPAS</span>
+          <span className="label" style={{ fontSize: '0.95rem' }}>Grade 12</span>
         </Link>
-        <nav style={{ display: 'flex', gap: 18 }}>
+        <nav aria-label="Main" style={{ display: 'flex', gap: 'calc(var(--pitch) * 0.15)', flexWrap: 'wrap' }}>
           {NAV.map(n => {
             const active = n.to === '/' ? pathname === '/' : pathname.startsWith(n.to)
             return (
-              <Link key={n.to} to={n.to} style={{
-                fontSize: 13, textDecoration: 'none', minHeight: 44,
-                display: 'flex', alignItems: 'center',
-                color: active ? 'var(--ink)' : 'var(--ink-3)',
-                fontWeight: active ? 620 : 400,
-              }}>{n.label}</Link>
+              <Link key={n.to} to={n.to} aria-current={active ? 'page' : undefined} className="nav-link">
+                {n.label}
+              </Link>
             )
           })}
         </nav>
       </header>
-      <main style={{ padding: '18px 16px 40px', maxWidth: 1100, margin: '0 auto' }}>
+      <main className="wrap" style={{ paddingBlock: 'calc(var(--pitch) * 0.5) calc(var(--pitch) * 2)' }}>
         {children}
       </main>
     </div>

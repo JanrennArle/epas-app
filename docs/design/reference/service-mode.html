@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EPAS Grade 12 · Service Mode</title>
+<meta name="color-scheme" content="dark">
+<style>
+@font-face { font-family: "DotGothic16"; font-weight: 400; font-display: swap; src: url({{FONT:dotgothic}}) format("woff2"); }
+
+:root {
+  /* A sixteen colour evening: the shop opens as the sun goes down. */
+  --night: #10132E;
+  --deep: #0A0C1E;
+  --dusk: #232A63;
+  --teal: #1F6F74;
+  --amber: #F2B138;
+  --sunset: #E8622C;
+  --white: #F1EFE6;
+  --grey: #8B93A8;
+  --phosphor: #5BD26B;
+  --danger: #D8352A;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--dusk) var(--deep); }
+body {
+  margin: 0; min-height: 100dvh; overflow-x: hidden;
+  background: var(--deep); color: var(--white);
+  font: 400 1.125rem/1.75 "DotGothic16", ui-monospace, monospace;
+  caret-color: var(--amber);
+}
+::selection { background: var(--amber); color: var(--night); }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+a { color: inherit; }
+.wrap { width: min(100% - 24px, 1200px); margin-inline: auto; }
+@media (min-width: 768px) { .wrap { width: min(100% - 64px, 1200px); } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* One frame for every window: the classic double rule, square corners. */
+.win {
+  background: var(--night);
+  box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--white), inset 0 0 0 6px var(--dusk);
+  padding: 22px 24px;
+}
+
+.bar { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; font-size: 1.25rem; }
+.brand i { width: 12px; height: 12px; background: var(--phosphor); box-shadow: 4px 4px 0 var(--teal); }
+.nav { display: flex; }
+.nav a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 12px; text-decoration: none; color: var(--grey); }
+@media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--amber); } }
+@media (max-width: 560px) { .nav a:not(:first-child) { display: none; } }
+
+/* ---------- hero scene ---------- */
+.stage { position: relative; }
+.scene { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; box-shadow: 0 0 0 3px var(--deep), 0 0 0 6px var(--white); background: var(--night); }
+@media (min-width: 900px) { .scene { aspect-ratio: 16 / 9; } }
+h1 {
+  margin: 20px 0 0; font-weight: 400; line-height: 1.05; letter-spacing: 0.01em;
+  font-size: clamp(2.3rem, 7vw, 4.6rem);
+  color: var(--white); text-shadow: 4px 4px 0 var(--deep);
+}
+h1 em { font-style: normal; color: var(--amber); }
+@media (min-width: 900px) {
+  h1 { position: absolute; top: 34px; left: 38px; margin: 0; max-width: 11ch; }
+}
+
+.talk { margin-top: 26px; display: grid; gap: 18px; }
+@media (min-width: 900px) {
+  .talk { position: absolute; left: 32px; right: 32px; bottom: 32px; margin: 0; grid-template-columns: 1.5fr 1fr; align-items: stretch; }
+}
+.speaker { display: inline-block; margin: 0 0 8px; padding: 0 10px; background: var(--teal); color: var(--white); font-size: 0.95rem; }
+.said { margin: 0; min-height: 3.5em; font-size: clamp(1.15rem, 0.6vw + 1.05rem, 1.4rem); line-height: 1.6; }
+.said .cur { display: inline-block; width: 0.55em; height: 0.2em; margin-left: 4px; background: var(--amber); vertical-align: baseline; }
+.menu { list-style: none; margin: 0; padding: 14px 16px; display: grid; align-content: center; gap: 4px; }
+.menu a { position: relative; display: flex; align-items: center; min-height: 48px; padding: 0 12px 0 34px; text-decoration: none; font-size: 1.15rem; white-space: nowrap; }
+.menu a::before { content: ""; position: absolute; left: 10px; top: 50%; width: 12px; height: 14px; margin-top: -7px; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); opacity: 0; }
+.menu .go a { background: var(--sunset); color: var(--night); }
+.menu .go a::before, .menu a:focus-visible::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .menu a:hover::before { opacity: 1; }
+  .menu li:not(.go) a:hover { color: var(--amber); }
+}
+.menu a:active { transform: translateY(2px); }
+
+/* ---------- sections ---------- */
+section { padding-block: 88px 0; }
+h2 { margin: 0 0 22px; font-weight: 400; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.1; }
+h2 small { display: block; margin-top: 8px; font-size: 1.05rem; color: var(--grey); max-width: 52ch; line-height: 1.6; }
+
+.log { list-style: none; margin: 0; padding: 8px 8px; }
+.log a { display: grid; grid-template-columns: 52px 1fr; gap: 2px 14px; align-items: baseline; min-height: 56px; padding: 10px 14px; text-decoration: none; }
+@media (min-width: 760px) { .log a { grid-template-columns: 60px 1fr auto; } }
+.log .n { color: var(--phosphor); font-size: 1.3rem; }
+.log .t { font-size: 1.12rem; line-height: 1.4; }
+.log .w { grid-column: 2; color: var(--grey); font-size: 0.95rem; }
+@media (min-width: 760px) { .log .w { grid-column: auto; } }
+.log .first a { background: var(--dusk); }
+.log .first .t::after { content: "  START HERE"; color: var(--amber); white-space: pre; }
+@media (hover: hover) and (pointer: fine) { .log a:hover { background: var(--teal); } .log a:hover .w { color: var(--white); } }
+.log a:active { transform: translateY(2px); }
+
+.inv { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 18px; }
+.inv li { padding: 20px 22px; min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+.inv b { font-weight: 400; font-size: 1.2rem; line-height: 1.35; }
+.inv small { color: var(--phosphor); font-size: 0.95rem; }
+.after { margin: 26px 0 0; color: var(--grey); max-width: 58ch; }
+
+.rules { display: grid; grid-template-columns: 1fr; gap: 22px; }
+@media (min-width: 960px) { .rules { grid-template-columns: 1fr 1fr 1.25fr; } }
+.rules h3 { margin: 0 0 8px; font-weight: 400; font-size: 1.3rem; line-height: 1.3; }
+.rules p { margin: 0; color: var(--grey); line-height: 1.65; }
+/* Red is only ever this window. */
+.win.danger { box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--danger), inset 0 0 0 6px var(--night); }
+.danger h3 { display: flex; align-items: center; gap: 10px; color: var(--white); }
+.danger h3 svg { width: 26px; height: 26px; fill: var(--danger); flex: none; }
+.danger .flag { display: inline-block; padding: 0 8px; background: var(--danger); color: var(--white); font-size: 0.95rem; margin-bottom: 10px; }
+.danger p { color: var(--white); }
+
+.close { padding-block: 104px 80px; }
+.close .win { display: grid; gap: 18px; justify-items: start; padding: 32px; }
+.close p { margin: 0; font-size: clamp(1.4rem, 3vw, 2.2rem); line-height: 1.35; }
+.close .menu { padding: 0; }
+footer { padding-block: 0 40px; color: var(--grey); font-size: 0.95rem; }
+
+/* ---------- opening moment ---------- */
+.js .menu.hero-menu { opacity: 0; }
+.typed .menu.hero-menu { opacity: 1; transition: opacity 180ms steps(3); }
+.said .cur { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .said .cur { animation: none; }
+  .js .menu.hero-menu { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="#top" aria-label="EPAS Grade 12, home"><i aria-hidden="true"></i>EPAS 12</a>
+  <nav class="nav" aria-label="Main">
+    <a href="#modules">Modules</a>
+    <a href="#labs">Labs</a>
+    <a href="#progress">Progress</a>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap stage">
+    <svg class="scene" viewBox="0 0 160 90" preserveAspectRatio="xMaxYMid slice" shape-rendering="crispEdges" role="img" aria-label="A small electronics repair shop at sunset. A switched off electric fan and an old television sit in its lit window.">
+      <defs>
+        <pattern id="d-night-dusk" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="#10132E"/><rect width="1" height="1" fill="#232A63"/><rect x="1" y="1" width="1" height="1" fill="#232A63"/></pattern>
+        <pattern id="d-dusk-teal" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="#232A63"/><rect width="1" height="1" fill="#1F6F74"/><rect x="1" y="1" width="1" height="1" fill="#1F6F74"/></pattern>
+        <pattern id="d-teal-sun" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="#1F6F74"/><rect width="1" height="1" fill="#E8622C"/><rect x="1" y="1" width="1" height="1" fill="#E8622C"/></pattern>
+        <pattern id="d-sun-amber" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="2" fill="#E8622C"/><rect width="1" height="1" fill="#F2B138"/><rect x="1" y="1" width="1" height="1" fill="#F2B138"/></pattern>
+        <pattern id="d-street" width="4" height="2" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#0A0C1E"/><rect width="1" height="1" fill="#10132E"/><rect x="2" y="1" width="1" height="1" fill="#10132E"/></pattern>
+      </defs>
+      <g id="sky">
+        <rect width="160" height="24" fill="#10132E"/>
+        <rect y="22" width="160" height="3" fill="url(#d-night-dusk)"/>
+        <rect y="25" width="160" height="14" fill="#232A63"/>
+        <rect y="38" width="160" height="3" fill="url(#d-dusk-teal)"/>
+        <rect y="41" width="160" height="10" fill="#1F6F74"/>
+        <rect y="50" width="160" height="3" fill="url(#d-teal-sun)"/>
+        <rect y="53" width="160" height="10" fill="#E8622C"/>
+        <rect y="62" width="160" height="3" fill="url(#d-sun-amber)"/>
+        <rect y="65" width="160" height="8" fill="#F2B138"/>
+      </g>
+      <g id="stars"></g>
+      <g id="city"></g>
+      <g id="shop"></g>
+      <rect y="72" width="160" height="1" fill="#8B93A8"/>
+      <rect y="73" width="160" height="17" fill="url(#d-street)"/>
+    </svg>
+
+    <h1>Every fault <em>has a cause.</em></h1>
+
+    <div class="talk">
+      <div class="win">
+        <p class="speaker">Customer</p>
+        <p class="said"><span class="sr">The fan is plugged in and switched on, but nothing happens.</span><span id="typed" aria-hidden="true">The fan is plugged in and switched on, but nothing happens.</span><span class="cur" aria-hidden="true"></span></p>
+      </div>
+      <ul class="win menu hero-menu" aria-label="What next">
+        <li class="go"><a href="#modules">Start module 1</a></li>
+        <li><a href="#labs">Open the labs</a></li>
+        <li><a href="#progress">Check progress</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="modules" class="wrap" aria-labelledby="modules-h">
+    <h2 id="modules-h">Nine modules <small>Eleven weeks and 28 outcomes. Each module has a pre-test before and a post-test after.</small></h2>
+    <ol class="win log">
+      <li class="first"><a href="#top"><span class="n">01</span><span class="t">Electronic Systems and Component Testing</span><span class="w">Week 1</span></a></li>
+      <li><a href="#top"><span class="n">02</span><span class="t">PCB, Soldering and Power Supplies</span><span class="w">Week 2</span></a></li>
+      <li><a href="#top"><span class="n">03</span><span class="t">Appliances with Electric Motors</span><span class="w">Week 3</span></a></li>
+      <li><a href="#top"><span class="n">04</span><span class="t">Heating Appliances and Lighting Units</span><span class="w">Weeks 4 to 5</span></a></li>
+      <li><a href="#top"><span class="n">05</span><span class="t">CCTV Systems</span><span class="w">Week 6</span></a></li>
+      <li><a href="#top"><span class="n">06</span><span class="t">Fire Alarm Principles and Installation</span><span class="w">Week 7</span></a></li>
+      <li><a href="#top"><span class="n">07</span><span class="t">Fire Alarm Servicing and Audio Introduction</span><span class="w">Week 8</span></a></li>
+      <li><a href="#top"><span class="n">08</span><span class="t">Audio Products and Systems</span><span class="w">Week 9</span></a></li>
+      <li><a href="#top"><span class="n">09</span><span class="t">Television, Control Boards, Sensors and Actuators</span><span class="w">Weeks 10 to 11</span></a></li>
+    </ol>
+  </section>
+
+  <section id="labs" class="wrap" aria-labelledby="labs-h">
+    <h2 id="labs-h">Repair requests <small>Eight appliances are waiting, each with one real fault. Take readings and find it.</small></h2>
+    <ul class="inv">
+      <li class="win"><b>Electric fan</b><small>Module 3</small></li>
+      <li class="win"><b>Electric flat iron</b><small>Module 4</small></li>
+      <li class="win"><b>Rechargeable LED lamp</b><small>Module 4</small></li>
+      <li class="win"><b>CCTV camera channel</b><small>Module 5</small></li>
+      <li class="win"><b>Fire alarm zone</b><small>Modules 6 and 7</small></li>
+      <li class="win"><b>Audio amplifier</b><small>Module 8</small></li>
+      <li class="win"><b>Flat screen television</b><small>Module 9</small></li>
+      <li class="win"><b>Motor control board</b><small>Module 9</small></li>
+    </ul>
+    <p class="after">17 labs in all, including a multimeter trainer and a power supply you build one stage at a time.</p>
+  </section>
+
+  <section id="progress" class="wrap" aria-labelledby="rules-h">
+    <h2 id="rules-h">Shop rules</h2>
+    <div class="rules">
+      <div class="win"><h3>No signal needed</h3><p>Open it once and it keeps working. No data, no Wi-Fi.</p></div>
+      <div class="win"><h3>Your save stays with you</h3><p>No account and nothing sent anywhere. You hand in your own results file.</p></div>
+      <div class="win danger"><span class="flag">SAFETY</span><h3>{{ICON:Warning:fill}}Mains voltage can kill</h3><p>Every procedure says when the power is on and when it is off. Ask your teacher before you open a real appliance.</p></div>
+    </div>
+  </section>
+
+  <div class="wrap close">
+    <div class="win">
+      <p>The fan is still waiting. Start with module 1.</p>
+      <ul class="menu"><li class="go"><a href="#modules">Start module 1</a></li></ul>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap">EPAS Grade 12. Electronics Product Assembly and Servicing, a DepEd TechPro elective.</footer>
+
+<script>
+(() => {
+  const NS = 'http://www.w3.org/2000/svg'
+  const put = (g, x, y, w, h, fill) => {
+    const r = document.createElementNS(NS, 'rect')
+    r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('fill', fill)
+    g.appendChild(r)
+  }
+  const sprite = (g, ox, oy, rows, pal) => rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) put(g, ox + x, oy + y, 1, 1, pal[ch]) }))
+  // Seeded, so the city is the same skyline every time the page opens.
+  let seed = 7
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647
+
+  const stars = document.getElementById('stars')
+  for (let i = 0; i < 38; i++) put(stars, Math.floor(rnd() * 160), Math.floor(rnd() * 22), 1, 1, rnd() > 0.7 ? '#F1EFE6' : '#8B93A8')
+  sprite(stars, 84, 4, ['.ww.', 'ww..', 'w...', 'ww..', '.ww.'], { w: '#F1EFE6' })
+
+  const city = document.getElementById('city')
+  for (let x = 0; x < 160;) {
+    const w = 7 + Math.floor(rnd() * 11), top = 30 + Math.floor(rnd() * 24)
+    if (x + w > 84 && x < 154) { x = x < 84 ? 84 : 154; continue }
+    put(city, x, top, w, 72 - top, '#10132E')
+    for (let wy = top + 3; wy < 69; wy += 4) for (let wx = x + 2; wx < x + w - 1; wx += 3) if (rnd() > 0.72) put(city, wx, wy, 1, 2, '#F2B138')
+    x += w + (rnd() > 0.6 ? 1 : 0)
+  }
+
+  const shop = document.getElementById('shop')
+  put(shop, 88, 38, 64, 34, '#10132E')           // shell
+  put(shop, 90, 38, 60, 34, '#232A63')           // wall
+  for (let x = 86; x < 154; x += 4) put(shop, x, 31, 4, 6, (x / 4) % 2 ? '#F1EFE6' : '#E8622C') // awning
+  for (let x = 86; x < 154; x += 4) put(shop, x + 1, 37, 2, 1, (x / 4) % 2 ? '#F1EFE6' : '#E8622C')
+  put(shop, 104, 19, 33, 11, '#0A0C1E'); put(shop, 105, 20, 31, 9, '#10132E') // sign board
+  put(shop, 110, 30, 1, 1, '#8B93A8'); put(shop, 130, 30, 1, 1, '#8B93A8')
+  const glyph = {
+    R: ['11.', '1.1', '11.', '1.1', '1.1'], E: ['111', '1..', '11.', '1..', '111'],
+    P: ['11.', '1.1', '11.', '1..', '1..'], A: ['.1.', '1.1', '111', '1.1', '1.1'], I: ['111', '.1.', '.1.', '.1.', '111'],
+  }
+  ;[...'REPAIR'].forEach((c, i) => sprite(shop, 109 + i * 4, 22, glyph[c], { 1: '#5BD26B' }))
+  put(shop, 94, 41, 38, 27, '#F1EFE6')           // window frame
+  put(shop, 95, 42, 36, 25, '#F2B138')           // lit glass
+  for (let y = 62; y < 67; y++) for (let x = 95; x < 131; x++) if ((x + y) % 2) put(shop, x, y, 1, 1, '#E8622C')
+  put(shop, 112, 42, 1, 25, '#F1EFE6')           // mullion
+  sprite(shop, 96, 45, [
+    '....kkkkkkkk....', '..kkggggggggkk..', '.kgg.g.gg.g.ggk.', '.kg.g.gkkg.g.gk.',
+    'kgg..gkggkg..ggk', 'kg.ggkgwwgkgg.gk', 'kg.ggkgwwgkgg.gk', 'kgg..gkggkg..ggk',
+    '.kg.g.gkkg.g.gk.', '.kgg.g.gg.g.ggk.', '..kkggggggggkk..', '....kkkkkkkk....',
+    '.......kk.......', '.......kg.......', '.......kg.......', '.......kg.......',
+    '.......kg.......', '.....kkkkkk.....', '...kggggggggk...', '...kkkkkkkkkk...',
+  ], { k: '#10132E', g: '#8B93A8', w: '#F1EFE6' })
+  sprite(shop, 115, 54, [
+    'kkkkkkkkkkkkk', 'kttttttttttgk', 'ktwtttttttttk', 'kttttttttttgk', 'ktttttttttttk',
+    'kttttttttttgk', 'kkkkkkkkkkkkk', '..k.......k..',
+  ], { k: '#10132E', t: '#1F6F74', w: '#F1EFE6', g: '#8B93A8' })
+  put(shop, 115, 62, 13, 5, '#0A0C1E')           // shelf under the set
+  put(shop, 135, 43, 12, 29, '#F1EFE6'); put(shop, 136, 44, 10, 28, '#10132E') // door
+  put(shop, 137, 46, 6, 8, '#1F6F74'); put(shop, 144, 59, 1, 2, '#F2B138')
+
+  // The opening: the customer's words type out, then the menu appears.
+  const root = document.documentElement
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  root.classList.add('js')
+  const el = document.getElementById('typed'), full = el.textContent
+  let i = 0, timer
+  const done = () => { clearTimeout(timer); el.textContent = full; root.classList.add('typed') }
+  el.textContent = ''
+  const type = () => {
+    if (i >= full.length) return done()
+    el.textContent = full.slice(0, ++i)
+    const ch = full[i - 1]
+    timer = setTimeout(type, ch === ',' ? 260 : ch === ' ' ? 30 : 34)
+  }
+  timer = setTimeout(type, 600)
+  ;['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(e => addEventListener(e, done, { once: true, passive: true }))
+})()
+</script>
+</body>
+</html>
