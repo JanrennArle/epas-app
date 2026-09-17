@@ -176,7 +176,7 @@ by a teacher who knows to go looking for the salvage key.
 
 - `docs/superpowers/plans/STATUS.md` says what is built, what is left, and what the next plan must honour. Start here after a break.
 - `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` is the binding product spec.
-- `docs/DESIGN.md` is the visual authority: tokens, the Shadow Board tokens, the Service Mode scope for the fault-finding labs, motion rules, and an explicit ban list.
+- `docs/DESIGN.md` is the visual authority: the Shadow Board tokens, the Service Mode scope for the fault-finding labs, motion rules, and an explicit ban list.
 - `docs/DEPLOY.md` walks a teacher through the three ways to get the built app in front of a class, including the lab-PC-with-no-internet case.
 - `docs/OFFLINE-CHECK.md` is the manual phone check that no automated test can do: installing, going into flight mode, and confirming nothing was lost.
 - `docs/superpowers/plans/CARRY-FORWARD.md` records known deferred defects and is grouped by the plan that raised each one. **Read it before starting new work.** Resolved entries are marked rather than deleted, so check the marker before trusting an entry. The live traps include that `simId` alone no longer identifies an exercise, that success is encoded four different ways across the simulations, that a missing row is not proof of no engagement, and that the export must filter on `participant.research` or the consent screen becomes a false statement.

@@ -50,7 +50,7 @@ What remains is the teacher's, and no agent can do it:
 
 ## Resuming
 
-Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Plan 9 was the last one on the spec's build order; there is no next plan queued. What remains is listed above under "What is left", and every item there is the teacher's to do, not an agent's. The nine plans in this directory are the house pattern for what one looks like, if a new one is ever needed.
+Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Plan 10 was the last one, adding the Shadow Board visual world across the app and Service Mode in the eight fault labs. There is no next plan queued. What remains is listed above under "What is left", and every item there is the teacher's to do, not an agent's. The ten plans in this directory are the house pattern for what one looks like, if a new one is ever needed.
 
 The one item in the project that no agent can resolve: every module ships `teacherReviewed: false`, and the app shows an unreviewed warning until the teacher sets it to `true`. M1 `lo3` contains a capacitor-discharge procedure describing a lethal hazard. That flag is the teacher's to flip.
 
