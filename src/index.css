@@ -277,14 +277,21 @@ ul { list-style: disc; }
      for this fix, 1440px by 37px too, because the margin around .board is
      not the same at every width. */
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  /* ellipse closest-side sizes each axis off the box's own nearest edge on
-     that axis, so the fade to transparent always finishes before the
-     element's edge on both axes, at any position, box size or aspect ratio.
-     The light sits nearer the top than the left (--ly 20% vs --lx 30%), so
-     the ellipse is naturally wider than it is tall; the 92% stop uses
-     nearly the full safe radius on both axes so the glow reads as one lamp
-     over the board rather than a spot behind the middle tool. */
-  background: radial-gradient(ellipse closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 92%);
+  /* Two layers, because one gradient cannot both cover most of a 3x3 board
+     from a corner-ish position AND provably reach zero at the near edges.
+     The first layer is the bright core: "closest-side" sizes it off
+     whichever edge --lx/--ly sits nearest to, so it is mathematically
+     guaranteed to fade out before that edge, at any box size. On its own
+     that guarantee makes it small, since the light sits close to the top.
+     The second layer is a much wider, dimmer wash (color-mix turns down
+     --lamp's own alpha rather than introducing a second token) sized at
+     55% of the board so it reads as one pool of light falling across most
+     of the slots and fading out before the far corner; it is faint enough
+     everywhere that the little it still shows at the nearest edges reads
+     as soft light, not a line. */
+  background:
+    radial-gradient(ellipse closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 100%),
+    radial-gradient(55% 55% at var(--lx, 30%) var(--ly, 20%), color-mix(in srgb, var(--lamp) 45%, transparent), transparent 100%);
 }
 .slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
 .slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 70%; height: 70%; }
