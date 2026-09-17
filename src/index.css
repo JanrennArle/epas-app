@@ -38,6 +38,18 @@
   --shade: rgba(12, 16, 14, 0.10);
   --pitch: 24px;
 
+  /* Kept because lab diagrams in src/content/activities (frozen) fill parts
+     with these washes: flat-iron-parts.ts reads --m4, tv-boards.ts reads --m9. */
+  --m1: #DDF0EC;
+  --m2: #FAEDD6;
+  --m3: #DEECFA;
+  --m4: #FBE7DD;
+  --m5: #E4E6FA;
+  --m6: #FADEE4;
+  --m7: #EFE2F7;
+  --m8: #E9F3D8;
+  --m9: #DAF0F5;
+
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
@@ -63,6 +75,16 @@
     --caution: #E8B25A;
     --lamp: rgba(255, 226, 150, 0.20);
     --shade: rgba(0, 0, 0, 0.42);
+
+    --m1: #17332E;
+    --m2: #33291A;
+    --m3: #1A2A38;
+    --m4: #33231B;
+    --m5: #22243D;
+    --m6: #33222A;
+    --m7: #2B2136;
+    --m8: #262E1B;
+    --m9: #162E36;
   }
 }
 @media (min-width: 768px) { :root { --pitch: 32px; } }
