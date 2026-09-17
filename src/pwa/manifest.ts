@@ -18,10 +18,10 @@ export const MANIFEST = {
   scope: './',
   display: 'standalone',
   orientation: 'portrait',
-  // docs/DESIGN.md: `--paper`, the light ground colour, and `--accent` below.
-  // Not `--surface` (#FFFFFF), which is a different, whiter token.
-  background_color: '#FAFAF9',
-  theme_color: '#0E6E63',
+  // docs/DESIGN.md: the Shadow Board tokens. background_color is the light
+  // board colour; theme_color is the paint colour, not the plate yellow.
+  background_color: '#E3E8E4',
+  theme_color: '#26302B',
   lang: 'en',
   icons: [
     { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

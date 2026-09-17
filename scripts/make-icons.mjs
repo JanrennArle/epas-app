@@ -6,8 +6,9 @@
 // work than adding an image toolchain that has to be installed on whatever
 // machine builds this next.
 //
-// The mark is the one in the app header: a rounded teal square with a white
-// E. Re-run with `npm run icons` after changing the accent in docs/DESIGN.md.
+// The mark is the one in the app header: a rounded plate-yellow square with a
+// dark E, matching the Shadow Board's brass plate. Re-run with `npm run icons`
+// after changing the accent in docs/DESIGN.md.
 import { deflateSync } from 'node:zlib'
 import { mkdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -15,9 +16,9 @@ import { fileURLToPath } from 'node:url'
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public')
 
-// docs/DESIGN.md, the light accent. One accent for the whole app.
-const TEAL = [0x0e, 0x6e, 0x63]
-const WHITE = [0xff, 0xff, 0xff]
+// docs/DESIGN.md, the Shadow Board plate. One plate colour for the whole app.
+const PLATE = [0xf2, 0xc2, 0x30]
+const GLYPH = [0x14, 0x18, 0x16]
 
 const CRC_TABLE = (() => {
   const t = new Int32Array(256)
@@ -95,7 +96,7 @@ function draw(size, fullBleed) {
         const cy = y < radius ? radius : y > size - radius ? size - radius : y
         inside = (x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2
       }
-      if (inside) put(x, y, TEAL)
+      if (inside) put(x, y, PLATE)
     }
   }
 
@@ -113,7 +114,7 @@ function draw(size, fullBleed) {
   const bar = (bx0, by0, bx1, by1) => {
     for (let y = by0; y < by1; y++) {
       for (let x = bx0; x < bx1; x++) {
-        if (x >= 0 && y >= 0 && x < size && y < size) put(x, y, WHITE)
+        if (x >= 0 && y >= 0 && x < size && y < size) put(x, y, GLYPH)
       }
     }
   }
@@ -147,13 +148,14 @@ for (const [name, size, fullBleed] of files) {
  *
  * Android wants three kinds, at five densities each:
  * - `ic_launcher`, the plain icon older phones (Android 7.x) show as it is.
- *   The same rounded teal square the website uses.
+ *   The same rounded plate-yellow square the website uses.
  * - `ic_launcher_round`, for launchers that ask for a circle.
- * - `ic_launcher_foreground`, the white E alone on a transparent 108dp
- *   canvas. Android 8 and later composite it over the teal background colour
- *   and cut the result to whatever shape that phone's launcher uses, so the
- *   glyph has to sit inside the 66dp circle every shape keeps. A square E
- *   fits inside that circle with an inset of about 0.28; 0.32 leaves room.
+ * - `ic_launcher_foreground`, the dark E alone on a transparent 108dp
+ *   canvas. Android 8 and later composite it over the plate background
+ *   colour and cut the result to whatever shape that phone's launcher uses,
+ *   so the glyph has to sit inside the 66dp circle every shape keeps. A
+ *   square E fits inside that circle with an inset of about 0.28; 0.32
+ *   leaves room.
  */
 function drawAndroid(size, shape) {
   if (shape === 'square') return draw(size, false)
@@ -168,7 +170,7 @@ function drawAndroid(size, shape) {
     const c = (size - 1) / 2
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
-        if ((x - c) ** 2 + (y - c) ** 2 <= (size / 2) ** 2) put(x, y, TEAL)
+        if ((x - c) ** 2 + (y - c) ** 2 <= (size / 2) ** 2) put(x, y, PLATE)
       }
     }
   }
@@ -182,7 +184,7 @@ function drawAndroid(size, shape) {
   const mid = Math.round((y0 + y1) / 2 - t / 2)
   const bar = (bx0, by0, bx1, by1) => {
     for (let y = by0; y < by1; y++) {
-      for (let x = bx0; x < bx1; x++) put(x, y, WHITE)
+      for (let x = bx0; x < bx1; x++) put(x, y, GLYPH)
     }
   }
   bar(x0, y0, x0 + t, y1)
@@ -206,7 +208,7 @@ try {
   }
   // The colour Android 8 and later draws behind the foreground.
   writeFileSync(join(RES, 'values', 'ic_launcher_background.xml'),
-    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#0E6E63</color>\n</resources>\n`)
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#F2C230</color>\n</resources>\n`)
   console.log('android launcher icons written for 5 densities')
 } catch {
   console.log('no android/ project here, skipping launcher icons')

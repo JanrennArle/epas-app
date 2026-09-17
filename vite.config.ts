@@ -54,8 +54,11 @@ export default defineConfig(({ mode }) => {
         workbox: {
           // Everything the app is made of. The fonts matter as much as the
           // code: a missing woff2 is a lesson rendered in a fallback face on a
-          // phone with no signal, which looks like the app is broken.
-          globPatterns: ['**/*.{js,css,html,woff2,png,svg,json,ico,webmanifest}'],
+          // phone with no signal, which looks like the app is broken. `woff`
+          // is here too because the Shadow Board's display faces
+          // (barlow-condensed, dotgothic16) ship a woff fallback alongside
+          // their woff2, and both must survive with no signal.
+          globPatterns: ['**/*.{js,css,html,woff2,woff,png,svg,json,ico,webmanifest}'],
           // A student on a shared phone can carry three generations of this
           // app in storage otherwise.
           cleanupOutdatedCaches: true,
