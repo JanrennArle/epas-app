@@ -298,6 +298,16 @@ ul { list-style: disc; }
   .board-opening .slot .tool { opacity: 1; }
   .board-opening .slot .shadow { opacity: 0.55; }
 }
+.board-opening.play .slot.landed .tool { opacity: 1; }
+.board-opening.play .slot.landed .shadow { opacity: 0.55; }
+
+.map-hero {
+  display: grid; grid-template-columns: 1fr; gap: calc(var(--pitch) * 1);
+  align-items: center; padding-block: calc(var(--pitch) * 0.5) calc(var(--pitch) * 1.5);
+}
+@media (min-width: 960px) { .map-hero { grid-template-columns: calc(var(--pitch) * 15) 1fr; } }
+.map-hero .board { max-width: 520px; width: 100%; justify-self: center; }
+.map-lede { max-width: 36ch; margin: calc(var(--pitch) * 0.6) 0 0; font-size: clamp(1.06rem, 1vw + 0.85rem, 1.25rem); line-height: 1.5; }
 
 /* The instrument panels keep their dark skin in both themes; yellow reads on it. */
 .instrument { --accent: #F2C230; --paint: #F2C230; }
