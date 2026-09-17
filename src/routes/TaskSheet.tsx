@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { Warning } from '@phosphor-icons/react'
 import { getTask } from '../content/tasks'
 import { setTaskProgress, taskProgress } from '../lib/store'
-import type { CSSProperties } from 'react'
 import type { PerformanceTask } from '../lib/types'
-
-const label: CSSProperties = {
-  fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-  color: 'var(--ink-3)', margin: '0 0 8px',
-}
+import { Tape } from '../ui/board/Tape'
 
 /**
  * Resolving the task is all this does. The sheet below is keyed on the task
@@ -86,35 +82,24 @@ function Sheet({ task }: { task: PerformanceTask }) {
 
   return (
     <div style={{ maxWidth: '62ch' }}>
-      <p style={label}>{task.kind === 'group' ? 'Group task' : 'Individual task'}</p>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 10px' }}>
-        {task.title}
-      </h1>
+      <p className="label" style={{ margin: '0 0 8px' }}>{task.kind === 'group' ? 'Group task' : 'Individual task'}</p>
+      <Tape as="h1">{task.title}</Tape>
 
-      <blockquote style={{
-        margin: '0 0 18px', padding: '12px 14px', borderRadius: 14,
-        background: 'var(--surface)', border: '1px solid var(--line)',
-        fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)',
+      <blockquote className="sign" style={{
+        margin: '18px 0 18px', fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)',
       }}>
         {task.brief}
       </blockquote>
 
-      <div role="note" style={{
-        background: 'var(--surface)', border: '1px solid var(--line)',
-        borderLeft: '3px solid var(--danger)', borderRadius: '0 10px 10px 0',
-        padding: '11px 13px', margin: '0 0 20px',
-      }}>
-        <strong style={{
-          display: 'block', fontSize: 11, letterSpacing: '0.06em',
-          textTransform: 'uppercase', color: 'var(--danger)', marginBottom: 6,
-        }}>Safety</strong>
+      <div role="note" className="callout callout--safety">
+        <strong><Warning weight="bold" aria-hidden />Safety</strong>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)' }}>
           {task.safety.map(s => <li key={s} style={{ marginBottom: 5 }}>{s}</li>)}
         </ul>
       </div>
 
-      <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 4px' }}>How you are marked</h2>
-      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 10px' }}>
+      <Tape as="h2" size="section">How you are marked</Tape>
+      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '10px 0 10px' }}>
         Your teacher scores this by watching you work. It is here before the steps so you know
         what you are aiming at, out of {total}.
       </p>
@@ -123,7 +108,7 @@ function Sheet({ task }: { task: PerformanceTask }) {
           <thead>
             <tr>
               {['What is marked', 'What full marks looks like', 'Points'].map(h => (
-                <th key={h} style={{ ...label, textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{h}</th>
+                <th key={h} className="label" style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -139,8 +124,8 @@ function Sheet({ task }: { task: PerformanceTask }) {
         </table>
       </div>
 
-      <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 4px' }}>Steps</h2>
-      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 10px' }}>
+      <Tape as="h2" size="section">Steps</Tape>
+      <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '10px 0 10px' }}>
         Tick these as you go. They are your own record of what you did; your teacher marks
         the work itself, not the ticks.
       </p>
@@ -149,30 +134,30 @@ function Sheet({ task }: { task: PerformanceTask }) {
           <li key={s}>
             <label style={{
               display: 'flex', gap: 10, alignItems: 'flex-start', minHeight: 44,
-              padding: '8px 10px', borderRadius: 10, cursor: 'pointer',
+              padding: '8px 10px', borderRadius: 3, cursor: 'pointer',
               fontSize: 13.5, lineHeight: 1.55,
               color: progress.checked.includes(i) ? 'var(--ink-3)' : 'var(--ink-2)',
             }}>
               <input type="checkbox" checked={progress.checked.includes(i)}
                 onChange={() => toggle(i)}
-                style={{ marginTop: 3, accentColor: 'var(--accent)' }} />
+                style={{ marginTop: 3, accentColor: 'var(--paint)' }} />
               <span><strong style={{ color: 'var(--ink-3)' }}>{i + 1}.</strong> {s}</span>
             </label>
           </li>
         ))}
       </ol>
 
-      <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 6px' }}>Your notes</h2>
+      <Tape as="h2" size="section">Your notes</Tape>
       <textarea
         value={progress.notes ?? ''}
         onChange={e => note(e.target.value)}
         rows={5}
         placeholder="What you measured, what you found, what you changed"
         style={{
-          width: '100%', padding: '10px 12px', borderRadius: 10,
-          border: '1px solid var(--line)', background: 'var(--surface)',
+          width: '100%', padding: '10px 12px', borderRadius: 3,
+          border: '2px solid var(--line)', background: 'var(--surface)',
           font: 'inherit', fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink)',
-          margin: '0 0 18px', resize: 'vertical',
+          margin: '10px 0 18px', resize: 'vertical',
         }} />
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: 0 }}>

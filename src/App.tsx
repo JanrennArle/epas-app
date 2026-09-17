@@ -10,14 +10,13 @@ import Progress from './routes/Progress'
 import Teacher from './routes/Teacher'
 import TaskSheet from './routes/TaskSheet'
 import { LabFullScreen, LabsGallery } from './routes/Labs'
+import { Tape } from './ui/board/Tape'
 
 function NotBuiltYet() {
   return (
     <>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px', color: 'var(--ink)' }}>
-        Not built yet
-      </h1>
-      <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: 0 }}>
+      <Tape as="h1">Not built yet</Tape>
+      <p style={{ fontSize: '1rem', color: 'var(--ink-2)', margin: '10px 0 0' }}>
         This part of the app is coming in a later version.
       </p>
     </>

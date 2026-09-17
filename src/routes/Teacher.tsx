@@ -1,10 +1,13 @@
 import { useMemo, useRef, useState } from 'react'
+import { Warning } from '@phosphor-icons/react'
 import { classTable, codebookRows, parseBundle, rubricRows } from '../lib/export'
 import { setTeacherPin, teacherPin } from '../lib/store'
 import { addLoaded, excludedStudents, groupByStudent, includedStudents, markingList, whyLeftOut } from '../lib/merge'
 import type { LoadedFile, StudentGroup } from '../lib/merge'
 import { downloadCsv } from '../ui/download'
 import type { CSSProperties } from 'react'
+import { Tape } from '../ui/board/Tape'
+import { PlateButton } from '../ui/board/Plate'
 
 interface Rejected {
   file: string
@@ -106,8 +109,8 @@ export default function Teacher() {
     const first = teacherPin() === undefined
     return (
       <div style={{ maxWidth: '48ch' }}>
-        <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>Teacher tools</h1>
-        <p style={note}>
+        <Tape as="h1">Teacher tools</Tape>
+        <p style={{ ...note, margin: '18px 0 4px' }}>
           {first
             ? 'Choose a PIN for this device. It keeps a student who wanders in from seeing this screen. It is not a password and it protects nothing else.'
             : 'Enter the PIN set on this device.'}
@@ -116,16 +119,12 @@ export default function Teacher() {
           type="password" inputMode="numeric" autoComplete="off"
           style={{
             width: '100%', maxWidth: 220, minHeight: 44, padding: '10px 12px',
-            borderRadius: 10, border: '1px solid var(--line)', background: 'var(--surface)',
+            borderRadius: 3, border: '1px solid var(--line)', background: 'var(--surface)',
             font: 'inherit', fontSize: 14, color: 'var(--ink)', margin: '10px 0',
           }} />
         {pinError && <p role="alert" style={{ fontSize: 13, color: 'var(--caution)', margin: '0 0 10px' }}>{pinError}</p>}
         <div>
-          <button onClick={unlock} className="tile" style={{
-            minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-            background: 'var(--accent)', color: 'var(--on-accent)',
-            font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>{first ? 'Set this PIN' : 'Unlock'}</button>
+          <PlateButton variant="primary" onClick={unlock}>{first ? 'Set this PIN' : 'Unlock'}</PlateButton>
         </div>
       </div>
     )
@@ -133,8 +132,8 @@ export default function Teacher() {
 
   return (
     <div style={{ maxWidth: '70ch' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>Merge a class</h1>
-      <p style={note}>
+      <Tape as="h1">Merge a class</Tape>
+      <p style={{ ...note, margin: '18px 0 4px' }}>
         Select the JSON files your students handed in. Everything happens on this device;
         nothing is uploaded. You can select more than once if your files sit in different
         folders. You get one table with a row per student, and a codebook that explains
@@ -146,18 +145,12 @@ export default function Teacher() {
           onChange={e => { void take(e.target.files) }}
           style={{ font: 'inherit', fontSize: 13.5, color: 'var(--ink-2)' }} />
         {loaded.length + rejected.length > 0 && (
-          <button onClick={clearAll} style={{
-            background: 'none', border: 0, padding: 0, font: 'inherit', fontSize: 13,
-            color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
-          }}>Start again</button>
+          <PlateButton onClick={clearAll}>Start again</PlateButton>
         )}
       </div>
 
       {loaded.length + rejected.length > 0 && (
-        <div style={{
-          background: 'var(--surface)', border: '1px solid var(--line)',
-          borderRadius: 14, padding: 16, margin: '0 0 18px',
-        }}>
+        <div className="sign" style={{ margin: '0 0 18px' }}>
           <p style={{ ...note, color: 'var(--ink)', fontWeight: 600 }}>
             {included.length} student{included.length === 1 ? '' : 's'} will be in the table,
             from {loaded.length} file{loaded.length === 1 ? '' : 's'}.
@@ -198,43 +191,24 @@ export default function Teacher() {
       )}
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <button
+        <PlateButton
+          variant="primary"
           onClick={() => {
             const table = classTable(included.map(forExport))
             setUnreadable(table.unreadable)
             downloadCsv('epas-class.csv', table.rows)
           }}
-          disabled={included.length === 0}
-          className="tile"
-          style={{
-            minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-            background: included.length ? 'var(--accent)' : 'var(--line)',
-            color: included.length ? 'var(--on-accent)' : 'var(--ink-3)',
-            font: 'inherit', fontSize: 14, fontWeight: 600,
-            cursor: included.length ? 'pointer' : 'default',
-          }}>
+          disabled={included.length === 0}>
           Save the class table
-        </button>
-        <button onClick={() => downloadCsv('epas-codebook.csv', codebookRows())} className="tile" style={{
-          minHeight: 44, padding: '11px 18px', borderRadius: 10,
-          border: '1px solid var(--line)', background: 'var(--surface)',
-          color: 'var(--ink)', font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-        }}>
+        </PlateButton>
+        <PlateButton onClick={() => downloadCsv('epas-codebook.csv', codebookRows())}>
           Save the codebook
-        </button>
-        <button
+        </PlateButton>
+        <PlateButton
           onClick={() => downloadCsv('epas-rubric-sheet.csv', rubricRows(marking))}
-          disabled={marking.length === 0}
-          className="tile"
-          style={{
-            minHeight: 44, padding: '11px 18px', borderRadius: 10,
-            border: '1px solid var(--line)', background: 'var(--surface)',
-            color: marking.length ? 'var(--ink)' : 'var(--ink-3)',
-            font: 'inherit', fontSize: 14, fontWeight: 600,
-            cursor: marking.length ? 'pointer' : 'default',
-          }}>
+          disabled={marking.length === 0}>
           Save the rubric scoring sheet
-        </button>
+        </PlateButton>
       </div>
 
       {marking.length > 0 && (
@@ -247,16 +221,8 @@ export default function Teacher() {
       )}
 
       {unreadable.length > 0 && (
-        <div role="status" style={{
-          fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)', marginTop: 14,
-          background: 'var(--surface)', border: '1px solid var(--line)',
-          borderLeft: '3px solid var(--caution)', borderRadius: '0 10px 10px 0',
-          padding: '11px 13px',
-        }}>
-          <strong style={{
-            display: 'block', fontSize: 11, letterSpacing: '0.06em',
-            textTransform: 'uppercase', color: 'var(--caution)', marginBottom: 6,
-          }}>Saved, with gaps</strong>
+        <div role="status" className="callout callout--caution" style={{ marginTop: 14, fontSize: 13 }}>
+          <strong><Warning weight="bold" aria-hidden />Saved, with gaps</strong>
           <p style={{ margin: '0 0 6px' }}>
             The table saved, but {unreadable.length === 1 ? 'one student' : `${unreadable.length} students`} could
             not be read into a row. Those rows carry the code and nothing else, so the table is

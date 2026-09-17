@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { mayPrompt } from '../lib/updates'
+import { PlateButton } from './board/Plate'
 
 /**
  * Offers a new version, and never takes it.
@@ -44,13 +45,12 @@ export function UpdatePrompt() {
   if (!needRefresh || !mayPrompt(pathname)) return null
 
   return (
-    <div role="status" style={{
-      background: 'var(--surface)', borderBottom: '1px solid var(--line)',
-      borderLeft: '3px solid var(--accent)',
+    <div role="status" className="sign" style={{
+      position: 'sticky', bottom: 0, borderRadius: 0, zIndex: 1,
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
-        padding: '12px 16px', maxWidth: 1100, margin: '0 auto',
+        maxWidth: 1100, margin: '0 auto',
       }}>
         <p style={{ margin: 0, flex: 1, minWidth: 200, fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink)' }}>
           A newer version of the app is ready. Your work is saved on this device
@@ -61,16 +61,9 @@ export function UpdatePrompt() {
             reload always happens, driven by the `controlling` listener the
             plugin sets up internally, not by this argument. There is no way
             to update without reloading through this API. */}
-        <button
-          onClick={() => { void updateServiceWorker(true) }}
-          className="tile"
-          style={{
-            minHeight: 44, padding: '10px 16px', borderRadius: 10, border: 0,
-            background: 'var(--accent)', color: 'var(--on-accent)',
-            font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>
+        <PlateButton variant="primary" onClick={() => { void updateServiceWorker(true) }}>
           Update now
-        </button>
+        </PlateButton>
       </div>
     </div>
   )
