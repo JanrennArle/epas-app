@@ -311,3 +311,49 @@ ul { list-style: disc; }
 
 /* The instrument panels keep their dark skin in both themes; yellow reads on it. */
 .instrument { --accent: #F2C230; --paint: #F2C230; }
+
+/* ---------- Service Mode: the fault-finding labs only ---------- */
+.service {
+  --night: #10132E; --deep: #0A0C1E; --dusk: #232A63; --teal: #1F6F74; --amber: #F2B138;
+  --sunset: #E8622C; --white: #F1EFE6; --grey: #8B93A8; --phosphor: #5BD26B; --sv-danger: #D8352A;
+  --paint: #F2B138; --accent: #F2B138;
+  color: var(--white); background: var(--deep);
+  font-family: var(--font-pixel); font-size: 1.125rem; line-height: 1.7;
+  padding: calc(var(--pitch) * 0.5); border-radius: 3px;
+}
+.service ::selection { background: var(--amber); color: var(--night); }
+.service :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 0; }
+.service .scene { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; box-shadow: 0 0 0 3px var(--deep), 0 0 0 6px var(--white); }
+@media (min-width: 900px) { .service .scene { aspect-ratio: 16 / 9; } }
+.service .win {
+  background: var(--night);
+  box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--white), inset 0 0 0 6px var(--dusk);
+  padding: 20px 22px;
+}
+.service .win--danger { box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--sv-danger), inset 0 0 0 6px var(--night); }
+.service .win-title { display: inline-block; margin: 0 0 10px; padding: 0 10px; background: var(--teal); color: var(--white); font-size: 1rem; font-weight: 400; line-height: 1.6; }
+.service .win--danger .win-title { background: var(--sv-danger); }
+.service .menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.service .menu button {
+  position: relative; width: 100%; min-height: 48px; padding: 8px 12px 8px 34px;
+  border: 0; background: transparent; color: var(--white); text-align: left; cursor: pointer;
+  font: inherit; line-height: 1.5;
+}
+.service .menu button::before {
+  content: ""; position: absolute; left: 10px; top: 50%; width: 12px; height: 14px; margin-top: -7px;
+  background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); opacity: 0;
+}
+.service .menu button:focus-visible::before, .service .menu button[aria-current="true"]::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .service .menu button:not([disabled]):not([aria-disabled="true"]):hover { color: var(--amber); }
+  .service .menu button:not([disabled]):not([aria-disabled="true"]):hover::before { opacity: 1; }
+}
+.service .menu button:active { transform: translateY(2px); }
+.service .menu button[disabled], .service .menu button[aria-disabled="true"] { color: var(--grey); cursor: default; transform: none; }
+.service .menu .used { color: var(--phosphor); }
+.service .reading { margin: 2px 0 8px 34px; color: var(--phosphor); font-size: 1.05rem; }
+.service .check { display: flex; gap: 12px; align-items: flex-start; min-height: 44px; cursor: pointer; }
+.service .check input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--amber); flex: none; }
+.service .cursor { display: inline-block; width: 0.55em; height: 0.2em; margin-left: 4px; background: var(--amber); animation: sv-blink 1s steps(1) infinite; }
+@keyframes sv-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .service .cursor { animation: none; } }
