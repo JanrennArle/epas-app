@@ -23,7 +23,7 @@ export default function LessonReader() {
 
   return (
     <div className="lesson-layout">
-      <div>
+      <div className="lesson-main">
         <Link to={`/m/${m.id}`} className="back">
           <ArrowLeft weight="bold" aria-hidden />
           {m.title}
