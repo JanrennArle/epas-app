@@ -58,8 +58,8 @@ describe('the web app manifest', () => {
 
   // docs/DESIGN.md is the visual authority and allows exactly one accent.
   it('uses the app palette', () => {
-    expect(MANIFEST.theme_color).toBe('#0E6E63')
-    expect(MANIFEST.background_color).toBe('#FAFAF9')
+    expect(MANIFEST.theme_color).toBe('#26302B')
+    expect(MANIFEST.background_color).toBe('#E3E8E4')
   })
 
   it('has no em dash in anything a student reads', () => {

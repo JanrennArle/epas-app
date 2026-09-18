@@ -1,10 +1,10 @@
 # Project status
 
-Last updated 2026-09-13, after plan 9 merged.
+Last updated 2026-09-18, after plan 10 merged.
 
 ## Where things stand
 
-`master` is green: `npx tsc -b --force` clean, 332 tests across 21 files, `npm run build` clean. No open branches. No active plan workspace.
+`master` is green: `npx tsc -b --force` clean, 346 tests across 23 files, `npm run build` clean. No open branches. No active plan workspace.
 
 Every part of the app a student or teacher touches is built, including packaging: the code and configuration section 14 of `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` asks for is done in full. What is not done is the teacher's own remaining action items, listed below: deploying it, verifying it offline on a real phone, and the two things only a person can decide.
 
@@ -19,6 +19,7 @@ Every part of the app a student or teacher touches is built, including packaging
 | Performance tasks | Eight Budget of Work sheets at `/tasks/:taskId`, 33 rubric criteria, ticks and notes stored |
 | Labs | 17 exercises at `/labs`, every activity and every scenario openable on its own |
 | Engagement columns | Class CSV is 141 columns, with `classTable` and a blank marking grid covering the whole class |
+| Visual design | Shadow Board across the app, Service Mode on the eight fault labs (plan 10) |
 
 ## What is left
 
@@ -49,7 +50,7 @@ What remains is the teacher's, and no agent can do it:
 
 ## Resuming
 
-Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Plan 9 was the last one on the spec's build order; there is no next plan queued. What remains is listed above under "What is left", and every item there is the teacher's to do, not an agent's. The nine plans in this directory are the house pattern for what one looks like, if a new one is ever needed.
+Read `CLAUDE.md` first, then `CARRY-FORWARD.md`. Plan 10 was the last one, adding the Shadow Board visual world across the app and Service Mode in the eight fault labs. There is no next plan queued. What remains is listed above under "What is left", and every item there is the teacher's to do, not an agent's. The ten plans in this directory are the house pattern for what one looks like, if a new one is ever needed.
 
 The one item in the project that no agent can resolve: every module ships `teacherReviewed: false`, and the app shows an unreviewed warning until the teacher sets it to `true`. M1 `lo3` contains a capacitor-discharge procedure describing a lethal hazard. That flag is the teacher's to flip.
 

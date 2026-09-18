@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EPAS Grade 12 · Shadow Board</title>
+<meta name="color-scheme" content="light dark">
+<style>
+@font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url({{FONT:barlow600}}) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 700; font-display: swap; src: url({{FONT:barlow700}}) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next"; font-weight: 200 800; font-display: swap; src: url({{FONT:atkinson}}) format("woff2-variations"); }
+
+:root {
+  /* A painted pegboard in daylight: the workshop scene most students are in. */
+  --board: #E3E8E4;
+  --board-lit: #EEF2EF;
+  --hole: #CBD2CD;
+  --paint: #26302B;          /* tool outlines, painted on the board */
+  --steel: #1A1F1C;
+  --steel-hi: #56615B;
+  --ink: #18201C;
+  --ink-2: #3F4A44;
+  --tape: #0E1110;
+  --tape-ink: #F2F3EE;
+  --plate: #F2C230;          /* safety yellow: the one accent */
+  --plate-ink: #141816;
+  --danger: #B3372A;         /* safety hazards only */
+  --lamp: rgba(255, 244, 214, 0.55);
+  --shade: rgba(12, 16, 14, 0.10);
+  --pitch: 24px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* The same board after hours: dark paint, yellow outlines, one work lamp. */
+    --board: #24302A;
+    --board-lit: #2C3A33;
+    --hole: #1B231F;
+    --paint: #F2C230;
+    --steel: #0F1311;
+    --steel-hi: #7E8B84;
+    --ink: #E6EBE7;
+    --ink-2: #B3BDB7;
+    --danger: #EF7A68;
+    --lamp: rgba(255, 226, 150, 0.20);
+    --shade: rgba(0, 0, 0, 0.42);
+    color-scheme: dark;
+  }
+}
+@media (min-width: 768px) { :root { --pitch: 32px; } }
+@media (min-width: 1200px) { :root { --pitch: 36px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--paint) var(--board); }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--ink);
+  font: 400 1.0625rem/1.6 "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  background-color: var(--board);
+  /* The pegboard: every hole on one pitch, and the pitch is the page grid. */
+  background-image: radial-gradient(circle at center, var(--hole) 0 calc(var(--pitch) * 0.075), transparent calc(var(--pitch) * 0.095));
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+  caret-color: var(--paint);
+  overflow-x: hidden; overflow-x: clip;
+}
+::selection { background: var(--plate); color: var(--plate-ink); }
+:focus-visible { outline: 3px solid var(--paint); outline-offset: 4px; border-radius: 2px; }
+a { color: inherit; }
+.wrap { width: min(100% - var(--pitch) * 2, calc(var(--pitch) * 34)); margin-inline: auto; }
+
+/* Embossed label tape: the workshop's own way of naming things. It IS the heading. */
+.tape {
+  display: inline-block;
+  margin: 0;
+  padding: calc(var(--pitch) * 0.14) calc(var(--pitch) * 0.36) calc(var(--pitch) * 0.1);
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #1B201E, var(--tape) 55%, #080A09);
+  color: var(--tape-ink);
+  font: 700 1.05rem/1 "Barlow Condensed", system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.28);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-radius: 2px;
+}
+
+/* ---------- top bar ---------- */
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: calc(var(--pitch) * 2.5);
+}
+.brand { display: flex; align-items: center; gap: calc(var(--pitch) * 0.4); text-decoration: none; min-height: 44px; }
+.brand small { font: 600 0.95rem/1 "Barlow Condensed", sans-serif; letter-spacing: 0.06em; color: var(--ink-2); text-transform: uppercase; }
+.nav { display: flex; gap: calc(var(--pitch) * 0.2); }
+.nav a {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: calc(var(--pitch) * 0.4);
+  font: 600 1.05rem/1 "Barlow Condensed", sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none; color: var(--ink-2);
+}
+.nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+@media (max-width: 520px) { .nav a:not(:first-child) { display: none; } }
+
+/* ---------- hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: calc(var(--pitch) * 1.5);
+  padding-block: calc(var(--pitch) * 1) calc(var(--pitch) * 2.5);
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .hero { grid-template-columns: calc(var(--pitch) * 14) 1fr; min-height: calc(100dvh - var(--pitch) * 2.5); padding-block: calc(var(--pitch) * 1) calc(var(--pitch) * 2); }
+}
+h1 { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--pitch) * 0.3); }
+h1 .tape {
+  font-size: clamp(2.1rem, 9.2vw, 4.4rem);
+  padding: calc(var(--pitch) * 0.18) calc(var(--pitch) * 0.45) calc(var(--pitch) * 0.1);
+  letter-spacing: 0.07em;
+}
+h1 .tape:nth-child(2) { transform: rotate(-0.8deg); margin-left: calc(var(--pitch) * 0.5); }
+.punch { display: inline-block; clip-path: inset(0 0 0 0); }
+.lede { max-width: 34ch; margin: calc(var(--pitch) * 1) 0 0; font-size: clamp(1.06rem, 1.2vw + 0.8rem, 1.3rem); line-height: 1.5; color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: calc(var(--pitch) * 0.5); margin-top: calc(var(--pitch) * 1); }
+
+/* A painted steel plate screwed to the board. */
+.plate {
+  position: relative; display: inline-flex; align-items: center; gap: 0.6em;
+  min-height: 52px; padding: 0 calc(var(--pitch) * 0.7);
+  font: 700 1.2rem/1 "Barlow Condensed", sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none; white-space: nowrap;
+  border-radius: 3px;
+  transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+}
+.plate svg { width: 1.1em; height: 1.1em; fill: currentColor; }
+.plate::before, .plate::after {
+  content: ""; position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(0,0,0,0.45));
+  transform: translateY(-50%);
+}
+.plate::before { left: 8px; } .plate::after { right: 8px; }
+.plate--primary { background: linear-gradient(180deg, #F6CD4A, var(--plate)); color: var(--plate-ink); box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 8px 18px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5); }
+.plate--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--paint); }
+.plate:active { transform: translateY(1px) scale(0.98); }
+@media (hover: hover) and (pointer: fine) {
+  .plate--primary:hover { box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 12px 24px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .plate--quiet:hover { background: color-mix(in srgb, var(--paint) 10%, transparent); }
+}
+
+/* ---------- the board of tools ---------- */
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--pitch) * 0.5);
+  padding: calc(var(--pitch) * 0.5);
+  isolation: isolate;
+}
+.lamp {
+  position: absolute; inset: calc(var(--pitch) * -3); z-index: -1; pointer-events: none;
+  background: radial-gradient(circle at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 55%);
+  opacity: 1;
+}
+@media (max-width: 959px) { .lamp { inset: calc(var(--pitch) * -3) 0; } }
+.slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
+.slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 74%; height: 74%; }
+.slot .outline { transform: scale(1.16); }
+.slot .outline path { fill: none; stroke: var(--paint); stroke-width: 6; stroke-linejoin: round; }
+.slot .shadow { fill: rgba(0,0,0,0.55); filter: blur(5px); opacity: 0.55; transform: translate(var(--sx, 5px), var(--sy, 7px)); }
+.slot .tool { fill: url(#steel); transform: translate(var(--tx, 0), var(--ty, 0)); }
+.slot .num {
+  position: absolute; left: 4%; top: 2%;
+  font: 700 clamp(0.8rem, 1vw + 0.5rem, 1.05rem)/1 "Barlow Condensed", sans-serif; letter-spacing: 0.06em;
+  color: var(--paint);
+}
+.slot .hook { position: absolute; top: 3%; width: 16%; height: 7%; border: 3px solid var(--steel-hi); border-bottom: 0; border-radius: 8px 8px 0 0; opacity: 0.8; }
+
+/* ---------- sections ---------- */
+section { padding-block: calc(var(--pitch) * 2.5); }
+.section-head { margin: 0 0 calc(var(--pitch) * 1); }
+.section-head .tape { font-size: clamp(1.3rem, 2.4vw + 0.7rem, 2rem); }
+.section-note { max-width: 58ch; margin: calc(var(--pitch) * 0.6) 0 0; color: var(--ink-2); }
+
+/* The rack: each module's outline is sized by how many outcomes it teaches. */
+.rack { list-style: none; margin: 0; padding: 0; display: grid; gap: calc(var(--pitch) * 0.5); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .rack { grid-template-columns: repeat(12, 1fr); } .rack li { grid-column: span var(--span); } }
+.rack a {
+  position: relative; display: grid; grid-template-columns: calc(var(--pitch) * 2) 1fr; gap: calc(var(--pitch) * 0.5); align-items: center;
+  min-height: calc(var(--pitch) * 3); height: 100%;
+  padding: calc(var(--pitch) * 0.5);
+  text-decoration: none;
+  border: 2px dashed color-mix(in srgb, var(--paint) 55%, transparent);
+  border-radius: 6px;
+  transition: transform 140ms var(--ease-out), background-color 160ms ease;
+}
+.rack a:active { transform: scale(0.985); }
+@media (hover: hover) and (pointer: fine) { .rack a:hover { background: color-mix(in srgb, var(--paint) 7%, transparent); } }
+.rack svg { width: 100%; height: auto; }
+.rack svg path { fill: none; stroke: var(--paint); stroke-width: 9; stroke-linejoin: round; }
+.rack .m { display: block; font: 700 0.95rem/1 "Barlow Condensed", sans-serif; letter-spacing: 0.08em; color: var(--ink-2); text-transform: uppercase; }
+.rack .t { display: block; margin-top: 4px; font: 700 clamp(1.1rem, 0.6vw + 1rem, 1.3rem)/1.15 "Barlow Condensed", sans-serif; letter-spacing: 0.01em; }
+.rack .w { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rack .here a { border-style: solid; border-color: var(--paint); background: color-mix(in srgb, var(--plate) 16%, transparent); }
+.rack .here .start { display: inline-block; margin-top: 8px; }
+
+/* The drawer of fault-finding labs. */
+.drawer {
+  position: relative; margin-top: calc(var(--pitch) * 0.5);
+  padding: calc(var(--pitch) * 1) calc(var(--pitch) * 0.8) calc(var(--pitch) * 1.4);
+  border-radius: 8px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--steel) 92%, var(--board)), var(--steel));
+  box-shadow: 0 10px 28px var(--shade), inset 0 1px 0 rgba(255,255,255,0.06);
+  color: #E9EDEA;
+}
+.drawer::after { content: ""; position: absolute; left: 50%; bottom: calc(var(--pitch) * 0.45); width: calc(var(--pitch) * 3); height: 8px; border-radius: 8px; transform: translateX(-50%); background: linear-gradient(180deg, #8C968F, #4B5550); }
+.labels { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: calc(var(--pitch) * 0.35); }
+.labels li:nth-child(3n+1) .tape { transform: rotate(-0.6deg); }
+.labels li:nth-child(4n+2) .tape { transform: rotate(0.5deg); }
+.labels .tape { font-size: clamp(0.95rem, 0.5vw + 0.85rem, 1.15rem); }
+.drawer p { max-width: 60ch; margin: calc(var(--pitch) * 0.8) 0 0; color: #C8D0CB; }
+.drawer strong { color: #FFFFFF; font-weight: 700; }
+
+/* Shop rules: a painted sign screwed to the board. */
+.rules {
+  display: grid; gap: calc(var(--pitch) * 0.5); grid-template-columns: 1fr;
+  margin: calc(var(--pitch) * 0.5) 0 0; padding: 0; list-style: none;
+}
+@media (min-width: 900px) { .rules { grid-template-columns: 1fr 1fr 1.25fr; } }
+.rules li {
+  padding: calc(var(--pitch) * 0.7);
+  background: var(--board-lit);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 20px var(--shade);
+}
+.rules h3 { margin: 0 0 6px; display: flex; gap: 10px; align-items: center; font: 700 1.3rem/1.1 "Barlow Condensed", sans-serif; letter-spacing: 0.02em; }
+.rules h3 svg { width: 26px; height: 26px; flex: none; fill: var(--paint); }
+.rules p { margin: 0; color: var(--ink-2); }
+.rules .safety h3 { color: var(--danger); }
+.rules .safety h3 svg { fill: var(--danger); }
+.rules .safety { background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--danger) 10%, transparent) 0 10px, transparent 10px 20px),
+    var(--board-lit); }
+
+.close { display: grid; gap: calc(var(--pitch) * 0.8); justify-items: start; padding-block: calc(var(--pitch) * 2) calc(var(--pitch) * 3); }
+.close .tape { font-size: clamp(1.7rem, 4vw + 0.8rem, 3rem); }
+footer { padding-block: calc(var(--pitch) * 1); color: var(--ink-2); font-size: 0.92rem; }
+
+/* ---------- the opening moment ---------- */
+.js .slot .tool, .js .slot .shadow { opacity: 0; }
+.js .lamp { opacity: 0; }
+.js h1 .punch { clip-path: inset(0 100% 0 0); }
+.js.play .lamp { animation: lamp-on 520ms linear 120ms forwards; }
+.js.play h1 .tape:nth-child(1) .punch { animation: punch 620ms steps(10, end) 1250ms forwards; }
+.js.play h1 .tape:nth-child(2) .punch { animation: punch 680ms steps(13, end) 1880ms forwards; }
+@keyframes lamp-on { 0% { opacity: 0; } 18% { opacity: 1; } 30% { opacity: 0.35; } 42% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes punch { to { clip-path: inset(0 0 0 0); } }
+.done .lamp { opacity: 1; animation: none; }
+.done h1 .punch { clip-path: inset(0 0 0 0); animation: none; }
+.done .slot .tool, .done .slot .shadow { opacity: 1; }
+.done .slot .shadow { opacity: 0.55; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .slot .tool, .js .slot .shadow, .js .lamp { opacity: 1; }
+  .js .slot .shadow { opacity: 0.55; }
+  .js h1 .punch { clip-path: none; }
+  .js.play .lamp, .js.play h1 .punch { animation: none; }
+  .plate, .rack a { transition: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6E7A73"/>
+      <stop offset="0.35" stop-color="#2B332F"/>
+      <stop offset="1" stop-color="#101412"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="wrap bar">
+  <a class="brand" href="#top" aria-label="EPAS Grade 12, home">
+    <span class="tape">EPAS</span><small>Grade 12</small>
+  </a>
+  <nav class="nav" aria-label="Main">
+    <a href="#modules">Modules</a>
+    <a href="#labs">Labs</a>
+    <a href="#progress">Progress</a>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <h1 aria-label="Every tool has its place.">
+        <span class="tape" aria-hidden="true"><span class="punch">Every tool</span></span>
+        <span class="tape" aria-hidden="true"><span class="punch">has its place.</span></span>
+      </h1>
+      <p class="lede">Learn to test, build and repair real appliances on your phone. Nine modules, no internet needed.</p>
+      <div class="actions">
+        <a class="plate plate--primary" href="#modules">Start module 1 {{ICON:ArrowRight:bold}}</a>
+        <a class="plate plate--quiet" href="#labs">Open the labs</a>
+      </div>
+    </div>
+
+    <div class="board" aria-hidden="true">
+      <div class="lamp"></div>
+      <div class="slot"><span class="hook"></span>{{ICON:Gauge:fill:outline}}{{ICON:Gauge:fill:shadow}}{{ICON:Gauge:fill:tool}}<span class="num">M1</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:Cpu:fill:outline}}{{ICON:Cpu:fill:shadow}}{{ICON:Cpu:fill:tool}}<span class="num">M2</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:Fan:fill:outline}}{{ICON:Fan:fill:shadow}}{{ICON:Fan:fill:tool}}<span class="num">M3</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:LightbulbFilament:fill:outline}}{{ICON:LightbulbFilament:fill:shadow}}{{ICON:LightbulbFilament:fill:tool}}<span class="num">M4</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:SecurityCamera:fill:outline}}{{ICON:SecurityCamera:fill:shadow}}{{ICON:SecurityCamera:fill:tool}}<span class="num">M5</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:Siren:fill:outline}}{{ICON:Siren:fill:shadow}}{{ICON:Siren:fill:tool}}<span class="num">M6</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:BellRinging:fill:outline}}{{ICON:BellRinging:fill:shadow}}{{ICON:BellRinging:fill:tool}}<span class="num">M7</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:SpeakerHifi:fill:outline}}{{ICON:SpeakerHifi:fill:shadow}}{{ICON:SpeakerHifi:fill:tool}}<span class="num">M8</span></div>
+      <div class="slot"><span class="hook"></span>{{ICON:Television:fill:outline}}{{ICON:Television:fill:shadow}}{{ICON:Television:fill:tool}}<span class="num">M9</span></div>
+    </div>
+  </div>
+
+  <section id="modules" class="wrap" aria-labelledby="modules-h">
+    <div class="section-head">
+      <h2 id="modules-h" class="tape">Your board</h2>
+      <p class="section-note">Nine modules, eleven weeks. Each outline is sized by how much it teaches. Finish a module and its tool hangs in place.</p>
+    </div>
+    <ol class="rack">
+      <li class="here" style="--span:4"><a href="#top">{{ICON:Gauge:fill}}<span><span class="m">Module 1 · Start here</span><span class="t">Electronic Systems and Component Testing</span><span class="w">Week 1 · 3 outcomes</span></span></a></li>
+      <li style="--span:4"><a href="#top">{{ICON:Cpu:fill}}<span><span class="m">Module 2</span><span class="t">PCB, Soldering and Power Supplies</span><span class="w">Week 2 · 4 outcomes</span></span></a></li>
+      <li style="--span:4"><a href="#top">{{ICON:Fan:fill}}<span><span class="m">Module 3</span><span class="t">Appliances with Electric Motors</span><span class="w">Week 3 · 2 outcomes</span></span></a></li>
+      <li style="--span:6"><a href="#top">{{ICON:LightbulbFilament:fill}}<span><span class="m">Module 4</span><span class="t">Heating Appliances and Lighting Units</span><span class="w">Weeks 4 to 5 · 5 outcomes</span></span></a></li>
+      <li style="--span:3"><a href="#top">{{ICON:SecurityCamera:fill}}<span><span class="m">Module 5</span><span class="t">CCTV Systems</span><span class="w">Week 6 · 2 outcomes</span></span></a></li>
+      <li style="--span:3"><a href="#top">{{ICON:Siren:fill}}<span><span class="m">Module 6</span><span class="t">Fire Alarm Principles and Installation</span><span class="w">Week 7 · 2 outcomes</span></span></a></li>
+      <li style="--span:3"><a href="#top">{{ICON:BellRinging:fill}}<span><span class="m">Module 7</span><span class="t">Fire Alarm Servicing and Audio Introduction</span><span class="w">Week 8 · 2 outcomes</span></span></a></li>
+      <li style="--span:3"><a href="#top">{{ICON:SpeakerHifi:fill}}<span><span class="m">Module 8</span><span class="t">Audio Products and Systems</span><span class="w">Week 9 · 2 outcomes</span></span></a></li>
+      <li style="--span:6"><a href="#top">{{ICON:Television:fill}}<span><span class="m">Module 9</span><span class="t">Television, Control Boards, Sensors and Actuators</span><span class="w">Weeks 10 to 11 · 6 outcomes</span></span></a></li>
+    </ol>
+  </section>
+
+  <section id="labs" class="wrap" aria-labelledby="labs-h">
+    <div class="section-head">
+      <h2 id="labs-h" class="tape">Find the fault</h2>
+      <p class="section-note">When the shop is short of equipment, the practice is still here. Every appliance below has a real fault waiting for you to track down.</p>
+    </div>
+    <div class="drawer">
+      <ul class="labels">
+        <li><span class="tape">Electric fan</span></li>
+        <li><span class="tape">Electric flat iron</span></li>
+        <li><span class="tape">Rechargeable LED lamp</span></li>
+        <li><span class="tape">CCTV camera channel</span></li>
+        <li><span class="tape">Fire alarm zone</span></li>
+        <li><span class="tape">Audio amplifier</span></li>
+        <li><span class="tape">Flat screen television</span></li>
+        <li><span class="tape">Motor control board</span></li>
+      </ul>
+      <p>Plus a multimeter trainer, a power supply you build stage by stage, and seven parts and signal path exercises. <strong>17 labs in all</strong>, and 8 performance tasks you carry out on real equipment.</p>
+    </div>
+  </section>
+
+  <section id="progress" class="wrap" aria-labelledby="rules-h">
+    <div class="section-head">
+      <h2 id="rules-h" class="tape">Shop rules</h2>
+    </div>
+    <ul class="rules">
+      <li>
+        <h3>{{ICON:WifiSlash:bold}}Works with no signal</h3>
+        <p>Open it once and everything runs on your phone after that. No data, no Wi-Fi.</p>
+      </li>
+      <li>
+        <h3>{{ICON:DeviceMobile:bold}}Your work stays with you</h3>
+        <p>No account and nothing sent anywhere. You hand in your own results file.</p>
+      </li>
+      <li class="safety">
+        <h3>{{ICON:Warning:fill}}Mains voltage can kill</h3>
+        <p>Every procedure says when the power is on and when it is off. Check with your teacher before you open a real appliance.</p>
+      </li>
+    </ul>
+  </section>
+
+  <div class="wrap close">
+    <h2 class="tape">Your board is waiting.</h2>
+    <a class="plate plate--primary" href="#modules">Start module 1 {{ICON:ArrowRight:bold}}</a>
+  </div>
+</main>
+
+<footer class="wrap">EPAS Grade 12. Electronics Product Assembly and Servicing, a DepEd TechPro elective.</footer>
+
+<script>
+(() => {
+  const root = document.documentElement
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+  root.classList.add('js')
+  const slots = [...document.querySelectorAll('.board .slot')]
+  const lamp = document.querySelector('.lamp')
+  if (reduce) { root.classList.add('done'); return }
+
+  // A critically damped spring (damping ratio 1), in Apple's response terms:
+  // stiffness (2 pi / response)^2, damping 4 pi zeta / response, mass 1.
+  function spring(from, to, response, zeta, step, done) {
+    const k = (2 * Math.PI / response) ** 2, c = (4 * Math.PI * zeta) / response
+    let x = from, v = 0, t0 = performance.now()
+    const tick = now => {
+      const dt = Math.min(0.032, (now - t0) / 1000); t0 = now
+      v += (-k * (x - to) - c * v) * dt; x += v * dt
+      if (Math.abs(x - to) < 0.05 && Math.abs(v) < 0.05) { step(to); done && done(); return }
+      step(x); requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
+
+  let finished = false
+  const finish = () => {
+    if (finished) return
+    finished = true
+    root.classList.add('done')
+    slots.forEach(s => {
+      const tool = s.querySelector('.tool'), shadow = s.querySelector('.shadow')
+      tool.style.opacity = 1; tool.style.transform = ''
+      shadow.style.opacity = 0.55; shadow.style.transform = ''
+    })
+  }
+
+  requestAnimationFrame(() => {
+    root.classList.add('play')
+    // The tools drop into their outlines once the lamp is on.
+    slots.forEach((s, i) => {
+      const tool = s.querySelector('.tool'), shadow = s.querySelector('.shadow')
+      setTimeout(() => {
+        if (finished) return
+        tool.style.opacity = 1
+        spring(-46, 0, 0.42, 1, y => {
+          if (finished) return
+          tool.style.transform = `translateY(${y}px)`
+          // The further the tool is from the board, the looser and fainter its shadow.
+          const lift = Math.min(1, Math.abs(y) / 46)
+          shadow.style.opacity = (0.55 * (1 - lift * 0.7)).toFixed(3)
+          shadow.style.transform = `translate(${5 + lift * 14}px, ${7 + lift * 20}px) scale(${1 + lift * 0.08})`
+        }, i === slots.length - 1 ? () => setTimeout(finish, 900) : null)
+      }, 520 + i * 70)
+    })
+  })
+
+  // Any real intent ends the show: nobody waits for an intro.
+  ;['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(e => addEventListener(e, finish, { once: true, passive: true }))
+
+  // On a laptop, the work lamp follows the pointer, spring-smoothed.
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const board = document.querySelector('.board')
+    let tx = 30, ty = 20, cx = 30, cy = 20, vx = 0, vy = 0, running = false
+    const k = (2 * Math.PI / 0.6) ** 2, c = (4 * Math.PI) / 0.6
+    const loop = now => {
+      const dt = 1 / 60
+      vx += (-k * (cx - tx) - c * vx) * dt; cx += vx * dt
+      vy += (-k * (cy - ty) - c * vy) * dt; cy += vy * dt
+      lamp.style.setProperty('--lx', cx + '%'); lamp.style.setProperty('--ly', cy + '%')
+      if (Math.abs(cx - tx) + Math.abs(cy - ty) + Math.abs(vx) + Math.abs(vy) > 0.05) requestAnimationFrame(loop)
+      else running = false
+    }
+    board.addEventListener('pointermove', e => {
+      const r = board.getBoundingClientRect()
+      tx = ((e.clientX - r.left) / r.width) * 100
+      ty = ((e.clientY - r.top) / r.height) * 100
+      if (!running) { running = true; requestAnimationFrame(loop) }
+    })
+  }
+})()
+</script>
+</body>
+</html>

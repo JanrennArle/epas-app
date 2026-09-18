@@ -1,36 +1,57 @@
 @import "tailwindcss";
-@import "@fontsource-variable/geist";
+@import "@fontsource/barlow-condensed/latin-600.css";
+@import "@fontsource/barlow-condensed/latin-700.css";
+@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource/dotgothic16/latin-400.css";
 
 @theme {
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
-  --radius-card: 14px;
-  --radius-control: 10px;
+  --font-pixel: "DotGothic16", ui-monospace, monospace;
+  --radius-card: 6px;
+  --radius-control: 3px;
 }
 
+/* A painted pegboard in daylight: the workshop scene most students are in. */
 :root {
-  --paper: #FAFAF9;
-  --surface: #FFFFFF;
-  --ink: #1A1B1E;
-  --ink-2: #5F646C;
-  --ink-3: #6C737D;
-  --line: #E7E7E9;
-  --accent: #0E6E63;
-  --on-accent: #FFFFFF;
-  --danger: #B3382C;
-  --pass: #1E7A4A;
-  --caution: #A9650C;
+  --paper: #E3E8E4;
+  --surface: #EEF2EF;
+  --hole: #CBD2CD;
+  --ink: #18201C;
+  --ink-2: #3F4A44;
+  --ink-3: #56615B;
+  --line: #C3CBC6;
+  --paint: #26302B;
+  /* The structural chrome (rack borders and icons, nav underline, focus
+     ring, links, checked controls) reads this instead of --paint, so it can
+     be given its own tone in dark mode without touching the painted-on-board
+     yellow. Equal to --paint here, so light mode is untouched. */
+  --chrome: #26302B;
+  --plate: #F2C230;
+  --plate-ink: #141816;
+  --tape: #0E1110;
+  --tape-ink: #F2F3EE;
+  --steel-hi: #56615B;
+  --danger: #B3372A;
+  --pass: #186A3F;
+  --caution: #8A500A;
+  --lamp: rgba(255, 244, 214, 0.55);
+  --shade: rgba(12, 16, 14, 0.10);
+  --pitch: 24px;
 
-  --m1: #DDF0EC; --m1-ink: #1D6B60;
-  --m2: #FAEDD6; --m2-ink: #8A5B12;
-  --m3: #DEECFA; --m3-ink: #1F5A87;
-  --m4: #FBE7DD; --m4-ink: #8E4B2E;
-  --m5: #E4E6FA; --m5-ink: #414BA0;
-  --m6: #FADEE4; --m6-ink: #963C58;
-  --m7: #EFE2F7; --m7-ink: #6B3D8F;
-  --m8: #E9F3D8; --m8-ink: #4F6B1E;
-  --m9: #DAF0F5; --m9-ink: #1B6377;
+  /* Kept because lab diagrams in src/content/activities (frozen) fill parts
+     with these washes: flat-iron-parts.ts reads --m4, tv-boards.ts reads --m9. */
+  --m1: #DDF0EC;
+  --m2: #FAEDD6;
+  --m3: #DEECFA;
+  --m4: #FBE7DD;
+  --m5: #E4E6FA;
+  --m6: #FADEE4;
+  --m7: #EFE2F7;
+  --m8: #E9F3D8;
+  --m9: #DAF0F5;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -38,44 +59,65 @@
   color-scheme: light dark;
 }
 
+/* The same board after hours: dark paint, yellow outlines, one work lamp. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #131417;
-    --surface: #1A1C20;
-    --ink: #EDEEF0;
-    --ink-2: #A2A8B2;
-    --ink-3: #868D98;
-    --line: #2A2D33;
-    --accent: #3FA394;
-    --on-accent: #131417;
-    --danger: #EF8577;
-    --pass: #5FC98E;
-    --caution: #E0A54A;
+    --paper: #24302A;
+    --surface: #2C3A33;
+    --hole: #1B231F;
+    --ink: #E6EBE7;
+    --ink-2: #B3BDB7;
+    --ink-3: #97A39C;
+    --line: #3A4A42;
+    --paint: #F2C230;
+    /* Chalk on steel: distinct from the yellow paint, so the yellow plate
+       stays the one yellow object on a dark screen. ~9:1 on #24302A. */
+    --chrome: #C9D6CC;
+    --steel-hi: #7E8B84;
+    --danger: #EF7A68;
+    --pass: #6FD49B;
+    --caution: #E8B25A;
+    --lamp: rgba(255, 226, 150, 0.20);
+    --shade: rgba(0, 0, 0, 0.42);
 
-    --m1: #17332E; --m1-ink: #79CFBF;
-    --m2: #33291A; --m2-ink: #E0B269;
-    --m3: #1A2A38; --m3-ink: #82BCE6;
-    --m4: #33231B; --m4-ink: #E2A183;
-    --m5: #22243D; --m5-ink: #A3AAF0;
-    --m6: #33222A; --m6-ink: #E79BB1;
-    --m7: #2B2136; --m7-ink: #C39BE4;
-    --m8: #262E1B; --m8-ink: #B7CE84;
-    --m9: #162E36; --m9-ink: #7FCBDD;
+    --m1: #17332E;
+    --m2: #33291A;
+    --m3: #1A2A38;
+    --m4: #33231B;
+    --m5: #22243D;
+    --m6: #33222A;
+    --m7: #2B2136;
+    --m8: #262E1B;
+    --m9: #162E36;
   }
 }
+@media (min-width: 768px) { :root { --pitch: 32px; } }
+@media (min-width: 1200px) { :root { --pitch: 36px; } }
 
+html { scrollbar-color: var(--paint) var(--paper); }
 body {
   margin: 0;
-  background: var(--paper);
+  min-height: 100dvh;
   color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  background-color: var(--paper);
+  /* Every hole on one pitch, and the pitch is the layout grid. */
+  background-image: radial-gradient(circle at center, var(--hole) 0 calc(var(--pitch) * 0.075), transparent calc(var(--pitch) * 0.095));
+  background-size: var(--pitch) var(--pitch);
+  background-position: calc(var(--pitch) / 2) calc(var(--pitch) / 2);
+  caret-color: var(--paint);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
+::selection { background: var(--plate); color: var(--plate-ink); }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid var(--chrome);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -85,18 +127,299 @@ body {
   }
 }
 
-.tile {
-  transition: transform 140ms var(--ease-out);
-}
-.tile:active {
-  transform: scale(0.98);
-}
-
 /* Restore list semantics that Tailwind preflight removes. Inline
    listStyle:'none' still wins where a list is used for layout. */
 ol { list-style: decimal; }
 ul { list-style: disc; }
 
-/* The instrument panel keeps its dark skin in both themes, so it carries
-   the dark accent for focus visibility. */
-.instrument { --accent: #3FA394; }
+.wrap { width: min(100% - var(--pitch) * 2, calc(var(--pitch) * 34)); margin-inline: auto; }
+
+/* Anything pressable that is not a plate. */
+.press, .tile { transition: transform 140ms var(--ease-out); }
+.press:active, .tile:active { transform: scale(0.98); }
+
+/* ---------- label tape ---------- */
+.tape {
+  padding: 0.16em 0.42em 0.1em;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #1B201E, var(--tape) 55%, #080A09);
+  color: var(--tape-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.28);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.tape-heading { margin: 0; font-weight: 700; }
+.tape-heading--hero { font-size: clamp(2.1rem, 7vw, 4.2rem); line-height: 1.45; }
+.tape-heading--page { font-size: clamp(1.45rem, 2.4vw + 0.9rem, 2.2rem); line-height: 1.5; max-width: 32ch; }
+.tape-heading--section { font-size: clamp(1.1rem, 0.8vw + 0.95rem, 1.35rem); line-height: 1.5; }
+
+/* ---------- plates ---------- */
+.plate {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55em;
+  min-height: 48px; padding: 0 calc(var(--pitch) * 0.65);
+  border: 0; border-radius: 3px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out), background-color 160ms ease;
+}
+.plate svg { width: 1.1em; height: 1.1em; flex: none; }
+.plate--primary::before, .plate--primary::after {
+  content: ""; position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(0,0,0,0.45));
+  transform: translateY(-50%);
+}
+.plate--primary::before { left: 8px; }
+.plate--primary::after { right: 8px; }
+.plate--primary {
+  background: linear-gradient(180deg, #F6CD4A, var(--plate)); color: var(--plate-ink);
+  box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 8px 18px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.plate--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--chrome); }
+.plate:active { transform: translateY(1px) scale(0.98); }
+.plate[disabled], .plate[aria-disabled="true"] { opacity: 0.5; cursor: default; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .plate--primary:hover { box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 12px 24px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .plate--quiet:hover { background: color-mix(in srgb, var(--chrome) 10%, transparent); }
+}
+/* Long labels (task titles) may wrap inside a plate rather than overflow a phone. */
+.plate--wrap { white-space: normal; text-align: left; padding-block: 10px; line-height: 1.15; }
+
+/* ---------- signs, labels, callouts ---------- */
+.sign {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--shade);
+  padding: calc(var(--pitch) * 0.6);
+}
+.label {
+  font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; line-height: 1.2;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+}
+.back {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-2); text-decoration: none;
+}
+.back svg { width: 1em; height: 1em; }
+@media (hover: hover) and (pointer: fine) { .back:hover { color: var(--ink); } }
+
+.nav-link {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: calc(var(--pitch) * 0.35);
+  font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--ink-2);
+  text-underline-offset: 6px; text-decoration-thickness: 2px;
+}
+.nav-link[aria-current="page"] { color: var(--ink); text-decoration-line: underline; text-decoration-color: var(--chrome); }
+@media (hover: hover) and (pointer: fine) { .nav-link:hover { color: var(--ink); text-decoration-line: underline; } }
+
+.callout {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--shade);
+  padding: calc(var(--pitch) * 0.5) calc(var(--pitch) * 0.6);
+  margin: 0 0 18px; max-width: 60ch;
+  font-size: 1rem; line-height: 1.55; color: var(--ink);
+}
+.callout > strong:first-child {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.callout > strong:first-child svg { width: 1.2em; height: 1.2em; flex: none; }
+.callout--note > strong:first-child { color: var(--ink-2); }
+.callout--caution > strong:first-child { color: var(--caution); }
+/* Hazard stripes appear on safety content and nowhere else. */
+.callout--safety {
+  background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--danger) 10%, transparent) 0 10px, transparent 10px 20px),
+    var(--surface);
+}
+.callout--safety > strong:first-child { color: var(--danger); }
+
+/* ---------- the rack: a module list painted on the board ---------- */
+.rack { list-style: none; margin: 0; padding: 0; display: grid; gap: calc(var(--pitch) * 0.5); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .rack { grid-template-columns: repeat(12, 1fr); } .rack > li { grid-column: span var(--span, 4); } }
+.rack a {
+  position: relative; display: grid; grid-template-columns: calc(var(--pitch) * 1.8) 1fr; gap: calc(var(--pitch) * 0.5); align-items: center;
+  min-height: calc(var(--pitch) * 3); height: 100%;
+  padding: calc(var(--pitch) * 0.5);
+  color: var(--ink); text-decoration: none;
+  border: 2px dashed color-mix(in srgb, var(--chrome) 55%, transparent);
+  border-radius: 6px;
+  transition: transform 140ms var(--ease-out), background-color 160ms ease;
+}
+.rack a:active { transform: scale(0.985); }
+@media (hover: hover) and (pointer: fine) { .rack a:hover { background: color-mix(in srgb, var(--chrome) 7%, transparent); } }
+.rack svg { width: 100%; height: auto; color: var(--chrome); }
+.rack .t { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.1rem, 0.6vw + 1rem, 1.3rem); line-height: 1.15; letter-spacing: 0.01em; }
+.rack .w { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rack .here a { border-style: solid; border-color: var(--chrome); background: color-mix(in srgb, var(--plate) 16%, transparent); }
+.rack .hung a { border-style: solid; }
+/* Labs cards: a small icon column so the title and blurb get most of the
+   card's width instead of wrapping to three lines. The home screen's module
+   rack keeps its own wider icon column. */
+.rack--labs a { grid-template-columns: calc(var(--pitch) * 1.1) 1fr; }
+
+/* ---------- the board of tools ---------- */
+.board {
+  position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--pitch) * 0.5); padding: calc(var(--pitch) * 0.5); isolation: isolate;
+}
+.lamp {
+  /* inset: 0, not a negative pitch: .board's own box is already guaranteed
+     to fit the viewport at every breakpoint (it always has been), so pinning
+     .lamp to that exact box, rather than a padded box bigger than it,
+     guarantees the glow can never cause horizontal overflow on a phone. A
+     wider box here previously overflowed 390px by 33px and, checked again
+     for this fix, 1440px by 37px too, because the margin around .board is
+     not the same at every width. */
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  /* Two layers, because one gradient cannot both cover most of a 3x3 board
+     from a corner-ish position AND provably reach zero at the near edges.
+     The first layer is the bright core: "closest-side" sizes it off
+     whichever edge --lx/--ly sits nearest to, so it is mathematically
+     guaranteed to fade out before that edge, at any box size. On its own
+     that guarantee makes it small, since the light sits close to the top.
+     The second layer is a much wider, dimmer wash (color-mix turns down
+     --lamp's own alpha rather than introducing a second token) sized at
+     55% of the board so it reads as one pool of light falling across most
+     of the slots and fading out before the far corner; it is faint enough
+     everywhere that the little it still shows at the nearest edges reads
+     as soft light, not a line. */
+  background:
+    radial-gradient(ellipse closest-side at var(--lx, 30%) var(--ly, 20%), var(--lamp), transparent 100%),
+    radial-gradient(55% 55% at var(--lx, 30%) var(--ly, 20%), color-mix(in srgb, var(--lamp) 45%, transparent), transparent 100%);
+}
+.slot { position: relative; aspect-ratio: 1; display: grid; place-items: center; }
+.slot .outline, .slot .shadow, .slot .tool { position: absolute; width: 70%; height: 70%; }
+.slot .outline { transform: scale(1.16); overflow: visible; }
+.slot .outline path { fill: none; stroke: var(--paint); stroke-width: 6; stroke-linejoin: round; }
+.slot .shadow { filter: blur(5px); opacity: 0.55; transform: translate(5px, 7px); }
+.slot .tool { transform: translateY(var(--ty, 0)); }
+.slot .num {
+  position: absolute; left: 4%; top: 2%;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(0.8rem, 1vw + 0.5rem, 1.05rem); line-height: 1;
+  letter-spacing: 0.06em; color: var(--paint);
+}
+.slot .hook { position: absolute; top: 3%; width: 16%; height: 7%; border: 3px solid var(--steel-hi); border-bottom: 0; border-radius: 8px 8px 0 0; opacity: 0.8; }
+/* A tool part way through its module: the steel fills from the bottom. */
+.slot .tool { clip-path: inset(calc((1 - var(--fill, 1)) * 100%) 0 0 0); }
+.slot.empty .tool, .slot.empty .shadow { display: none; }
+/* A student at zero progress still sees the payoff: the next module's tool
+   is present but faint, a preview rather than a placed tool, so finishing a
+   module visibly means something on a first run. No cast shadow, because a
+   shadow implies the tool is actually hanging there. */
+.slot.ghost .tool { display: block; opacity: 0.32; }
+
+.board-opening .lamp { opacity: 0; }
+.board-opening.play .lamp { animation: lamp-on 520ms linear 120ms forwards; }
+.board-opening .slot .outline path { stroke-dasharray: 1200; stroke-dashoffset: 1200; }
+.board-opening.play .slot .outline path { animation: outline-in 700ms var(--ease-out) forwards; animation-delay: calc(300ms + var(--i) * 70ms); }
+.board-opening .slot .tool, .board-opening .slot .shadow { opacity: 0; }
+@keyframes lamp-on { 0% { opacity: 0; } 18% { opacity: 1; } 30% { opacity: 0.35; } 42% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes outline-in { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .board-opening .lamp { opacity: 1; animation: none !important; }
+  .board-opening .slot .outline path { stroke-dashoffset: 0; animation: none !important; }
+  .board-opening .slot .tool { opacity: 1; }
+  .board-opening .slot .shadow { opacity: 0.55; }
+}
+.board-opening.play .slot.landed .tool { opacity: 1; }
+.board-opening.play .slot.landed .shadow { opacity: 0.55; }
+.board-opening.play .slot.ghost.landed .tool { opacity: 0.32; }
+
+.map-hero {
+  display: grid; grid-template-columns: 1fr; gap: calc(var(--pitch) * 1);
+  align-items: center; padding-block: calc(var(--pitch) * 0.5) calc(var(--pitch) * 1.5);
+}
+@media (min-width: 960px) { .map-hero { grid-template-columns: calc(var(--pitch) * 15) 1fr; } }
+.map-hero .board { max-width: 520px; width: 100%; justify-self: center; }
+.map-lede { max-width: 36ch; margin: calc(var(--pitch) * 0.6) 0 0; font-size: clamp(1.06rem, 1vw + 0.85rem, 1.25rem); line-height: 1.5; }
+
+/* The instrument panels keep their dark skin in both themes; yellow reads on it.
+   --chrome is overridden here too: light mode's near-black chrome is
+   unreadable on this panel's dark ground (about 1.3:1), so the focus ring
+   needs its own colour rather than following the ambient theme. */
+.instrument { --paint: #F2C230; --chrome: #F2C230; }
+
+/* ---------- Service Mode: the fault-finding labs only ---------- */
+.service {
+  --night: #10132E; --deep: #0A0C1E; --dusk: #232A63; --teal: #1F6F74; --amber: #F2B138;
+  --sunset: #E8622C; --white: #F1EFE6; --grey: #8B93A8; --phosphor: #5BD26B; --sv-danger: #D8352A;
+  --paint: #F2B138;
+  color: var(--white); background: var(--deep);
+  font-family: var(--font-pixel); font-size: 1.125rem; line-height: 1.7;
+  padding: calc(var(--pitch) * 0.5); border-radius: 3px;
+}
+.service ::selection { background: var(--amber); color: var(--night); }
+.service :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 0; }
+.service .scene { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; box-shadow: 0 0 0 3px var(--deep), 0 0 0 6px var(--white); }
+@media (min-width: 900px) { .service .scene { aspect-ratio: 16 / 9; } }
+.service .win {
+  background: var(--night);
+  box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--white), inset 0 0 0 6px var(--dusk);
+  padding: 20px 22px;
+}
+.service .win--danger { box-shadow: 0 0 0 3px var(--deep), inset 0 0 0 3px var(--sv-danger), inset 0 0 0 6px var(--night); }
+.service .win-title { display: inline-block; margin: 0 0 10px; padding: 0 10px; background: var(--teal); color: var(--white); font-size: 1rem; font-weight: 400; line-height: 1.6; }
+.service .win--danger .win-title { background: var(--sv-danger); }
+.service .menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.service .menu button {
+  position: relative; width: 100%; min-height: 48px; padding: 8px 12px 8px 34px;
+  border: 0; background: transparent; color: var(--white); text-align: left; cursor: pointer;
+  font: inherit; line-height: 1.5;
+}
+.service .menu button::before {
+  content: ""; position: absolute; left: 10px; top: 50%; width: 12px; height: 14px; margin-top: -7px;
+  background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); opacity: 0;
+}
+.service .menu button:focus-visible::before, .service .menu button[aria-current="true"]::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .service .menu button:not([disabled]):not([aria-disabled="true"]):hover { color: var(--amber); }
+  .service .menu button:not([disabled]):not([aria-disabled="true"]):hover::before { opacity: 1; }
+}
+.service .menu button:active { transform: translateY(2px); }
+.service .menu button[disabled], .service .menu button[aria-disabled="true"] { color: var(--grey); cursor: default; transform: none; }
+.service .menu .used { color: var(--phosphor); }
+.service .reading { margin: 2px 0 8px 34px; color: var(--phosphor); font-size: 1.05rem; }
+.service .check { display: flex; gap: 12px; align-items: flex-start; min-height: 44px; cursor: pointer; }
+.service .check input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--amber); flex: none; }
+.service .cursor { display: inline-block; width: 0.55em; height: 0.2em; margin-left: 4px; background: var(--amber); animation: sv-blink 1s steps(1) infinite; }
+@keyframes sv-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .service .cursor { animation: none; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.service-stage { position: relative; }
+.service-talk { margin-top: 18px; }
+@media (min-width: 900px) { .service-talk { position: absolute; left: 24px; right: 24px; bottom: 24px; margin: 0; max-width: 62%; } }
+.service-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
+@media (min-width: 900px) { .service-grid { grid-template-columns: 1fr 1fr; } .service-grid > .win--danger { grid-column: 1 / -1; } }
+
+/* ---------- lesson rail: on a wide desktop the reading column keeps its own
+   measure, so above 1100px the rest of the board carries the module itself
+   rather than sitting bare. Hidden below that width, where the reading
+   column already uses the room it has. ---------- */
+.lesson-layout { display: grid; grid-template-columns: 1fr; gap: calc(var(--pitch) * 1.5); align-items: start; }
+/* Grid items default to min-width: auto, so without this a wide table inside
+   .lesson-main refuses to shrink the column below its own min-content width
+   and the page itself scrolls sideways on a phone instead of the table's own
+   overflow-x: auto doing the job. */
+.lesson-main, .lesson-rail { min-width: 0; }
+.lesson-rail { display: none; }
+@media (min-width: 1100px) {
+  .lesson-layout { grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); }
+  .lesson-rail {
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+    position: sticky; top: calc(var(--pitch) * 1);
+    padding: calc(var(--pitch) * 1) calc(var(--pitch) * 0.6);
+  }
+  .lesson-rail svg { width: 100%; max-width: 200px; height: auto; color: var(--chrome); }
+}

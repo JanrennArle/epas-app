@@ -1,13 +1,26 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
+import { ArrowRight } from '@phosphor-icons/react'
 import { allModules } from '../content'
 import { loadState, resetAll } from '../lib/store'
+import { nextAction, toolStates } from '../lib/board'
+import { Tape } from '../ui/board/Tape'
+import { PlateButton, PlateLink } from '../ui/board/Plate'
+import { ToolBoard } from '../ui/board/ToolBoard'
+import { toolFor } from '../ui/board/tools'
+
+// Each module's outline on the rack is sized by how many outcomes it teaches,
+// on a 12-column row: 3 4 2 / 5 2 2 / 2 2 6 outcomes read as 4 4 4 / 6 3 3 / 3 3 6.
+const SPAN: Record<string, number> = { m1: 4, m2: 4, m3: 4, m4: 6, m5: 3, m6: 3, m7: 3, m8: 3, m9: 6 }
 
 export default function ModuleMap() {
   const navigate = useNavigate()
   const state = loadState()
   const modules = allModules()
   const [confirming, setConfirming] = useState(false)
+  const tools = toolStates(modules, state.modules)
+  const next = nextAction(tools)
+  const nextModule = next ? modules.find(m => m.id === next.moduleId) : undefined
 
   function startNewParticipant() {
     resetAll()
@@ -16,47 +29,50 @@ export default function ModuleMap() {
 
   return (
     <>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 2px' }}>
-        Modules
-      </h1>
-      <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '0 0 18px' }}>
-        Grade 12 · one term · 11 weeks
-      </p>
+      <div className="map-hero">
+        <div>
+          <Tape as="h1" size="hero">Every tool has its place.</Tape>
+          <p className="map-lede">
+            Nine modules, eleven weeks. Finish a module and its tool hangs on your board.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'calc(var(--pitch) * 0.4)', marginTop: 'calc(var(--pitch) * 0.8)' }}>
+            {next && nextModule ? (
+              <PlateLink to={`/m/${next.moduleId}`} variant="primary">
+                {next.verb} module {modules.indexOf(nextModule) + 1} <ArrowRight weight="bold" />
+              </PlateLink>
+            ) : (
+              <PlateLink to="/progress" variant="primary">
+                See your progress <ArrowRight weight="bold" />
+              </PlateLink>
+            )}
+            <PlateLink to="/labs">Open the labs</PlateLink>
+          </div>
+        </div>
+        <ToolBoard tools={tools} nextId={next?.moduleId} />
+      </div>
 
-      <ul style={{
-        listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12,
-        gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
-      }}>
-        {modules.map(m => {
-          const done = state.modules[m.id]?.completedOutcomes.length ?? 0
-          const pct = m.outcomes.length
-            ? Math.min(100, Math.round((done / m.outcomes.length) * 100))
-            : 0
+      <Tape as="h2" size="section" id="rack-h">Your board</Tape>
+      <ul className="rack" aria-labelledby="rack-h" style={{ marginTop: 'calc(var(--pitch) * 0.6)' }}>
+        {modules.map((m, i) => {
+          const t = tools[i]
+          const Tool = toolFor(m.id)
+          const here = next?.moduleId === m.id
           return (
-            <li key={m.id}>
-              <Link to={`/m/${m.id}`} className="tile" style={{
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                background: `var(--${m.tint})`, color: 'var(--ink)',
-                borderRadius: 14, padding: 14, minHeight: 120, textDecoration: 'none',
-                border: '1px solid rgba(0,0,0,0.045)',
-              }}>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', color: `var(--${m.tint}-ink)` }}>
-                    {m.week.toUpperCase()}
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 640, lineHeight: 1.3, marginTop: 6 }}>
-                    {m.title}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
-                  <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'color-mix(in srgb, var(--ink) 14%, transparent)' }}>
-                    <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: `var(--${m.tint}-ink)` }} />
-                  </div>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 10,
-                    color: `var(--${m.tint}-ink)`, fontVariantNumeric: 'tabular-nums',
-                  }}>{pct}%</span>
-                </div>
+            <li key={m.id} className={here ? 'here' : t?.hung ? 'hung' : undefined}
+              style={{ ['--span' as string]: SPAN[m.id] ?? 4 }}>
+              <Link to={`/m/${m.id}`}>
+                <Tool weight={t?.hung ? 'fill' : 'regular'} aria-hidden />
+                <span>
+                  <span className="t">{m.title}</span>
+                  <span className="w">
+                    Module {i + 1} · {m.week}, {t?.done ?? 0} of {t?.total ?? 0} outcomes
+                  </span>
+                  {here && (
+                    <span className="w" style={{ color: 'var(--ink)', fontWeight: 700 }}>
+                      {next?.verb === 'Continue' ? 'Continue here' : 'Start here'}
+                    </span>
+                  )}
+                </span>
               </Link>
             </li>
           )
@@ -70,42 +86,31 @@ export default function ModuleMap() {
         student retaking a test.
       */}
       <div style={{
-        marginTop: 28, paddingTop: 14, borderTop: '1px solid var(--line)',
-        fontSize: 12.5, lineHeight: 1.6, color: 'var(--ink-3)',
+        marginTop: 'calc(var(--pitch) * 1.5)', paddingTop: 14,
+        borderTop: '2px dashed color-mix(in srgb, var(--chrome) 35%, transparent)',
+        fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--ink-2)',
       }}>
         {confirming ? (
           <div>
-            <p style={{ margin: '0 0 10px', color: 'var(--ink-2)' }}>
+            <p style={{ margin: '0 0 10px', color: 'var(--ink)' }}>
               This clears every answer and result stored on this device and starts a new
               participant. Work that has not been exported cannot be got back.
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button onClick={startNewParticipant} className="tile" style={{
-                minHeight: 44, padding: '10px 14px', borderRadius: 10, border: 0,
-                background: 'var(--accent)', color: 'var(--on-accent)',
-                font: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}>
-                Clear and start a new participant
-              </button>
-              <button onClick={() => setConfirming(false)} className="tile" style={{
-                minHeight: 44, padding: '10px 14px', borderRadius: 10,
-                border: '1px solid var(--line)', background: 'var(--surface)',
-                color: 'var(--ink)', font: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}>
-                Cancel
-              </button>
+              <PlateButton onClick={startNewParticipant}>Clear and start a new participant</PlateButton>
+              <PlateButton onClick={() => setConfirming(false)}>Cancel</PlateButton>
             </div>
           </div>
         ) : (
           <span>
             Working as{' '}
-            <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-2)', fontWeight: 600 }}>
+            <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink)', fontWeight: 600 }}>
               {state.participant.code}
             </strong>
             {state.participant.name ? ` (${state.participant.name})` : ''}.{' '}
             <button onClick={() => setConfirming(true)} style={{
-              background: 'none', border: 0, padding: 0, font: 'inherit',
-              color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
+              background: 'none', border: 0, padding: 0, minHeight: 44, font: 'inherit',
+              color: 'var(--ink)', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 4,
             }}>
               Not you?
             </button>

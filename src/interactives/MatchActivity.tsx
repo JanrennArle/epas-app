@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { scoreActivity } from '../lib/activity'
 import { ACTIVITIES } from '../content/activities'
 import { recordSim } from '../lib/store'
+import { PlateButton } from '../ui/board/Plate'
 import type { InteractiveProps } from './types'
 
 export function MatchActivity({ moduleId, config, onEvent }: InteractiveProps) {
@@ -36,16 +37,17 @@ export function MatchActivity({ moduleId, config, onEvent }: InteractiveProps) {
   }
 
   return (
-    <section aria-label={`Matching activity, ${activity.id}`} style={{
-      border: '1px solid var(--line)', borderRadius: 14, background: 'var(--surface)',
-      padding: 14, margin: '0 0 20px', maxWidth: '60ch',
-    }}>
-      <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', margin: '0 0 14px' }}>
+    <section aria-label={`Matching activity, ${activity.id}`} className="sign" style={{ margin: '0 0 20px', maxWidth: '60ch' }}>
+      <h3 className="label" style={{ fontSize: '1.2rem', color: 'var(--ink)', margin: '0 0 14px' }}>
         {activity.instruction}
-      </p>
+      </h3>
 
       {activity.items.map(item => {
         const wrong = result?.wrong.includes(item.id)
+        const picked = responses[item.id] !== undefined && responses[item.id] !== ''
+        const borderColor = checked
+          ? (wrong ? 'var(--caution)' : 'var(--pass)')
+          : (picked ? 'var(--chrome)' : 'var(--line)')
         return (
           <div key={item.id} style={{ marginBottom: 14 }}>
             <label htmlFor={`${activity.id}-${item.id}`} style={{
@@ -58,9 +60,9 @@ export function MatchActivity({ moduleId, config, onEvent }: InteractiveProps) {
               disabled={checked}
               onChange={e => setResponses(r => ({ ...r, [item.id]: e.target.value }))}
               style={{
-                width: '100%', minHeight: 44, borderRadius: 10, padding: '0 10px',
+                width: '100%', minHeight: 44, borderRadius: 3, padding: '0 10px',
                 font: 'inherit', fontSize: 13.5, background: 'var(--paper)', color: 'var(--ink)',
-                border: `1px solid ${checked ? (wrong ? 'var(--caution)' : 'var(--pass)') : 'var(--line)'}`,
+                border: `2px solid ${borderColor}`,
               }}>
               <option value="">Choose a part</option>
               {activity.choices.map(c => (
@@ -77,11 +79,7 @@ export function MatchActivity({ moduleId, config, onEvent }: InteractiveProps) {
       })}
 
       {!checked ? (
-        <button onClick={check} disabled={!answered} className="tile" style={{
-          background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-          padding: '11px 18px', fontSize: 14, fontWeight: 620, minHeight: 44,
-          cursor: answered ? 'pointer' : 'default', opacity: answered ? 1 : 0.5,
-        }}>Check answers</button>
+        <PlateButton variant="primary" onClick={check} disabled={!answered}>Check answers</PlateButton>
       ) : (
         <p role="status" style={{ fontSize: 13.5, fontWeight: 620, margin: 0, color: 'var(--ink)' }}>
           You matched {result!.correct} of {result!.total} correctly.

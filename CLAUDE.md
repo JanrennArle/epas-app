@@ -98,6 +98,8 @@ The sixth and seventh were found in plan 8 and neither was in an item:
 
 **Red (`--danger`) is reserved for safety hazards.** Never for wrong answers, errors or emphasis.
 
+**A picture is a surface.** The Service Mode pixel scene draws the appliance healthy and is chosen by scenario id alone; `tests/service.test.ts` guards both.
+
 **Every `competency` string must match a competency of its own module character for character,** and item ids must be globally unique across the formative quizzes and the bank together.
 
 The curriculum authority is the **DepEd TechPro Grade 12 elective Budget of Work**, organised week by week (`docs/reference/`). It is not TESDA NC II units; do not map content onto those.
@@ -174,7 +176,7 @@ by a teacher who knows to go looking for the salvage key.
 
 - `docs/superpowers/plans/STATUS.md` says what is built, what is left, and what the next plan must honour. Start here after a break.
 - `docs/superpowers/specs/2026-09-06-epas-learning-app-design.md` is the binding product spec.
-- `docs/DESIGN.md` is the visual authority: tokens, the nine module tints, motion rules, and an explicit ban list.
+- `docs/DESIGN.md` is the visual authority: the Shadow Board tokens, the Service Mode scope for the fault-finding labs, motion rules, and an explicit ban list.
 - `docs/DEPLOY.md` walks a teacher through the three ways to get the built app in front of a class, including the lab-PC-with-no-internet case.
 - `docs/OFFLINE-CHECK.md` is the manual phone check that no automated test can do: installing, going into flight mode, and confirming nothing was lost.
 - `docs/superpowers/plans/CARRY-FORWARD.md` records known deferred defects and is grouped by the plan that raised each one. **Read it before starting new work.** Resolved entries are marked rather than deleted, so check the marker before trusting an entry. The live traps include that `simId` alone no longer identifies an exercise, that success is encoded four different ways across the simulations, that a missing row is not proof of no engagement, and that the export must filter on `participant.research` or the consent screen becomes a false statement.

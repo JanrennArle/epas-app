@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { waveform, REGULATOR_DROPOUT } from '../lib/signal'
 import type { PsuConfig, PsuStage, RectifierKind } from '../lib/signal'
 import { recordSim } from '../lib/store'
+import { PlateButton } from '../ui/board/Plate'
 import type { InteractiveProps } from './types'
 
 const STAGES: { id: PsuStage; label: string }[] = [
@@ -45,7 +46,7 @@ function Scope({ points, vRef }: { points: number[]; vRef?: number }) {
       <rect x="0" y="0" width={w} height={h} fill="#0C1015" />
       <line x1="0" y1={y(0)} x2={w} y2={y(0)} stroke="#232D39" strokeWidth="1" />
       {vRef !== undefined && (
-        <line x1="0" y1={y(vRef)} x2={w} y2={y(vRef)} stroke="#F2A93B" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+        <line x1="0" y1={y(vRef)} x2={w} y2={y(vRef)} stroke="#F2C230" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
       )}
       <path d={d} fill="none" stroke="#5FE3B0" strokeWidth="1.6" />
     </svg>
@@ -87,12 +88,11 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
   }
 
   return (
-    <section aria-label="Power Supply Simulator" style={{
-      border: '1px solid var(--line)', borderRadius: 14, overflow: 'hidden',
-      margin: '0 0 20px', maxWidth: '60ch',
+    <section aria-label="Power Supply Simulator" className="sign" style={{
+      padding: 0, overflow: 'hidden', margin: '0 0 20px', maxWidth: '60ch',
     }}>
       <header style={{ padding: '11px 14px', background: 'var(--surface)', borderBottom: '1px solid var(--line)' }}>
-        <h3 style={{ fontSize: 13.5, fontWeight: 660, margin: 0 }}>Power Supply Simulator</h3>
+        <h3 className="label" style={{ fontSize: '1.2rem', color: 'var(--ink)', margin: 0 }}>Power Supply Simulator</h3>
         <p style={{ fontSize: 11.5, color: 'var(--ink-3)', margin: '2px 0 0' }}>
           Build a supply that holds {TARGET_V}.0 V steady at {LOAD_MA} mA. Transformer secondary is 15 V RMS.
         </p>
@@ -122,7 +122,7 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
               style={{
                 flex: 1, minHeight: 44, borderRadius: 8, border: 0, cursor: 'pointer',
                 fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.03em',
-                background: stage === s.id ? '#F2A93B' : '#1D2630',
+                background: stage === s.id ? '#F2C230' : '#1D2630',
                 color: stage === s.id ? '#141A21' : '#8E9CAC',
                 fontWeight: stage === s.id ? 700 : 400,
               }}>{s.label}</button>
@@ -137,11 +137,11 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
         <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
           {(['half', 'full'] as RectifierKind[]).map(r => (
             <button key={r} onClick={() => { setRectifier(r); setDone(false) }} aria-pressed={rectifier === r}
-              disabled={done}
+              disabled={done} className="press"
               style={{
-                flex: 1, minHeight: 44, borderRadius: 10, cursor: done ? 'default' : 'pointer',
+                flex: 1, minHeight: 44, borderRadius: 3, cursor: done ? 'default' : 'pointer',
                 background: 'var(--paper)', font: 'inherit', fontSize: 13,
-                border: `1px solid ${rectifier === r ? 'var(--accent)' : 'var(--line)'}`,
+                border: `2px solid ${rectifier === r ? 'var(--chrome)' : 'var(--line)'}`,
                 color: 'var(--ink)',
               }}>{r === 'half' ? 'Half wave' : 'Full wave bridge'}</button>
           ))}
@@ -153,22 +153,19 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
         <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
           {CAPS.map(c => (
             <button key={c} onClick={() => { setFilterUf(c); setDone(false) }} aria-pressed={filterUf === c}
-              disabled={done}
+              disabled={done} className="press"
               style={{
-                flex: 1, minHeight: 44, borderRadius: 10, cursor: done ? 'default' : 'pointer',
+                flex: 1, minHeight: 44, borderRadius: 3, cursor: done ? 'default' : 'pointer',
                 background: 'var(--paper)', font: 'inherit', fontSize: 12.5,
                 fontFamily: 'var(--font-mono)',
-                border: `1px solid ${filterUf === c ? 'var(--accent)' : 'var(--line)'}`,
+                border: `2px solid ${filterUf === c ? 'var(--chrome)' : 'var(--line)'}`,
                 color: 'var(--ink)',
               }}>{c}u</button>
           ))}
         </div>
 
         {!done ? (
-          <button onClick={test} className="tile" style={{
-            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-            padding: '11px 18px', fontSize: 14, fontWeight: 620, cursor: 'pointer', minHeight: 44,
-          }}>Test the output</button>
+          <PlateButton variant="primary" onClick={test}>Test the output</PlateButton>
         ) : (
           <p role="status" style={{ fontSize: 13, color: 'var(--pass)', margin: 0, lineHeight: 1.55 }}>
             Stable at {out.vDc.toFixed(2)} V with {out.ripple.toFixed(2)} V of ripple. You reached it in {tried.length} {tried.length === 1 ? 'configuration' : 'configurations'}.

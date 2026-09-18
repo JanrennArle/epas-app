@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { ArrowLeft } from '@phosphor-icons/react'
 import { getModule } from '../content'
 import { bankFor } from '../content/bank'
 import { competencyGains, gradeForm } from '../lib/assess'
 import { attemptsFor, hasTaken, newRunId, recordAttempt } from '../lib/store'
 import type { AttemptContext } from '../lib/store'
+import { Tape } from '../ui/board/Tape'
+import { PlateButton } from '../ui/board/Plate'
 
 const PHASES = {
   pre: { form: 'A', context: 'pretest', title: 'Pre-test' },
@@ -76,10 +79,8 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
 
     return (
       <div style={{ maxWidth: '60ch' }}>
-        <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>
-          {spec.title} complete
-        </h1>
-        <p role="status" style={{ fontSize: 15, lineHeight: 1.62, color: 'var(--ink-2)', margin: '0 0 6px' }}>
+        <Tape as="h1">{spec.title} complete</Tape>
+        <p role="status" style={{ fontSize: 15, lineHeight: 1.62, color: 'var(--ink-2)', margin: '18px 0 6px' }}>
           You answered {done.correct} of {done.total} correctly.
         </p>
 
@@ -104,19 +105,15 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
           </p>
         )}
 
-        <Link to={`/m/${moduleId}`} style={{ fontSize: 14, color: 'var(--accent)' }}>
-          Back to {module.title}
-        </Link>
+        <Link to={`/m/${moduleId}`} className="back"><ArrowLeft weight="bold" aria-hidden />Back to {module.title}</Link>
       </div>
     )
   }
 
   return (
     <div style={{ maxWidth: '60ch' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>
-        {spec.title}: {module.title}
-      </h1>
-      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px' }}>
+      <Tape as="h1">{spec.title}: {module.title}</Tape>
+      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-2)', margin: '18px 0 4px' }}>
         {items.length} questions, one for each competency in this module. Answer every one,
         then submit. You will not be told which answers were right.
       </p>
@@ -128,11 +125,8 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
 
       <div style={{ margin: '18px 0 0' }}>
         {items.map((item, n) => (
-          <fieldset key={item.id} style={{
-            border: '1px solid var(--line)', borderRadius: 14, padding: 16,
-            margin: '0 0 12px', background: 'var(--surface)',
-          }}>
-            <legend style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', padding: '0 6px' }}>
+          <fieldset key={item.id} className="sign" style={{ margin: '0 0 12px' }}>
+            <legend className="label" style={{ display: 'block', padding: 0, margin: '0 0 10px' }}>
               Question {n + 1}
             </legend>
             <p style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.55, margin: '0 0 10px', color: 'var(--ink)' }}>
@@ -141,13 +135,13 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
             {item.options.map((opt, i) => (
               <label key={i} style={{
                 display: 'flex', gap: 9, alignItems: 'flex-start', minHeight: 44,
-                padding: '8px 10px', borderRadius: 10, cursor: 'pointer',
+                padding: '8px 10px', borderRadius: 3, cursor: 'pointer',
                 fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink-2)',
               }}>
                 <input type="radio" name={item.id}
                   checked={responses[item.id] === i}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: i }))}
-                  style={{ marginTop: 3, accentColor: 'var(--accent)' }} />
+                  style={{ marginTop: 3, accentColor: 'var(--chrome)' }} />
                 <span>{opt}</span>
               </label>
             ))}
@@ -155,15 +149,9 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
         ))}
       </div>
 
-      <button onClick={submit} disabled={!ready} className="tile" style={{
-        minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-        background: ready ? 'var(--accent)' : 'var(--line)',
-        color: ready ? 'var(--on-accent)' : 'var(--ink-3)',
-        font: 'inherit', fontSize: 14, fontWeight: 600,
-        cursor: ready ? 'pointer' : 'default',
-      }}>
+      <PlateButton variant="primary" onClick={submit} disabled={!ready}>
         {ready ? 'Submit' : `Answer all ${items.length} to submit`}
-      </button>
+      </PlateButton>
     </div>
   )
 }

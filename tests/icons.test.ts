@@ -61,7 +61,8 @@ function pngPixels(path: string) {
   }
 }
 
-const TEAL = { r: 14, g: 110, b: 99 }
+const PLATE = { r: 242, g: 194, b: 48 }
+const GLYPH = { r: 20, g: 24, b: 22 }
 
 describe('the app icons', () => {
   for (const [path, size] of EXPECTED) {
@@ -82,16 +83,16 @@ describe('the app icons', () => {
   // sees this icon again until a student tries to install the app, so a
   // silently blank one would ship undetected. Decoding the pixels is the
   // only way to tell a drawn glyph from an empty buffer.
-  it('draws a white glyph on teal, not a blank tile', () => {
+  it('draws a dark glyph on the plate, not a blank tile', () => {
     const px = pngPixels('public/icon-512.png')
 
     // The centre of the E (its middle arm) crosses the middle of the icon.
     const centre = px.at(256, 256)
-    expect(centre, 'centre should be the white glyph, not empty').toEqual({ r: 255, g: 255, b: 255, a: 255 })
+    expect(centre, 'centre should be the dark glyph, not empty').toEqual({ ...GLYPH, a: 255 })
 
-    // Away from the glyph, inside the rounded square, is the flat teal fill.
+    // Away from the glyph, inside the rounded square, is the flat plate fill.
     const field = px.at(256, 100)
-    expect(field, 'field should be the teal fill').toEqual({ ...TEAL, a: 255 })
+    expect(field, 'field should be the plate fill').toEqual({ ...PLATE, a: 255 })
   })
 
   // A maskable icon with a transparent corner shows as a black-cornered tile
@@ -101,34 +102,34 @@ describe('the app icons', () => {
     const px = pngPixels('public/icon-maskable-512.png')
     const corner = px.at(0, 0)
     expect(corner.a, 'maskable corner alpha').toBe(255)
-    expect({ r: corner.r, g: corner.g, b: corner.b }, 'maskable corner colour').toEqual(TEAL)
+    expect({ r: corner.r, g: corner.g, b: corner.b }, 'maskable corner colour').toEqual(PLATE)
   })
 
-  // The corner check above passes for a solid teal square with no glyph at
+  // The corner check above passes for a solid plate square with no glyph at
   // all, the same blank-tile failure the plain icon's glyph test exists to
   // catch, one file over. The maskable variant's safe-zone inset (0.34) still
   // centres its middle arm on the icon's own centre, same as the plain icon.
-  it('the maskable icon draws a white glyph on teal, not a blank tile', () => {
+  it('the maskable icon draws a dark glyph on the plate, not a blank tile', () => {
     const px = pngPixels('public/icon-maskable-512.png')
 
     const centre = px.at(256, 256)
-    expect(centre, 'centre should be the white glyph, not empty').toEqual({ r: 255, g: 255, b: 255, a: 255 })
+    expect(centre, 'centre should be the dark glyph, not empty').toEqual({ ...GLYPH, a: 255 })
 
     const field = px.at(256, 100)
-    expect(field, 'field should be the teal fill').toEqual({ ...TEAL, a: 255 })
+    expect(field, 'field should be the plate fill').toEqual({ ...PLATE, a: 255 })
   })
 
   // apple-touch-icon.png is what an iPhone puts on a home screen, and it is
   // never decoded elsewhere in this suite, only header-and-size checked
   // above. Same blank-tile failure, same fix: decode the pixels.
-  it('the apple touch icon draws a white glyph on teal, not a blank tile', () => {
+  it('the apple touch icon draws a dark glyph on the plate, not a blank tile', () => {
     const px = pngPixels('public/apple-touch-icon.png')
 
     const centre = px.at(90, 90)
-    expect(centre, 'centre should be the white glyph, not empty').toEqual({ r: 255, g: 255, b: 255, a: 255 })
+    expect(centre, 'centre should be the dark glyph, not empty').toEqual({ ...GLYPH, a: 255 })
 
     const field = px.at(90, 20)
-    expect(field, 'field should be the teal fill').toEqual({ ...TEAL, a: 255 })
+    expect(field, 'field should be the plate fill').toEqual({ ...PLATE, a: 255 })
   })
 
   // The plain icon draws its own rounded corners, so its corner pixel is the

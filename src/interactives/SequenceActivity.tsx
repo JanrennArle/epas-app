@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { scoreActivity } from '../lib/activity'
 import { ACTIVITIES } from '../content/activities'
 import { recordSim } from '../lib/store'
+import { PlateButton } from '../ui/board/Plate'
 import type { InteractiveProps } from './types'
 
 export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps) {
@@ -54,13 +55,10 @@ export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps
   }
 
   return (
-    <section aria-label={`Signal path activity, ${activity.id}`} style={{
-      border: '1px solid var(--line)', borderRadius: 14, background: 'var(--surface)',
-      padding: 14, margin: '0 0 20px', maxWidth: '60ch',
-    }}>
-      <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--ink)', margin: '0 0 14px' }}>
+    <section aria-label={`Signal path activity, ${activity.id}`} className="sign" style={{ margin: '0 0 20px', maxWidth: '60ch' }}>
+      <h3 className="label" style={{ fontSize: '1.2rem', color: 'var(--ink)', margin: '0 0 14px' }}>
         {activity.instruction}
-      </p>
+      </h3>
 
       <p style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', margin: '0 0 8px' }}>
         The path so far
@@ -75,13 +73,14 @@ export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps
         {chain.map((id, i) => {
           const item = activity.items[i]
           const wrong = checked && item ? result?.wrong.includes(item.id) : false
+          const borderColor = checked ? (wrong ? 'var(--caution)' : 'var(--pass)') : 'var(--chrome)'
           return (
             <li key={id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{
-                display: 'inline-block', padding: '7px 10px', borderRadius: 10,
+                display: 'inline-block', padding: '7px 10px', borderRadius: 3,
                 fontSize: 12.5, lineHeight: 1.3, color: 'var(--ink)',
                 background: 'var(--paper)',
-                border: `1px solid ${checked ? (wrong ? 'var(--caution)' : 'var(--pass)') : 'var(--line)'}`,
+                border: `2px solid ${borderColor}`,
               }}>{labelOf(id)}</span>
               {i < chain.length - 1 && (
                 <span aria-hidden style={{ color: 'var(--ink-3)', fontSize: 13 }}>to</span>
@@ -98,11 +97,11 @@ export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps
           </p>
           <div style={{ display: 'grid', gap: 6, marginBottom: 14 }}>
             {pool.map(c => (
-              <button key={c.id} onClick={() => place(c.id)} aria-disabled={full} className="tile"
+              <button key={c.id} onClick={() => place(c.id)} aria-disabled={full} className="press"
                 style={{
                   width: '100%', textAlign: 'left', minHeight: 44, padding: '10px 12px',
-                  borderRadius: 10, background: 'var(--paper)', font: 'inherit', fontSize: 13,
-                  border: '1px solid var(--line)', color: 'var(--ink)',
+                  borderRadius: 3, background: 'var(--paper)', font: 'inherit', fontSize: 13,
+                  border: '2px solid var(--line)', color: 'var(--ink)',
                   cursor: full ? 'default' : 'pointer', opacity: full ? 0.5 : 1,
                 }}>{c.label}</button>
             ))}
@@ -115,16 +114,9 @@ export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps
 
       {!checked ? (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={check} disabled={!full} className="tile" style={{
-            background: 'var(--accent)', color: 'var(--on-accent)', border: 0, borderRadius: 10,
-            padding: '11px 18px', fontSize: 14, fontWeight: 620, minHeight: 44,
-            cursor: full ? 'pointer' : 'default', opacity: full ? 1 : 0.5,
-          }}>Check the path</button>
+          <PlateButton variant="primary" onClick={check} disabled={!full}>Check the path</PlateButton>
           {chain.length > 0 && (
-            <button onClick={reset} style={{
-              background: 'none', border: 0, color: 'var(--accent)', fontSize: 13,
-              cursor: 'pointer', padding: '0 8px', minHeight: 44, font: 'inherit',
-            }}>Start over</button>
+            <PlateButton onClick={reset}>Start over</PlateButton>
           )}
         </div>
       ) : (

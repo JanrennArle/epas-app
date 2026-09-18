@@ -1,14 +1,9 @@
-import { useState } from 'react'
-import type { CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { readingAt, scoreDiagnosis } from '../lib/diagnose'
 import { recordSim } from '../lib/store'
 import { SCENARIOS } from '../content/scenarios'
+import { PixelScene } from './service/PixelScene'
 import type { InteractiveProps } from './types'
-
-const label: CSSProperties = {
-  fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-  color: 'var(--ink-3)', margin: '0 0 8px',
-}
 
 export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveProps) {
   const key = typeof config?.scenario === 'string' ? config.scenario : 'fan'
@@ -17,6 +12,19 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
   const [acked, setAcked] = useState<string[]>([])
   const [used, setUsed] = useState<string[]>([])
   const [result, setResult] = useState<ReturnType<typeof scoreDiagnosis> | null>(null)
+
+  const symptom = scenario?.symptom ?? ''
+  const [typed, setTyped] = useState(() =>
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches ? symptom.length : 0)
+  useEffect(() => {
+    if (typed >= symptom.length) return
+    const finish = () => setTyped(symptom.length)
+    const ch = symptom[typed - 1]
+    const t = setTimeout(() => setTyped(n => n + 1), typed === 0 ? 500 : ch === ',' || ch === '.' ? 240 : 30)
+    const events = ['pointerdown', 'keydown'] as const
+    for (const e of events) addEventListener(e, finish, { once: true })
+    return () => { clearTimeout(t); for (const e of events) removeEventListener(e, finish) }
+  }, [typed, symptom])
 
   if (!scenario) {
     return (
@@ -52,93 +60,80 @@ export function SystemTroubleshooter({ moduleId, config, onEvent }: InteractiveP
     onEvent?.({ type: 'complete', score: r.score, evidence })
   }
 
-  return (
-    <section aria-label={`Troubleshooter, ${scenario.appliance}`} style={{
-      border: '1px solid var(--line)', borderRadius: 14, overflow: 'hidden',
-      margin: '0 0 20px', maxWidth: '60ch', background: 'var(--surface)',
-    }}>
-      <header style={{ padding: '11px 14px', borderBottom: '1px solid var(--line)' }}>
-        <h3 style={{ fontSize: 13.5, fontWeight: 660, margin: 0 }}>Troubleshooter: {scenario.appliance}</h3>
-        <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '6px 0 0', lineHeight: 1.55 }}>{scenario.symptom}</p>
-      </header>
+  const actual = scenario.faults.find(f => f.id === scenario.actualFault)
 
-      <div style={{ padding: 14 }}>
-        <div style={{
-          border: '1px solid var(--line)', borderLeft: '3px solid var(--danger)',
-          borderRadius: '0 10px 10px 0', padding: '11px 13px', marginBottom: 14,
-        }}>
-          <strong style={{ ...label, display: 'block', color: 'var(--danger)' }}>Before you test</strong>
+  return (
+    <section aria-label={`Troubleshooter, ${scenario.appliance}`} className="service" style={{ margin: '0 0 20px', maxWidth: 1100 }}>
+      <div className="service-stage">
+        <PixelScene scenarioId={scenario.id} appliance={scenario.appliance} />
+        <div className="win service-talk">
+          <h3 className="win-title">Troubleshooter: {scenario.appliance}</h3>
+          <p style={{ margin: 0 }}>
+            <span className="sr-only">{scenario.symptom}</span>
+            <span aria-hidden>{scenario.symptom.slice(0, typed)}</span>
+            <span className="cursor" aria-hidden />
+          </p>
+        </div>
+      </div>
+
+      <div className="service-grid">
+        <div className="win win--danger">
+          <p className="win-title">Before you test</p>
           {scenario.safety.map(s => (
-            <label key={s} style={{
-              display: 'flex', gap: 9, alignItems: 'flex-start', minHeight: 44,
-              fontSize: 13, lineHeight: 1.5, color: 'var(--ink)', cursor: result ? 'default' : 'pointer',
-            }}>
+            <label key={s} className="check" style={{ cursor: result ? 'default' : 'pointer' }}>
               <input type="checkbox" checked={acked.includes(s)} disabled={!!result}
-                onChange={e => setAcked(a => e.target.checked ? [...a, s] : a.filter(x => x !== s))}
-                style={{ marginTop: 3, accentColor: 'var(--accent)' }} />
+                onChange={e => setAcked(a => e.target.checked ? [...a, s] : a.filter(x => x !== s))} />
               <span>{s}</span>
             </label>
           ))}
         </div>
 
-        <p style={label}>Tests {safe ? `(${used.length} used)` : '(locked until the safety steps are ticked)'}</p>
-        <div style={{ display: 'grid', gap: 6, marginBottom: 14 }}>
-          {scenario.testPoints.map(tp => {
-            const done = used.includes(tp.id)
-            return (
-              <div key={tp.id}>
-                <button onClick={() => runTest(tp.id)} aria-disabled={!safe || done || !!result}
-                  className="tile"
-                  style={{
-                    width: '100%', textAlign: 'left', minHeight: 44, padding: '10px 12px',
-                    borderRadius: 10, background: 'var(--paper)', font: 'inherit', fontSize: 13,
-                    border: `1px solid ${done ? 'var(--accent)' : 'var(--line)'}`,
-                    color: 'var(--ink)', cursor: !safe || done || result ? 'default' : 'pointer',
-                    opacity: safe ? 1 : 0.5,
-                  }}>
-                  <strong style={{ fontWeight: 620 }}>{tp.label}. </strong>{tp.action}
-                </button>
-                {done && (
-                  <p role="status" style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 12.5, color: 'var(--ink)',
-                    margin: '6px 0 0 12px', lineHeight: 1.5,
-                  }}>Reading: {readingAt(scenario, tp.id)}</p>
-                )}
-              </div>
-            )
-          })}
+        <div className="win">
+          <p className="win-title">Tests {safe ? `(${used.length} used)` : '(locked until the safety steps are ticked)'}</p>
+          <ul className="menu">
+            {scenario.testPoints.map(tp => {
+              const done = used.includes(tp.id)
+              return (
+                <li key={tp.id}>
+                  <button onClick={() => runTest(tp.id)} aria-disabled={!safe || done || !!result}
+                    className={done ? 'used' : undefined}>
+                    <strong style={{ fontWeight: 400 }}>{tp.label}. </strong>{tp.action}
+                  </button>
+                  {done && <p role="status" className="reading">Reading: {readingAt(scenario, tp.id)}</p>}
+                </li>
+              )
+            })}
+          </ul>
         </div>
 
-        <p style={label}>Name the fault</p>
-        {safe && used.length === 0 && (
-          <p style={{ fontSize: 12.5, color: 'var(--ink-3)', margin: '0 0 8px', lineHeight: 1.5 }}>
-            Run at least one test first. A fault named without evidence is a guess.
-          </p>
-        )}
-        <div style={{ display: 'grid', gap: 6 }}>
-          {scenario.faults.map(f => (
-            <button key={f.id} onClick={() => accuse(f.id)} disabled={!canAccuse || !!result}
-              className="tile"
-              style={{
-                width: '100%', textAlign: 'left', minHeight: 44, padding: '10px 12px',
-                borderRadius: 10, background: 'var(--paper)', font: 'inherit', fontSize: 13,
-                border: `1px solid ${result && f.id === scenario.actualFault ? 'var(--pass)' : 'var(--line)'}`,
-                color: 'var(--ink)', cursor: !canAccuse || result ? 'default' : 'pointer',
-                opacity: canAccuse ? 1 : 0.5,
-              }}>{f.label}</button>
-          ))}
+        <div className="win">
+          <p className="win-title">Name the fault</p>
+          {safe && used.length === 0 && (
+            <p style={{ margin: '0 0 8px', color: 'var(--grey)' }}>
+              Run at least one test first. A fault named without evidence is a guess.
+            </p>
+          )}
+          <ul className="menu">
+            {scenario.faults.map(f => (
+              <li key={f.id}>
+                <button onClick={() => accuse(f.id)} disabled={!canAccuse || !!result}
+                  style={result && f.id === scenario.actualFault ? { color: 'var(--phosphor)' } : undefined}>
+                  {f.label}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {result && (
-          <p role="status" style={{
-            fontSize: 13, lineHeight: 1.55, marginTop: 14,
-            color: result.correct ? 'var(--pass)' : 'var(--caution)',
-          }}>
-            {result.correct
-              ? `Correct, after ${used.length} ${used.length === 1 ? 'test' : 'tests'}. `
-              : `Not quite. The fault was the ${scenario.faults.find(f => f.id === scenario.actualFault)?.label.toLowerCase() ?? 'another component'}. `}
-            {result.remedy}
-          </p>
+          <div className="win" role="status" style={{ gridColumn: '1 / -1' }}>
+            <p style={{ margin: 0, color: result.correct ? 'var(--phosphor)' : 'var(--amber)' }}>
+              {result.correct
+                ? `Correct, after ${used.length} ${used.length === 1 ? 'test' : 'tests'}. `
+                : `Not quite. The fault was the ${actual?.label.toLowerCase() ?? 'another component'}. `}
+              {result.remedy}
+            </p>
+          </div>
         )}
       </div>
     </section>

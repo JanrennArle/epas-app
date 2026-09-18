@@ -5,11 +5,8 @@ import { csvHeader, csvRow, toBundle } from '../lib/export'
 import { attemptsFor, hasTaken, inStudy, loadState } from '../lib/store'
 import { downloadCsv, downloadJson } from '../ui/download'
 import { SURVEY } from '../content/survey'
-import type { CSSProperties } from 'react'
-
-const label: CSSProperties = {
-  fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)',
-}
+import { Tape } from '../ui/board/Tape'
+import { PlateButton } from '../ui/board/Plate'
 
 export default function Progress() {
   const state = loadState()
@@ -20,19 +17,20 @@ export default function Progress() {
 
   return (
     <div style={{ maxWidth: '70ch' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 2px' }}>
-        Progress
-      </h1>
-      <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '0 0 18px' }}>
+      <Tape as="h1">Progress</Tape>
+      <p style={{ fontSize: 13, color: 'var(--ink-2)', margin: '10px 0 18px' }}>
         Working as <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink)' }}>{code}</strong>
       </p>
 
+      {/* One reading measure for the whole page: the table shares it with the
+          prose below rather than spreading to the full board width, which put
+          the last column nearly 1200px from the module name at 1440px. */}
       <div style={{ overflowX: 'auto', margin: '0 0 22px' }}>
         <table style={{ borderCollapse: 'collapse', fontSize: 13, width: '100%', minWidth: 460 }}>
           <thead>
             <tr>
               {['Module', 'Lessons done', 'Pre-test', 'Post-test', 'Competencies gained'].map(h => (
-                <th key={h} style={{ ...label, textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>
+                <th key={h} className="label" style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>
                   {h}
                 </th>
               ))}
@@ -70,14 +68,14 @@ export default function Progress() {
         </table>
       </div>
 
-      <h2 style={{ fontSize: 15, fontWeight: 660, margin: '0 0 6px' }}>Hand your results in</h2>
+      <Tape as="h2" size="section">Hand your results in</Tape>
       {!inStudy() && (
-        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '10px 0 4px' }}>
           You chose not to take part in the study. Your teacher can still see your work, and
           it stays out of anything they report. Handing in is your choice either way.
         </p>
       )}
-      <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px' }}>
+      <p style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink-2)', margin: inStudy() ? '10px 0 4px' : '0 0 4px' }}>
         Nothing has left this device. Saving a file is how your work reaches your teacher.
         Send them the JSON file; it holds everything. The CSV is the same results as one
         row of a table, for you to keep.
@@ -85,26 +83,18 @@ export default function Progress() {
       {!surveyDone && (
         <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
           You have answered {answeredCount} of {SURVEY.length} statements in the{' '}
-          <Link to="/evaluate" style={{ color: 'var(--accent)' }}>evaluation survey</Link>.
+          <Link to="/evaluate" style={{ color: 'var(--chrome)', textDecoration: 'underline' }}>evaluation survey</Link>.
           You can still hand in, but the unanswered ones will be blank.
         </p>
       )}
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '14px 0 0' }}>
-        <button onClick={() => downloadJson(`epas-${code}.json`, toBundle(state))} className="tile" style={{
-          minHeight: 44, padding: '11px 18px', borderRadius: 10, border: 0,
-          background: 'var(--accent)', color: 'var(--on-accent)',
-          font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-        }}>
+        <PlateButton variant="primary" onClick={() => downloadJson(`epas-${code}.json`, toBundle(state))}>
           Save my results for my teacher
-        </button>
-        <button onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])} className="tile" style={{
-          minHeight: 44, padding: '11px 18px', borderRadius: 10,
-          border: '1px solid var(--line)', background: 'var(--surface)',
-          color: 'var(--ink)', font: 'inherit', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-        }}>
+        </PlateButton>
+        <PlateButton onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])}>
           Save a spreadsheet copy
-        </button>
+        </PlateButton>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { LIKERT, SURVEY, SURVEY_CATEGORIES } from '../content/survey'
 import { inStudy, setSurvey, surveyAnswers } from '../lib/store'
 import type { RespondentType } from '../lib/types'
+import { Tape } from '../ui/board/Tape'
 
 const RESPONDENTS: { value: RespondentType; label: string }[] = [
   { value: 'student', label: 'Student' },
@@ -45,10 +46,8 @@ export default function Evaluate() {
 
   return (
     <div style={{ maxWidth: '60ch' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 680, letterSpacing: '-0.02em', margin: '0 0 6px' }}>
-        Evaluate this app
-      </h1>
-      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-2)', margin: '0 0 4px' }}>
+      <Tape as="h1">Evaluate this app</Tape>
+      <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-2)', margin: '18px 0 4px' }}>
         Twenty statements about the app itself, not about what you learned. Say how far you
         agree with each one. Your answers stay on this device until you export them.
       </p>
@@ -66,23 +65,20 @@ export default function Evaluate() {
         {answered} of {SURVEY.length} answered
       </p>
 
-      <fieldset style={{
-        border: '1px solid var(--line)', borderRadius: 14, padding: 16,
-        margin: '0 0 16px', background: 'var(--surface)',
-      }}>
-        <legend style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-3)', padding: '0 6px' }}>
+      <fieldset className="sign" style={{ margin: '0 0 16px' }}>
+        <legend className="label" style={{ padding: '0 6px' }}>
           Answering as
         </legend>
         {RESPONDENTS.map(r => (
           <label key={r.value} style={{
             display: 'flex', gap: 9, alignItems: 'center', minHeight: 44,
-            padding: '4px 6px', borderRadius: 10, cursor: 'pointer',
+            padding: '4px 6px', borderRadius: 3, cursor: 'pointer',
             fontSize: 13.5, color: 'var(--ink-2)',
           }}>
             <input type="radio" name="respondent"
               checked={answers.respondent === r.value}
               onChange={() => set('respondent', r.value)}
-              style={{ accentColor: 'var(--accent)' }} />
+              style={{ accentColor: 'var(--chrome)' }} />
             <span>{r.label}</span>
           </label>
         ))}
@@ -90,29 +86,23 @@ export default function Evaluate() {
 
       {SURVEY_CATEGORIES.map(category => (
         <section key={category} style={{ margin: '0 0 16px' }}>
-          <h2 style={{
-            fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'var(--ink-3)', margin: '0 0 8px',
-          }}>{category}</h2>
+          <h2 className="label" style={{ margin: '0 0 8px' }}>{category}</h2>
 
           {SURVEY.filter(i => i.category === category).map(item => (
-            <fieldset key={item.id} style={{
-              border: '1px solid var(--line)', borderRadius: 14, padding: 14,
-              margin: '0 0 10px', background: 'var(--surface)',
-            }}>
+            <fieldset key={item.id} className="sign" style={{ margin: '0 0 10px' }}>
               <legend style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.5, padding: '0 6px', color: 'var(--ink)' }}>
                 {item.text}
               </legend>
               {LIKERT.map((label, n) => (
                 <label key={label} style={{
                   display: 'flex', gap: 9, alignItems: 'center', minHeight: 44,
-                  padding: '4px 6px', borderRadius: 10, cursor: 'pointer',
+                  padding: '4px 6px', borderRadius: 3, cursor: 'pointer',
                   fontSize: 13.5, color: 'var(--ink-2)',
                 }}>
                   <input type="radio" name={item.id}
                     checked={answers[item.id] === n + 1}
                     onChange={() => set(item.id, n + 1)}
-                    style={{ accentColor: 'var(--accent)' }} />
+                    style={{ accentColor: 'var(--chrome)' }} />
                   <span>{label}</span>
                 </label>
               ))}
@@ -129,7 +119,7 @@ export default function Evaluate() {
         onChange={e => setAnswers(a => ({ ...a, comments: e.target.value }))}
         rows={4}
         style={{
-          width: '100%', padding: '10px 12px', borderRadius: 10,
+          width: '100%', padding: '10px 12px', borderRadius: 3,
           border: '1px solid var(--line)', background: 'var(--surface)',
           font: 'inherit', fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink)',
           margin: '0 0 18px', resize: 'vertical',
@@ -143,7 +133,7 @@ export default function Evaluate() {
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '18px 0 0' }}>
         Your answers go to your teacher only when you hand them in from{' '}
-        <Link to="/progress" style={{ color: 'var(--accent)' }}>Progress</Link>.
+        <Link to="/progress" style={{ color: 'var(--chrome)', textDecoration: 'underline' }}>Progress</Link>.
       </p>
     </div>
   )
