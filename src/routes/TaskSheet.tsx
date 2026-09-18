@@ -162,7 +162,7 @@ function Sheet({ task }: { task: PerformanceTask }) {
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: 0 }}>
         Saved on this device as you go. It reaches your teacher when you hand in from{' '}
-        <Link to="/progress" style={{ color: 'var(--chrome)' }}>Progress</Link>.
+        <Link to="/progress" style={{ color: 'var(--chrome)', textDecoration: 'underline' }}>Progress</Link>.
       </p>
     </div>
   )

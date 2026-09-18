@@ -83,17 +83,17 @@ export default function Progress() {
       {!surveyDone && (
         <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '0 0 4px' }}>
           You have answered {answeredCount} of {SURVEY.length} statements in the{' '}
-          <Link to="/evaluate" style={{ color: 'var(--chrome)' }}>evaluation survey</Link>.
+          <Link to="/evaluate" style={{ color: 'var(--chrome)', textDecoration: 'underline' }}>evaluation survey</Link>.
           You can still hand in, but the unanswered ones will be blank.
         </p>
       )}
 
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '14px 0 0' }}>
-        <PlateButton onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])}>
-          Save a spreadsheet copy
-        </PlateButton>
         <PlateButton variant="primary" onClick={() => downloadJson(`epas-${code}.json`, toBundle(state))}>
           Save my results for my teacher
+        </PlateButton>
+        <PlateButton onClick={() => downloadCsv(`epas-${code}.csv`, [csvHeader(), csvRow(state, { exportedAt: new Date().toISOString(), filesFromStudent: 1 })])}>
+          Save a spreadsheet copy
         </PlateButton>
       </div>
     </div>

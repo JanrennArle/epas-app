@@ -24,8 +24,6 @@
   --ink-3: #56615B;
   --line: #C3CBC6;
   --paint: #26302B;
-  --accent: #26302B;
-  --on-accent: #F2F3EE;
   /* The structural chrome (rack borders and icons, nav underline, focus
      ring, links, checked controls) reads this instead of --paint, so it can
      be given its own tone in dark mode without touching the painted-on-board
@@ -72,8 +70,6 @@
     --ink-3: #97A39C;
     --line: #3A4A42;
     --paint: #F2C230;
-    --accent: #F2C230;
-    --on-accent: #141816;
     /* Chalk on steel: distinct from the yellow paint, so the yellow plate
        stays the one yellow object on a dark screen. ~9:1 on #24302A. */
     --chrome: #C9D6CC;
@@ -349,14 +345,17 @@ ul { list-style: disc; }
 .map-hero .board { max-width: 520px; width: 100%; justify-self: center; }
 .map-lede { max-width: 36ch; margin: calc(var(--pitch) * 0.6) 0 0; font-size: clamp(1.06rem, 1vw + 0.85rem, 1.25rem); line-height: 1.5; }
 
-/* The instrument panels keep their dark skin in both themes; yellow reads on it. */
-.instrument { --accent: #F2C230; --paint: #F2C230; }
+/* The instrument panels keep their dark skin in both themes; yellow reads on it.
+   --chrome is overridden here too: light mode's near-black chrome is
+   unreadable on this panel's dark ground (about 1.3:1), so the focus ring
+   needs its own colour rather than following the ambient theme. */
+.instrument { --paint: #F2C230; --chrome: #F2C230; }
 
 /* ---------- Service Mode: the fault-finding labs only ---------- */
 .service {
   --night: #10132E; --deep: #0A0C1E; --dusk: #232A63; --teal: #1F6F74; --amber: #F2B138;
   --sunset: #E8622C; --white: #F1EFE6; --grey: #8B93A8; --phosphor: #5BD26B; --sv-danger: #D8352A;
-  --paint: #F2B138; --accent: #F2B138;
+  --paint: #F2B138;
   color: var(--white); background: var(--deep);
   font-family: var(--font-pixel); font-size: 1.125rem; line-height: 1.7;
   padding: calc(var(--pitch) * 0.5); border-radius: 3px;

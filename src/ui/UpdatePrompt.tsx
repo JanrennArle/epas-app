@@ -45,9 +45,7 @@ export function UpdatePrompt() {
   if (!needRefresh || !mayPrompt(pathname)) return null
 
   return (
-    <div role="status" className="sign" style={{
-      position: 'sticky', bottom: 0, borderRadius: 0, zIndex: 1,
-    }}>
+    <div role="status" className="sign" style={{ borderRadius: 0 }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
         maxWidth: 1100, margin: '0 auto',

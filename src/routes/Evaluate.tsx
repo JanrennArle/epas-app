@@ -133,7 +133,7 @@ export default function Evaluate() {
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '18px 0 0' }}>
         Your answers go to your teacher only when you hand them in from{' '}
-        <Link to="/progress" style={{ color: 'var(--chrome)' }}>Progress</Link>.
+        <Link to="/progress" style={{ color: 'var(--chrome)', textDecoration: 'underline' }}>Progress</Link>.
       </p>
     </div>
   )

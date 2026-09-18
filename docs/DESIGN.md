@@ -24,14 +24,12 @@ Visual authority for the EPAS Interactive Learning App. Records the world as it 
 
 No pure black, no pure white anywhere in the base palette. The page ground is not flat: `body` paints one radial-gradient dot per `--pitch` cell, so the board texture is structural, not a background image.
 
-### Paint, accent and chrome
+### Paint and chrome
 
 The board has exactly one painted colour, and which colour that is flips with the theme:
 
-- **Light mode:** `--paint` / `--accent` = `#26302B`, a near-black paint. `--chrome` (structural furniture: rack borders, icons, nav underline, focus ring, links, checked controls) equals `--paint` here, so light mode reads as one tone.
-- **Dark mode:** `--paint` / `--accent` = `#F2C230`, work-lamp yellow. `--chrome` becomes `#C9D6CC`, a chalk-on-steel grey distinct from the paint, so the yellow plate stays the one yellow object on a dark screen (~9:1 on `#24302A`).
-
-`--on-accent` (`#F2F3EE` light / `#141816` dark) is the text colour that sits on a filled accent surface.
+- **Light mode:** `--paint` = `#26302B`, a near-black paint. `--chrome` (structural furniture: rack borders, icons, nav underline, focus ring, links, checked controls) equals `--paint` here, so light mode reads as one tone.
+- **Dark mode:** `--paint` = `#F2C230`, work-lamp yellow. `--chrome` becomes `#C9D6CC`, a chalk-on-steel grey distinct from the paint, so the yellow plate stays the one yellow object on a dark screen (~9:1 on `#24302A`).
 
 **The yellow plate** (`--plate: #F2C230`, `--plate-ink: #141816`, both fixed regardless of theme) is the one primary action per screen: a single painted-steel button (`.plate--primary`) with two rivets, a soft gradient face and a resting drop shadow. A screen has at most one.
 
@@ -125,7 +123,7 @@ Real class names that exist in `src/index.css` and are used by more than one scr
 
 ### `.instrument`
 
-`.instrument { --accent: #F2C230; --paint: #F2C230; }`. A one-line override so any simulation panel wrapped in it always paints its accent and paint tokens work-lamp yellow, in both light and dark mode, rather than following light mode's near-black paint. It exists so a meter or trainer's active control always reads as "the highlighted one," and is a token override only, not a separate palette (it inherits `--surface`, `--ink`, etc. from the ambient theme).
+`.instrument { --paint: #F2C230; --chrome: #F2C230; }`. The multimeter trainer and power supply simulator panels keep a fixed dark skin (`#141A21`) in both themes, and this override keeps two tokens legible on it: `--chrome` so the focus ring stays visible (light mode's near-black chrome is close to invisible on that dark ground, about 1.3:1), and `--paint` for consistency with the rest of the board's dark-mode look. It is a token override only, not a separate palette (it inherits `--surface`, `--ink`, etc. from the ambient theme). The mode and stage buttons' own active-state yellow is hard-coded in `MultimeterTrainer.tsx` and `PowerSupplySim.tsx`, not read from either overridden token.
 
 ### `.service`
 
@@ -165,7 +163,7 @@ Phosphor, `weight="fill"` for the board's tools (outline/shadow/steel layers all
 ## 8. Banned
 
 - Emoji as icons, or anywhere in the interface
-- A second accent colour, or a competing paint colour, alongside `--paint`/`--accent`
+- A second accent colour, or a competing paint colour, alongside `--paint`
 - Module identity carried by colour (retired; see §1). New per-module colour coding outside the two frozen lab diagrams
 - Section-number eyebrows and standalone kicker labels as decoration. Week numbers are exempt: they are real curriculum data ("Module 4 · Week 4 to 5"), not decoration
 - Red (`--danger`) for anything other than a safety hazard
@@ -179,7 +177,7 @@ Phosphor, `weight="fill"` for the board's tools (outline/shadow/steel layers all
 ## 9. Accessibility floor
 
 - WCAG AA minimum for text; the chrome/paint split (§1) exists specifically to keep the accent legible in both themes
-- Visible focus ring on every interactive element: 3px solid `--chrome` (or `--amber` inside `.service`), 3px offset, never removed
+- Visible focus ring on every interactive element: 3px solid `--chrome` (`--chrome` is overridden to work-lamp yellow inside `.instrument`, so the ring reads on the dark meter and power-supply panels; `--amber` inside `.service`), 3px offset, never removed
 - Touch targets 44px minimum (`.back`, `.nav-link`, `.plate`, `.service .check`, `.service .menu button` all pin `min-height: 44px` or larger explicitly)
 - Both themes (light pegboard, dark after-hours board) render from the same markup via `prefers-color-scheme`, not a class toggle, and were captured in both for review
 - `prefers-reduced-motion: reduce` is honoured globally plus with two named exceptions handled explicitly (board opening, service cursor)
