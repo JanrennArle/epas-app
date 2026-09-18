@@ -14,8 +14,12 @@ let played = false
  * steel of every started or finished tool drops onto its hook with a spring.
  * Any pointer, key, wheel or touch finishes it at once. Reduced motion shows
  * the finished board.
+ *
+ * `nextId`, when its slot is still empty, gets a faint steel tool instead of
+ * a bare outline: the payoff for finishing a module has to be visible on a
+ * student's very first visit, when every real tool is still unearned.
  */
-export function ToolBoard({ tools }: { tools: ToolState[] }) {
+export function ToolBoard({ tools, nextId }: { tools: ToolState[]; nextId?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const skip = useRef(played || typeof matchMedia !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [phase, setPhase] = useState<'idle' | 'play' | 'done'>(skip.current ? 'done' : 'idle')
@@ -89,9 +93,10 @@ export function ToolBoard({ tools }: { tools: ToolState[] }) {
       {tools.map((t, i) => {
         const Tool = toolFor(t.moduleId)
         const empty = t.done === 0
+        const ghost = empty && t.moduleId === nextId
         return (
-          <div key={t.moduleId} className={`slot${empty ? ' empty' : ''}`}
-            style={{ ['--i' as string]: i, ['--fill' as string]: t.hung ? 1 : Math.max(0.12, t.fraction) }}>
+          <div key={t.moduleId} className={`slot${empty ? ' empty' : ''}${ghost ? ' ghost' : ''}`}
+            style={{ ['--i' as string]: i, ['--fill' as string]: t.hung ? 1 : (ghost ? 1 : Math.max(0.12, t.fraction)) }}>
             <span className="hook" />
             <Tool weight="fill" className="outline" />
             <Tool weight="fill" className="shadow" color="rgba(0,0,0,0.55)" />

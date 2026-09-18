@@ -73,7 +73,7 @@ export function SequenceActivity({ moduleId, config, onEvent }: InteractiveProps
         {chain.map((id, i) => {
           const item = activity.items[i]
           const wrong = checked && item ? result?.wrong.includes(item.id) : false
-          const borderColor = checked ? (wrong ? 'var(--caution)' : 'var(--pass)') : 'var(--paint)'
+          const borderColor = checked ? (wrong ? 'var(--caution)' : 'var(--pass)') : 'var(--chrome)'
           return (
             <li key={id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{

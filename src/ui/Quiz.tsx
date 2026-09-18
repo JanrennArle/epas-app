@@ -42,7 +42,7 @@ export function Quiz({ items, moduleId, onFinish }: {
         const correct = submitted && gradeItem(item, answered)
         return (
           <fieldset key={item.id} style={{ border: 0, padding: 0, margin: '0 0 20px' }}>
-            <legend style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.5, padding: 0, marginBottom: 8 }}>
+            <legend style={{ fontSize: '1.0625rem', fontWeight: 600, lineHeight: 1.5, padding: 0, marginBottom: 8, color: 'var(--ink)' }}>
               {item.stem}
             </legend>
 
@@ -52,12 +52,12 @@ export function Quiz({ items, moduleId, onFinish }: {
                 padding: '8px 10px', borderRadius: 3, cursor: 'pointer',
                 fontSize: '1rem', lineHeight: 1.5, color: 'var(--ink)',
                 border: `2px solid ${submitted && i === item.answer ? 'var(--pass)' : 'transparent'}`,
-                background: answered === i ? 'color-mix(in srgb, var(--paint) 8%, transparent)' : undefined,
+                background: answered === i ? 'color-mix(in srgb, var(--chrome) 8%, transparent)' : undefined,
               }}>
                 <input type="radio" name={item.id} disabled={submitted}
                   checked={answered === i}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: i }))}
-                  style={{ marginTop: 3, accentColor: 'var(--paint)' }} />
+                  style={{ marginTop: 3, accentColor: 'var(--chrome)' }} />
                 <span>{opt}</span>
               </label>
             ))}
@@ -68,12 +68,12 @@ export function Quiz({ items, moduleId, onFinish }: {
                 padding: '8px 10px', borderRadius: 3, cursor: 'pointer', fontSize: '1rem',
                 color: 'var(--ink)',
                 border: `2px solid ${submitted && v === item.answer ? 'var(--pass)' : 'transparent'}`,
-                background: answered === v ? 'color-mix(in srgb, var(--paint) 8%, transparent)' : undefined,
+                background: answered === v ? 'color-mix(in srgb, var(--chrome) 8%, transparent)' : undefined,
               }}>
                 <input type="radio" name={item.id} disabled={submitted}
                   checked={answered === v}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: v }))}
-                  style={{ accentColor: 'var(--paint)' }} />
+                  style={{ accentColor: 'var(--chrome)' }} />
                 <span>{v ? 'True' : 'False'}</span>
               </label>
             ))}
@@ -85,7 +85,7 @@ export function Quiz({ items, moduleId, onFinish }: {
 
             {submitted && (
               <p style={{
-                fontSize: 12.5, lineHeight: 1.55, marginTop: 8,
+                fontSize: 15, lineHeight: 1.55, marginTop: 8,
                 color: correct ? 'var(--pass)' : 'var(--caution)',
               }}>
                 {correct ? '' : 'Not quite. '}
@@ -154,16 +154,16 @@ function OrderInput({ item, disabled, onChange }: {
         {chosen.map(s => <li key={s} style={{ marginBottom: 4 }}>{s}</li>)}
       </ol>
       {!disabled && pool.map(s => (
-        <button key={s} onClick={() => pick(s)} style={{
+        <button key={s} onClick={() => pick(s)} className="press" style={{
           display: 'block', width: '100%', textAlign: 'left', minHeight: 44,
-          background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 10,
+          background: 'var(--paper)', border: '2px solid var(--line)', borderRadius: 3,
           padding: '9px 11px', marginBottom: 6, fontSize: 13.5, color: 'var(--ink-2)',
           cursor: 'pointer', font: 'inherit',
         }}>{s}</button>
       ))}
       {!disabled && chosen.length > 0 && (
         <button onClick={reset} style={{
-          background: 'none', border: 0, color: 'var(--accent)', fontSize: 12,
+          background: 'none', border: 0, color: 'var(--chrome)', fontSize: 12,
           cursor: 'pointer', padding: '8px 0', minHeight: 44,
         }}>Start over</button>
       )}

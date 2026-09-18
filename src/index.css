@@ -26,6 +26,11 @@
   --paint: #26302B;
   --accent: #26302B;
   --on-accent: #F2F3EE;
+  /* The structural chrome (rack borders and icons, nav underline, focus
+     ring, links, checked controls) reads this instead of --paint, so it can
+     be given its own tone in dark mode without touching the painted-on-board
+     yellow. Equal to --paint here, so light mode is untouched. */
+  --chrome: #26302B;
   --plate: #F2C230;
   --plate-ink: #141816;
   --tape: #0E1110;
@@ -69,6 +74,9 @@
     --paint: #F2C230;
     --accent: #F2C230;
     --on-accent: #141816;
+    /* Chalk on steel: distinct from the yellow paint, so the yellow plate
+       stays the one yellow object on a dark screen. ~9:1 on #24302A. */
+    --chrome: #C9D6CC;
     --steel-hi: #7E8B84;
     --danger: #EF7A68;
     --pass: #6FD49B;
@@ -111,7 +119,7 @@ body {
 ::selection { background: var(--plate); color: var(--plate-ink); }
 
 :focus-visible {
-  outline: 3px solid var(--paint);
+  outline: 3px solid var(--chrome);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -178,12 +186,12 @@ ul { list-style: disc; }
   background: linear-gradient(180deg, #F6CD4A, var(--plate)); color: var(--plate-ink);
   box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 8px 18px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5);
 }
-.plate--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--paint); }
+.plate--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--chrome); }
 .plate:active { transform: translateY(1px) scale(0.98); }
 .plate[disabled], .plate[aria-disabled="true"] { opacity: 0.5; cursor: default; transform: none; }
 @media (hover: hover) and (pointer: fine) {
   .plate--primary:hover { box-shadow: 0 3px 0 rgba(0,0,0,0.12), 0 12px 24px var(--shade), inset 0 1px 0 rgba(255,255,255,0.5); }
-  .plate--quiet:hover { background: color-mix(in srgb, var(--paint) 10%, transparent); }
+  .plate--quiet:hover { background: color-mix(in srgb, var(--chrome) 10%, transparent); }
 }
 /* Long labels (task titles) may wrap inside a plate rather than overflow a phone. */
 .plate--wrap { white-space: normal; text-align: left; padding-block: 10px; line-height: 1.15; }
@@ -191,8 +199,9 @@ ul { list-style: disc; }
 /* ---------- signs, labels, callouts ---------- */
 .sign {
   background: var(--surface);
+  border: 2px solid var(--line);
   border-radius: 6px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 20px var(--shade);
+  box-shadow: 4px 4px 0 var(--shade);
   padding: calc(var(--pitch) * 0.6);
 }
 .label {
@@ -213,13 +222,14 @@ ul { list-style: disc; }
   letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--ink-2);
   text-underline-offset: 6px; text-decoration-thickness: 2px;
 }
-.nav-link[aria-current="page"] { color: var(--ink); text-decoration-line: underline; text-decoration-color: var(--paint); }
+.nav-link[aria-current="page"] { color: var(--ink); text-decoration-line: underline; text-decoration-color: var(--chrome); }
 @media (hover: hover) and (pointer: fine) { .nav-link:hover { color: var(--ink); text-decoration-line: underline; } }
 
 .callout {
   background: var(--surface);
+  border: 2px solid var(--line);
   border-radius: 6px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 8px 20px var(--shade);
+  box-shadow: 4px 4px 0 var(--shade);
   padding: calc(var(--pitch) * 0.5) calc(var(--pitch) * 0.6);
   margin: 0 0 18px; max-width: 60ch;
   font-size: 1rem; line-height: 1.55; color: var(--ink);
@@ -247,16 +257,16 @@ ul { list-style: disc; }
   min-height: calc(var(--pitch) * 3); height: 100%;
   padding: calc(var(--pitch) * 0.5);
   color: var(--ink); text-decoration: none;
-  border: 2px dashed color-mix(in srgb, var(--paint) 55%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--chrome) 55%, transparent);
   border-radius: 6px;
   transition: transform 140ms var(--ease-out), background-color 160ms ease;
 }
 .rack a:active { transform: scale(0.985); }
-@media (hover: hover) and (pointer: fine) { .rack a:hover { background: color-mix(in srgb, var(--paint) 7%, transparent); } }
-.rack svg { width: 100%; height: auto; color: var(--paint); }
+@media (hover: hover) and (pointer: fine) { .rack a:hover { background: color-mix(in srgb, var(--chrome) 7%, transparent); } }
+.rack svg { width: 100%; height: auto; color: var(--chrome); }
 .rack .t { display: block; margin-top: 4px; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.1rem, 0.6vw + 1rem, 1.3rem); line-height: 1.15; letter-spacing: 0.01em; }
 .rack .w { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.rack .here a { border-style: solid; border-color: var(--paint); background: color-mix(in srgb, var(--plate) 16%, transparent); }
+.rack .here a { border-style: solid; border-color: var(--chrome); background: color-mix(in srgb, var(--plate) 16%, transparent); }
 .rack .hung a { border-style: solid; }
 /* Labs cards: a small icon column so the title and blurb get most of the
    card's width instead of wrapping to three lines. The home screen's module
@@ -308,6 +318,11 @@ ul { list-style: disc; }
 /* A tool part way through its module: the steel fills from the bottom. */
 .slot .tool { clip-path: inset(calc((1 - var(--fill, 1)) * 100%) 0 0 0); }
 .slot.empty .tool, .slot.empty .shadow { display: none; }
+/* A student at zero progress still sees the payoff: the next module's tool
+   is present but faint, a preview rather than a placed tool, so finishing a
+   module visibly means something on a first run. No cast shadow, because a
+   shadow implies the tool is actually hanging there. */
+.slot.ghost .tool { display: block; opacity: 0.32; }
 
 .board-opening .lamp { opacity: 0; }
 .board-opening.play .lamp { animation: lamp-on 520ms linear 120ms forwards; }
@@ -324,6 +339,7 @@ ul { list-style: disc; }
 }
 .board-opening.play .slot.landed .tool { opacity: 1; }
 .board-opening.play .slot.landed .shadow { opacity: 0.55; }
+.board-opening.play .slot.ghost.landed .tool { opacity: 0.32; }
 
 .map-hero {
   display: grid; grid-template-columns: 1fr; gap: calc(var(--pitch) * 1);
@@ -387,3 +403,19 @@ ul { list-style: disc; }
 @media (min-width: 900px) { .service-talk { position: absolute; left: 24px; right: 24px; bottom: 24px; margin: 0; max-width: 62%; } }
 .service-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
 @media (min-width: 900px) { .service-grid { grid-template-columns: 1fr 1fr; } .service-grid > .win--danger { grid-column: 1 / -1; } }
+
+/* ---------- lesson rail: on a wide desktop the reading column keeps its own
+   measure, so above 1100px the rest of the board carries the module itself
+   rather than sitting bare. Hidden below that width, where the reading
+   column already uses the room it has. ---------- */
+.lesson-layout { display: grid; grid-template-columns: 1fr; gap: calc(var(--pitch) * 1.5); align-items: start; }
+.lesson-rail { display: none; }
+@media (min-width: 1100px) {
+  .lesson-layout { grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); }
+  .lesson-rail {
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+    position: sticky; top: calc(var(--pitch) * 1);
+    padding: calc(var(--pitch) * 1) calc(var(--pitch) * 0.6);
+  }
+  .lesson-rail svg { width: 100%; max-width: 200px; height: auto; color: var(--chrome); }
+}

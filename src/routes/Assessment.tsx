@@ -125,7 +125,7 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
 
       <div style={{ margin: '18px 0 0' }}>
         {items.map((item, n) => (
-          <fieldset key={item.id} className="sign" style={{ border: 0, margin: '0 0 12px' }}>
+          <fieldset key={item.id} className="sign" style={{ margin: '0 0 12px' }}>
             <legend className="label" style={{ display: 'block', padding: 0, margin: '0 0 10px' }}>
               Question {n + 1}
             </legend>
@@ -141,7 +141,7 @@ function AssessmentForm({ moduleId, phase }: { moduleId: string; phase: string }
                 <input type="radio" name={item.id}
                   checked={responses[item.id] === i}
                   onChange={() => setResponses(r => ({ ...r, [item.id]: i }))}
-                  style={{ marginTop: 3, accentColor: 'var(--paint)' }} />
+                  style={{ marginTop: 3, accentColor: 'var(--chrome)' }} />
                 <span>{opt}</span>
               </label>
             ))}

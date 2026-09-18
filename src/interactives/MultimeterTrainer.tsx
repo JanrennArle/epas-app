@@ -104,7 +104,7 @@ export function MultimeterTrainer({ moduleId, config, onEvent }: InteractiveProp
             const wasRight = verdict !== undefined && verdict === isHealthy(c)
             const borderColor = verdict !== undefined
               ? (wasRight ? 'var(--pass)' : 'var(--caution)')
-              : (probed?.id === c.id ? 'var(--paint)' : 'var(--line)')
+              : (probed?.id === c.id ? 'var(--chrome)' : 'var(--line)')
             return (
               <button key={c.id} onClick={() => setProbed(c)} className="press"
                 aria-pressed={probed?.id === c.id}

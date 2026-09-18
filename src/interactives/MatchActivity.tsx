@@ -47,7 +47,7 @@ export function MatchActivity({ moduleId, config, onEvent }: InteractiveProps) {
         const picked = responses[item.id] !== undefined && responses[item.id] !== ''
         const borderColor = checked
           ? (wrong ? 'var(--caution)' : 'var(--pass)')
-          : (picked ? 'var(--paint)' : 'var(--line)')
+          : (picked ? 'var(--chrome)' : 'var(--line)')
         return (
           <div key={item.id} style={{ marginBottom: 14 }}>
             <label htmlFor={`${activity.id}-${item.id}`} style={{

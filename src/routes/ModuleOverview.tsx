@@ -29,7 +29,7 @@ export default function ModuleOverview() {
       <Link to="/" className="back"><ArrowLeft weight="bold" aria-hidden />Modules</Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0 20px' }}>
-        <Tool size={40} weight="regular" color="var(--paint)" aria-hidden />
+        <Tool size={40} weight="regular" color="var(--chrome)" aria-hidden />
         <div>
           <p className="label" style={{ margin: '0 0 2px' }}>{m.week}</p>
           <Tape as="h1">{m.title}</Tape>

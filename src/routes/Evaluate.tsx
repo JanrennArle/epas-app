@@ -65,7 +65,7 @@ export default function Evaluate() {
         {answered} of {SURVEY.length} answered
       </p>
 
-      <fieldset className="sign" style={{ border: 0, margin: '0 0 16px' }}>
+      <fieldset className="sign" style={{ margin: '0 0 16px' }}>
         <legend className="label" style={{ padding: '0 6px' }}>
           Answering as
         </legend>
@@ -78,7 +78,7 @@ export default function Evaluate() {
             <input type="radio" name="respondent"
               checked={answers.respondent === r.value}
               onChange={() => set('respondent', r.value)}
-              style={{ accentColor: 'var(--paint)' }} />
+              style={{ accentColor: 'var(--chrome)' }} />
             <span>{r.label}</span>
           </label>
         ))}
@@ -89,7 +89,7 @@ export default function Evaluate() {
           <h2 className="label" style={{ margin: '0 0 8px' }}>{category}</h2>
 
           {SURVEY.filter(i => i.category === category).map(item => (
-            <fieldset key={item.id} className="sign" style={{ border: 0, margin: '0 0 10px' }}>
+            <fieldset key={item.id} className="sign" style={{ margin: '0 0 10px' }}>
               <legend style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.5, padding: '0 6px', color: 'var(--ink)' }}>
                 {item.text}
               </legend>
@@ -102,7 +102,7 @@ export default function Evaluate() {
                   <input type="radio" name={item.id}
                     checked={answers[item.id] === n + 1}
                     onChange={() => set(item.id, n + 1)}
-                    style={{ accentColor: 'var(--paint)' }} />
+                    style={{ accentColor: 'var(--chrome)' }} />
                   <span>{label}</span>
                 </label>
               ))}
@@ -133,7 +133,7 @@ export default function Evaluate() {
 
       <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--ink-3)', margin: '18px 0 0' }}>
         Your answers go to your teacher only when you hand them in from{' '}
-        <Link to="/progress" style={{ color: 'var(--accent)' }}>Progress</Link>.
+        <Link to="/progress" style={{ color: 'var(--chrome)' }}>Progress</Link>.
       </p>
     </div>
   )

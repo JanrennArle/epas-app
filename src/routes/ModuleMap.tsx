@@ -48,7 +48,7 @@ export default function ModuleMap() {
             <PlateLink to="/labs">Open the labs</PlateLink>
           </div>
         </div>
-        <ToolBoard tools={tools} />
+        <ToolBoard tools={tools} nextId={next?.moduleId} />
       </div>
 
       <Tape as="h2" size="section" id="rack-h">Your board</Tape>
@@ -63,9 +63,11 @@ export default function ModuleMap() {
               <Link to={`/m/${m.id}`}>
                 <Tool weight={t?.hung ? 'fill' : 'regular'} aria-hidden />
                 <span>
-                  <span className="label">Module {i + 1}{here ? ` · ${next?.verb === 'Continue' ? 'Continue here' : 'Start here'}` : ''}</span>
                   <span className="t">{m.title}</span>
-                  <span className="w">{m.week} · {t?.done ?? 0} of {t?.total ?? 0} outcomes</span>
+                  <span className="w">
+                    Module {i + 1} · {m.week}, {t?.done ?? 0} of {t?.total ?? 0} outcomes
+                    {here ? `, ${next?.verb === 'Continue' ? 'Continue here' : 'Start here'}` : ''}
+                  </span>
                 </span>
               </Link>
             </li>
@@ -81,7 +83,7 @@ export default function ModuleMap() {
       */}
       <div style={{
         marginTop: 'calc(var(--pitch) * 1.5)', paddingTop: 14,
-        borderTop: '2px dashed color-mix(in srgb, var(--paint) 35%, transparent)',
+        borderTop: '2px dashed color-mix(in srgb, var(--chrome) 35%, transparent)',
         fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--ink-2)',
       }}>
         {confirming ? (

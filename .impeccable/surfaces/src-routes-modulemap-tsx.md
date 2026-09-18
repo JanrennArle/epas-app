@@ -23,7 +23,7 @@ related_targets: ["src/ui/Shell.tsx","src/interactives/SystemTroubleshooter.tsx"
 
 THESIS: The app is a technician's pegboard. Each module is a tool with a painted outline; finishing it hangs the tool in place. Refuses the pastel card grid of LMS dashboards.
 
-OWN-WORLD: Perforated board (#E3E8E4 light, #26312C dark), holes on one pitch that is the layout grid. Embossed label-tape headings in Barlow Condensed. Painted outlines. One yellow painted-steel plate (#F2C230) per screen for the primary action. Steel-filled Phosphor tools. Atkinson Hyperlegible Next body. Troubleshooting labs switch to Service Mode: sixteen-colour pixel shop, DotGothic16, double-rule windows.
+OWN-WORLD: Perforated board (#E3E8E4 light, #24302A dark), holes on one pitch that is the layout grid. Embossed label-tape headings in Barlow Condensed. Painted outlines. One yellow painted-steel plate (#F2C230) per screen for the primary action. Steel-filled Phosphor tools. Atkinson Hyperlegible Next body. Troubleshooting labs switch to Service Mode: sixteen-colour pixel shop, DotGothic16, double-rule windows.
 
 STORY: A student sees nine tools, knows where they stand, starts or continues the next module with no signal, and watches tools hang as modules finish.
 

@@ -141,7 +141,7 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
               style={{
                 flex: 1, minHeight: 44, borderRadius: 3, cursor: done ? 'default' : 'pointer',
                 background: 'var(--paper)', font: 'inherit', fontSize: 13,
-                border: `2px solid ${rectifier === r ? 'var(--paint)' : 'var(--line)'}`,
+                border: `2px solid ${rectifier === r ? 'var(--chrome)' : 'var(--line)'}`,
                 color: 'var(--ink)',
               }}>{r === 'half' ? 'Half wave' : 'Full wave bridge'}</button>
           ))}
@@ -158,7 +158,7 @@ export function PowerSupplySim({ moduleId, config, onEvent }: InteractiveProps) 
                 flex: 1, minHeight: 44, borderRadius: 3, cursor: done ? 'default' : 'pointer',
                 background: 'var(--paper)', font: 'inherit', fontSize: 12.5,
                 fontFamily: 'var(--font-mono)',
-                border: `2px solid ${filterUf === c ? 'var(--paint)' : 'var(--line)'}`,
+                border: `2px solid ${filterUf === c ? 'var(--chrome)' : 'var(--line)'}`,
                 color: 'var(--ink)',
               }}>{c}u</button>
           ))}
