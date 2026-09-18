@@ -59,13 +59,12 @@ export default function LessonReader() {
       */}
       <aside className="lesson-rail" aria-hidden="true">
         <Tool weight="regular" aria-hidden />
-        <span className="label">{m.week}</span>
         <span style={{
           fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.15rem',
           lineHeight: 1.25, color: 'var(--ink)',
         }}>{m.title}</span>
         <span style={{ fontSize: '0.92rem', color: 'var(--ink-2)', fontVariantNumeric: 'tabular-nums' }}>
-          {done} of {m.outcomes.length} outcomes
+          {m.week} · {done} of {m.outcomes.length} outcomes
         </span>
       </aside>
     </div>

@@ -66,8 +66,12 @@ export default function ModuleMap() {
                   <span className="t">{m.title}</span>
                   <span className="w">
                     Module {i + 1} · {m.week}, {t?.done ?? 0} of {t?.total ?? 0} outcomes
-                    {here ? `, ${next?.verb === 'Continue' ? 'Continue here' : 'Start here'}` : ''}
                   </span>
+                  {here && (
+                    <span className="w" style={{ color: 'var(--ink)', fontWeight: 700 }}>
+                      {next?.verb === 'Continue' ? 'Continue here' : 'Start here'}
+                    </span>
+                  )}
                 </span>
               </Link>
             </li>
